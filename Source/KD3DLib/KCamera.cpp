@@ -151,11 +151,11 @@ bool KDebugCamera::Frame()
     }
 
     g_InputData.bLShift ?
-        m_fSpeed += 80.0f * g_fSecPerFrame : m_fSpeed -= 200.0f * g_fSecPerFrame;
+        m_fSpeed += 300.0f * g_fSecPerFrame : m_fSpeed -= 300.0f * g_fSecPerFrame;
 
-    if (m_fSpeed >= 200.0f)
+    if (m_fSpeed >= 300.0f)
     {
-        m_fSpeed = 200.0f;
+        m_fSpeed = 300.0f;
     }
 
     if (m_fSpeed <= m_fOriginSpeed)

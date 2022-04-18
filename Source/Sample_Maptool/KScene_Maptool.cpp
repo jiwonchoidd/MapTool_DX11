@@ -101,6 +101,7 @@ bool KScene_Maptool::Frame()
 		if (ImGui::RadioButton("None", (m_iImguiSelected == 0)))
 		{
 			m_iImguiSelected = 0;
+			m_MousePicker.m_vIntersect = KVector3(0, -100, 0);
 		}ImGui::SameLine();
 		if (ImGui::RadioButton("Height", (m_iImguiSelected == 1)))
 		{
