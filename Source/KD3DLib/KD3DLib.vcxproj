@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ImGuiManager.cpp" />
+    <ClCompile Include="ImGui\imgui.cpp" />
+    <ClCompile Include="ImGui\imgui_demo.cpp" />
+    <ClCompile Include="ImGui\imgui_draw.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="K2DAsset.cpp" />
+    <ClCompile Include="K3DAsset.cpp" />
+    <ClCompile Include="KBoxObj.cpp" />
+    <ClCompile Include="KCamera.cpp" />
+    <ClCompile Include="KCollider.cpp" />
+    <ClCompile Include="KCollision.cpp" />
+    <ClCompile Include="KCore.cpp" />
+    <ClCompile Include="KDebugBoxRenderer.cpp" />
+    <ClCompile Include="KDepthStencil.cpp" />
+    <ClCompile Include="KDevice.cpp" />
+    <ClCompile Include="KFrustum.cpp" />
+    <ClCompile Include="KInput.cpp" />
+    <ClCompile Include="KManager.cpp" />
+    <ClCompile Include="KMap.cpp" />
+    <ClCompile Include="KMapSpace.cpp" />
+    <ClCompile Include="KMath.cpp" />
+    <ClCompile Include="KNode.cpp" />
+    <ClCompile Include="KObject.cpp" />
+    <ClCompile Include="KObjectManager.cpp" />
+    <ClCompile Include="KObjObject.cpp" />
+    <ClCompile Include="KPivot.cpp" />
+    <ClCompile Include="KPlaneObj.cpp" />
+    <ClCompile Include="KQuadTree.cpp" />
+    <ClCompile Include="KRenderTarget.cpp" />
+    <ClCompile Include="KScene.cpp" />
+    <ClCompile Include="KShaderManager.cpp" />
+    <ClCompile Include="KSkyBox.cpp" />
+    <ClCompile Include="KSound.cpp" />
+    <ClCompile Include="KSoundManager.cpp" />
+    <ClCompile Include="KSpriteManager.cpp" />
+    <ClCompile Include="KState.cpp" />
+    <ClCompile Include="KTextureManager.cpp" />
+    <ClCompile Include="KTimer.cpp" />
+    <ClCompile Include="KUI.cpp" />
+    <ClCompile Include="KUIModelManager.cpp" />
+    <ClCompile Include="KWindow.cpp" />
+    <ClCompile Include="KWrite.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ImGuiManager.h" />
+    <ClInclude Include="ImGui\imconfig.h" />
+    <ClInclude Include="ImGui\imgui.h" />
+    <ClInclude Include="ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="ImGui\imgui_internal.h" />
+    <ClInclude Include="ImGui\imstb_rectpack.h" />
+    <ClInclude Include="ImGui\imstb_textedit.h" />
+    <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="K2DAsset.h" />
+    <ClInclude Include="K3DAsset.h" />
+    <ClInclude Include="KBoxObj.h" />
+    <ClInclude Include="KCamera.h" />
+    <ClInclude Include="KCollider.h" />
+    <ClInclude Include="KCollision.h" />
+    <ClInclude Include="KCore.h" />
+    <ClInclude Include="KDebugBoxRenderer.h" />
+    <ClInclude Include="KDepthStencil.h" />
+    <ClInclude Include="KDevice.h" />
+    <ClInclude Include="KFrustum.h" />
+    <ClInclude Include="KInput.h" />
+    <ClInclude Include="KManager.h" />
+    <ClInclude Include="KMap.h" />
+    <ClInclude Include="KMapSpace.h" />
+    <ClInclude Include="KMath.h" />
+    <ClInclude Include="KNode.h" />
+    <ClInclude Include="KObject.h" />
+    <ClInclude Include="KObjectManager.h" />
+    <ClInclude Include="KObjObject.h" />
+    <ClInclude Include="KPivot.h" />
+    <ClInclude Include="KPlaneObj.h" />
+    <ClInclude Include="KQuadTree.h" />
+    <ClInclude Include="KRenderTarget.h" />
+    <ClInclude Include="KScene.h" />
+    <ClInclude Include="KShaderManager.h" />
+    <ClInclude Include="KSkyBox.h" />
+    <ClInclude Include="KSound.h" />
+    <ClInclude Include="KSoundManager.h" />
+    <ClInclude Include="KSpriteManager.h" />
+    <ClInclude Include="KState.h" />
+    <ClInclude Include="KStd.h" />
+    <ClInclude Include="KTextureManager.h" />
+    <ClInclude Include="KTimer.h" />
+    <ClInclude Include="KUI.h" />
+    <ClInclude Include="KUIModelManager.h" />
+    <ClInclude Include="KWindow.h" />
+    <ClInclude Include="KWrite.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="KD3DLib.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="C:\Users\kgca4021\OneDrive - nsu.ac.kr\DD_ICON.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\data\shader\PS_Plane.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VSPS_FBXShadow.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VSPS_DepthShadow.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VSPS_Frustum.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VS_Light.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0_level_9_1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VS_Normalmap.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VS_Plane.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <Text Include="..\..\data\shader\PS_2D.txt" />
+    <Text Include="..\..\data\shader\PS_2D_Map.txt" />
+    <Text Include="..\..\data\shader\PS_UI_0.txt" />
+    <Text Include="..\..\data\shader\PS_UI_Mask.txt" />
+    <FxCompile Include="..\..\data\shader\PS_Light.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">2.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\PS_Normalmap.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\Skybox.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </FxCompile>
+    <Text Include="..\..\data\shader\VSPS_Debug_0.txt" />
+    <Text Include="..\..\data\shader\VSPS_UI_Alpha.txt" />
+    <Text Include="..\..\data\shader\VS_2D.txt" />
+    <Text Include="..\..\data\shader\VS_2D_Map.txt" />
+    <Text Include="..\..\data\shader\VS_UI_0.txt" />
+    <Text Include="..\..\data\shader\VS_UI_Move.txt" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{05E37C1F-188E-4374-969E-60582876A434}</ProjectGuid>
+    <RootNamespace>Sample_LightShadow</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>../../Export/KD3DLib/</OutDir>
+    <IntDir>../../Export/KD3DLib/obj/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\\..\\include;..\\..\\include\\d3dtk;..\\..\\include\\fmod;\\Imgui</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\\..\\lib;..\\..\\fbx\\lib\\vs2017\\x64\\debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy "..\\..\\Export\\KD3DLib\\KD3DLib.lib" "..\\..\\Lib\\KD3DLib.lib"
+
+copy "*.h" "..\\..\\Include\\KD3DLib"
+copy "ImGui\\*.h" "..\\..\\Include\\KD3DLib\\ImGui"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

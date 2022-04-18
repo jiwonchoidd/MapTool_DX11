@@ -1,0 +1,52 @@
+﻿  KD3DLib.vcxproj -> C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\제출처\최지원Maptool\Export\KD3DLib\KD3DLib.lib
+          1개 파일이 복사되었습니다.
+  ImGuiManager.h
+  K2DAsset.h
+  K3DAsset.h
+  KBoxObj.h
+  KCamera.h
+  KCollider.h
+  KCollision.h
+  KCore.h
+  KDebugBoxRenderer.h
+  KDepthStencil.h
+  KDevice.h
+  KFrustum.h
+  KInput.h
+  KManager.h
+  KMap.h
+  KMapSpace.h
+  KMath.h
+  KNode.h
+  KObject.h
+  KObjectManager.h
+  KObjObject.h
+  KPivot.h
+  KPlaneObj.h
+  KQuadTree.h
+  KRenderTarget.h
+  KScene.h
+  KShaderManager.h
+  KSkyBox.h
+  KSound.h
+  KSoundManager.h
+  KSpriteManager.h
+  KState.h
+  KStd.h
+  KTextureManager.h
+  KTimer.h
+  KUI.h
+  KUIModelManager.h
+  KWindow.h
+  KWrite.h
+  resource.h
+         40개 파일이 복사되었습니다.
+  ImGui\\imconfig.h
+  ImGui\\imgui.h
+  ImGui\\imgui_impl_dx11.h
+  ImGui\\imgui_impl_win32.h
+  ImGui\\imgui_internal.h
+  ImGui\\imstb_rectpack.h
+  ImGui\\imstb_textedit.h
+  ImGui\\imstb_truetype.h
+          8개 파일이 복사되었습니다.

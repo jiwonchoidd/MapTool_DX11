@@ -1,0 +1,398 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{bf1d5406-6de6-4ec1-8b77-503cdff86464}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{4de3f8ac-b6f6-4eb1-a7c4-ec390c63b3db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{4da0e558-0c45-4086-bdbd-d723d7f7deba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Font">
+      <UniqueIdentifier>{f02a54a3-52ad-49de-a30f-0675a8d88406}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code">
+      <UniqueIdentifier>{453addcd-7df2-419b-9806-a8f14f333c55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Obj">
+      <UniqueIdentifier>{50e0e513-c73e-4e79-bfc5-963b4facbaeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Manager">
+      <UniqueIdentifier>{789f895c-bf24-4dbe-8559-46fafe951c59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Core">
+      <UniqueIdentifier>{2edd2789-3908-471b-a48f-d288183369b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Obj\2D">
+      <UniqueIdentifier>{59beabdd-ddec-4d8f-824d-bec149491c53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Obj\3D">
+      <UniqueIdentifier>{12549f7e-8259-4a9d-ae05-ac087cd6cf38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Obj\3D\Map">
+      <UniqueIdentifier>{823a47e9-ebdc-4aa6-aba5-6a61d36316c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Obj\3D\Primitive Obj">
+      <UniqueIdentifier>{67e57aef-c689-4010-83fa-f12e194b7114}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Obj\3D\Debug">
+      <UniqueIdentifier>{d5e9bd45-a907-4d54-a36f-c871e1a79f80}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ImGuiManager.cpp">
+      <Filter>Code\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="KManager.cpp">
+      <Filter>Code\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="KShaderManager.cpp">
+      <Filter>Code\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="KSoundManager.cpp">
+      <Filter>Code\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="KTextureManager.cpp">
+      <Filter>Code\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="KObject.cpp">
+      <Filter>Code\Obj</Filter>
+    </ClCompile>
+    <ClCompile Include="KCamera.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="KCollision.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="KInput.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="KScene.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="KSound.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="KTimer.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="KWrite.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="KWindow.cpp">
+      <Filter>Code\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="KDevice.cpp">
+      <Filter>Code\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="KState.cpp">
+      <Filter>Code\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="KCore.cpp">
+      <Filter>Code\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="KSpriteManager.cpp">
+      <Filter>Code\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="K2DAsset.cpp">
+      <Filter>Code\Obj\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="KCollider.cpp">
+      <Filter>Code\Obj\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="KUI.cpp">
+      <Filter>Code\Obj\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="KObjectManager.cpp">
+      <Filter>Code\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="KUIModelManager.cpp">
+      <Filter>Code\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="KObjObject.cpp">
+      <Filter>Code\Obj\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="K3DAsset.cpp">
+      <Filter>Code\Obj\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="KPlaneObj.cpp">
+      <Filter>Code\Obj\3D\Primitive Obj</Filter>
+    </ClCompile>
+    <ClCompile Include="KBoxObj.cpp">
+      <Filter>Code\Obj\3D\Primitive Obj</Filter>
+    </ClCompile>
+    <ClCompile Include="KMapSpace.cpp">
+      <Filter>Code\Obj\3D\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="KMap.cpp">
+      <Filter>Code\Obj\3D\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="KFrustum.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="KSkyBox.cpp">
+      <Filter>Code\Obj\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="KQuadTree.cpp">
+      <Filter>Code\Obj\3D\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="KNode.cpp">
+      <Filter>Code\Obj\3D\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="KRenderTarget.cpp">
+      <Filter>Code\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="KDepthStencil.cpp">
+      <Filter>Code\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="KDebugBoxRenderer.cpp">
+      <Filter>Code\Obj\3D\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="KPivot.cpp">
+      <Filter>Code\Obj\3D\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="KMath.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_demo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_dx11.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_widgets.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="KInput.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="KSound.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="KStd.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="KTimer.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="KWrite.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="KCamera.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KObject.h">
+      <Filter>Code\Obj</Filter>
+    </ClInclude>
+    <ClInclude Include="KCollision.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="KScene.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiManager.h">
+      <Filter>Code\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="KShaderManager.h">
+      <Filter>Code\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="KSoundManager.h">
+      <Filter>Code\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="KTextureManager.h">
+      <Filter>Code\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="KManager.h">
+      <Filter>Code\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="KWindow.h">
+      <Filter>Code\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="KDevice.h">
+      <Filter>Code\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="KState.h">
+      <Filter>Code\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="KCore.h">
+      <Filter>Code\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="KSpriteManager.h">
+      <Filter>Code\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="K2DAsset.h">
+      <Filter>Code\Obj\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="KCollider.h">
+      <Filter>Code\Obj\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="KUI.h">
+      <Filter>Code\Obj\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="KObjectManager.h">
+      <Filter>Code\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="KUIModelManager.h">
+      <Filter>Code\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="KObjObject.h">
+      <Filter>Code\Obj\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="K3DAsset.h">
+      <Filter>Code\Obj\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="KPlaneObj.h">
+      <Filter>Code\Obj\3D\Primitive Obj</Filter>
+    </ClInclude>
+    <ClInclude Include="KBoxObj.h">
+      <Filter>Code\Obj\3D\Primitive Obj</Filter>
+    </ClInclude>
+    <ClInclude Include="KMapSpace.h">
+      <Filter>Code\Obj\3D\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="KMap.h">
+      <Filter>Code\Obj\3D\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="KFrustum.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="KSkyBox.h">
+      <Filter>Code\Obj\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="KQuadTree.h">
+      <Filter>Code\Obj\3D\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="KNode.h">
+      <Filter>Code\Obj\3D\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="KRenderTarget.h">
+      <Filter>Code\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="KDepthStencil.h">
+      <Filter>Code\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="KDebugBoxRenderer.h">
+      <Filter>Code\Obj\3D\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="KPivot.h">
+      <Filter>Code\Obj\3D\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="KMath.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_dx11.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_win32.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_internal.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_rectpack.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_textedit.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_truetype.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="KD3DLib.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="C:\Users\kgca4021\OneDrive - nsu.ac.kr\DD_ICON.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\data\shader\PS_2D.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="..\..\data\shader\PS_2D_Map.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="..\..\data\shader\PS_UI_0.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="..\..\data\shader\PS_UI_Mask.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="..\..\data\shader\VS_2D.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="..\..\data\shader\VS_2D_Map.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="..\..\data\shader\VS_UI_0.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="..\..\data\shader\VS_UI_Move.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="..\..\data\shader\VSPS_Debug_0.txt">
+      <Filter>Shader</Filter>
+    </Text>
+    <Text Include="..\..\data\shader\VSPS_UI_Alpha.txt">
+      <Filter>Shader</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\data\shader\Skybox.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\PS_Light.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\PS_Normalmap.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VS_Light.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VS_Normalmap.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VSPS_Frustum.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\PS_Plane.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VS_Plane.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VSPS_DepthShadow.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VSPS_FBXShadow.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>

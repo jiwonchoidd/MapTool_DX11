@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{322e654d-a33f-4bcb-9e44-4031acf305db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code">
+      <UniqueIdentifier>{bb0f24c7-2be7-4421-b1c6-ad148512453f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Scene">
+      <UniqueIdentifier>{775239b0-dd10-4fee-871c-19db47f4ecd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FBX">
+      <UniqueIdentifier>{1fab19c9-e071-4722-8573-500c28dce2d7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sample.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="KSceneManager.cpp">
+      <Filter>Code\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="KScene_Maptool.cpp">
+      <Filter>Code\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="KMiniMap.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="KMousePicker.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="KFBXObj.cpp">
+      <Filter>FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="KFbxVertexLoader.cpp">
+      <Filter>FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="KFbxLoader.cpp">
+      <Filter>FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="KFBXAsset.cpp">
+      <Filter>FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="KFBXManager.cpp">
+      <Filter>FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="KLight.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="KScene_Maptool.h">
+      <Filter>Code\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="KSceneManager.h">
+      <Filter>Code\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Sample.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="KMiniMap.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="KMousePicker.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="KDepthShadow.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="KLight.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="KFBXObj.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="KFbxLoader.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="KFBXAsset.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="KFBXManager.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Sample_Input.rc">
+      <Filter>Resource</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\data\DD_ICON.ico">
+      <Filter>Resource</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
