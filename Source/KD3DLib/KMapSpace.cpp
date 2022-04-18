@@ -408,6 +408,20 @@ KBox KMapSpace::CreateNodeBoundingBox(KNode* pNode)
 	return pNode->m_node_box;
 }
 
+void KMapSpace::UpdateNodeBoundingBox(KNode* pNode, float height)
+{
+	if (pNode == m_pRootNode)
+		return;
+	pNode->m_node_box.max = KVector3(pNode->m_node_box.max.x, height, pNode->m_node_box.max.z);
+	pNode->m_node_box.size.x = (pNode->m_node_box.max.x - pNode->m_node_box.min.x) / 2.0f;
+	pNode->m_node_box.size.y = (pNode->m_node_box.max.y - pNode->m_node_box.min.y) / 2.0f;
+	pNode->m_node_box.size.z = (pNode->m_node_box.max.z - pNode->m_node_box.min.z) / 2.0f;
+	pNode->m_node_box.middle = (pNode->m_node_box.max + pNode->m_node_box.min);
+	pNode->m_node_box.middle /= 2.0f;
+	UpdateNodeBoundingBox(pNode->m_pParent, height);
+}
+
+
 KVector2 KMapSpace::GetHeightFromNode(DWORD TL, DWORD TR, DWORD BL, DWORD BR)
 {
 	DWORD dwStartRow = TL / m_width;
@@ -444,6 +458,7 @@ void KMapSpace::DrawableUpdate()
 {
 	m_pDrawableLeafList.clear();
 	m_ObjectList_Static.clear();
+	//RenderTile_OnlyLeaf();
 	RenderTile(m_pRootNode);
 }
 void KMapSpace::RenderTile(KNode* pNode)
@@ -468,6 +483,29 @@ void KMapSpace::RenderTile(KNode* pNode)
 		for (int iNode = 0; iNode < pNode->m_pChildlist.size(); iNode++)
 		{
 			RenderTile(pNode->m_pChildlist[iNode]);
+		}
+	}
+}
+void KMapSpace::RenderTile_OnlyLeaf()
+{
+	for (int leaf = 0; leaf < m_pLeafList.size(); leaf++)
+	{
+		KNode* pNode = m_pLeafList[leaf];
+		if (pNode == nullptr) return;
+		if (m_pCamera->ClassifyOBB(&pNode->m_node_box) == TRUE)
+		{
+			for (auto obj : pNode->m_StaticObjectList)
+			{
+				if (m_pCamera->ClassifyOBB(&obj->obj_box) == TRUE)
+				{
+					//보여지는 오브젝트 담아서 렌더링
+					m_ObjectList_Static.push_back(obj);
+				}
+			}
+			if (pNode->m_bLeaf == true)
+			{
+				m_pDrawableLeafList.push_back(pNode);
+			}
 		}
 	}
 }

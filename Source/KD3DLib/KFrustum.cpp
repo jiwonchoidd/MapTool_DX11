@@ -123,8 +123,6 @@ void KFrustum::CreateFrustum(KMatrix& matView, KMatrix& matProj)
 
 	m_Plane[5] = KPlane(m_Frustum[2], m_Frustum[6], m_Frustum[7]);	//+y À­ÂÊ
 
-	
-	int a = 3;
 }
 
 BOOL KFrustum::ClassifyPoint(KVector3* v)

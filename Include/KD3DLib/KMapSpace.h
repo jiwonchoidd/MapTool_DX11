@@ -51,9 +51,11 @@ public:
 	KBoxObj					m_Debug_Box;// Temporary debug object
 public:
 	KBox   CreateNodeBoundingBox(KNode* pNode);
+	void   UpdateNodeBoundingBox(KNode* pNode, float height);
 	KVector2 GetHeightFromNode(DWORD TL, DWORD TR, DWORD BL, DWORD BR);
 	void   DrawableUpdate();
-	void   RenderTile(KNode* pNode);
+	void   RenderTile(KNode* pNode); //재귀 함수 버젼
+	void   RenderTile_OnlyLeaf(); //리프노드만 도는 버젼
 public:
 	//맵 오브젝트 추가 관련 함수
 	bool   RandomSetupObject(K3DAsset* obj, int amount); // 오브젝트를 Kmapobject 구조체로 변환

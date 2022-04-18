@@ -79,8 +79,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>../../Export/Sample_Graphic/</OutDir>
-    <IntDir>../../Export/Sample_Graphic/obj/</IntDir>
+    <OutDir>../../Export/Sample_Maptool/</OutDir>
+    <IntDir>../../Export/Sample_Maptool/obj/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

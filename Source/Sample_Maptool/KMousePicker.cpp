@@ -77,18 +77,26 @@ bool KMousePicker::Map_HeightControl(float HeightScale, float BrushSize)
 		}
 		else
 		{
+			//완전히 포함된 노드
 			for (int i = 1; i < 20; i++)
 			{
 				if (i == 5 || i == 10 || i == 15)
 					continue;
 				KVector3 pos = pNode->m_VertexList[i].pos;
 				float newHeight = pos.y + HeightScale * g_fSecPerFrame;
-				pNode->m_VertexList[i].pos = KVector3(pos.x, newHeight, pos.z);
-				pNode->m_node_box = KBox(KVector3(pNode->m_node_box.min.x, pNode->m_node_box.min.y, pNode->m_node_box.min.z),
-					KVector3(pNode->m_node_box.max.x, newHeight, pNode->m_node_box.max.z)); 
+				if (newHeight > -5)
+				{
+					pNode->m_VertexList[i].pos = KVector3(pos.x, newHeight, pos.z);
+
+					
+					//카메라 프러스텀때문에 박스를 다시 맞게 줄여줘야함
+					//-> 문제 : 리프노드 박스만 수정하면 되는줄 알았는데, 루트 노드 부터 사이즈를 변경해줘야함..
+					//-> 해결 : 해당 노드부터 부모 노드까지 재귀함수를 호출해, 높이 값을 다 늘려줌
+					m_pSpace->UpdateNodeBoundingBox(pNode, newHeight);
+
+				}
 			}
 			Map_HeightControl_MakeSameHeight(pNode);
-
 		}
 	}
 	return true;

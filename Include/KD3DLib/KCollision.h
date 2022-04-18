@@ -110,6 +110,9 @@ struct KBox
 		middle /= 2.0f;
 		size.x = max.x - min.x;
 		size.y = max.y - min.y;
+		Axis[0] = { 1,0,0 };
+		Axis[1] = { 0,1,0 };
+		Axis[2] = { 0,0,1 };
 	}
 	KBox(KVector3 v, float w, float h, float q)
 	{
@@ -119,6 +122,9 @@ struct KBox
 		middle /= 2.0f;
 		this->size.x = w;
 		this->size.y = h;
+		Axis[0] = { 1,0,0 };
+		Axis[1] = { 0,1,0 };
+		Axis[2] = { 0,0,1 };
 	}
 };
 struct KSphere

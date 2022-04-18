@@ -21,7 +21,7 @@ bool	KCore::GameInit()
         m_Camera.m_pVS = g_ShaderManager.CreateVertexShader(L"../../data/shader/VSPS_Frustum.hlsl", "VS");
         m_Camera.m_pPS = g_ShaderManager.CreatePixelShader(L"../../data/shader/VSPS_Frustum.hlsl", "PS");
         m_Camera.Init(m_pImmediateContext.Get());
-        m_Camera.CreateViewMatrix(KVector3(0, 100, -100), KVector3(0, 0, 0));
+        m_Camera.CreateViewMatrix(KVector3(0, 300, -300), KVector3(0, 0, 0));
         m_Camera.CreateProjMatrix(1.0f, 10000.0f, XM_PI * 0.4f,
             static_cast<float>(g_rtClient.right) / static_cast<float>(g_rtClient.bottom));
         //

@@ -45,7 +45,9 @@
     <ClCompile Include="KFBXManager.cpp">
       <Filter>FBX</Filter>
     </ClCompile>
-    <ClCompile Include="KLight.cpp" />
+    <ClCompile Include="KLight.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">

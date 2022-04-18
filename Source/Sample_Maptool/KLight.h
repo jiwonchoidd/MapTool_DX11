@@ -7,9 +7,14 @@
 class KLight
 {
 public:
+    float				m_fYaw;
+    float				m_fPitch;
+    float				m_fRoll;
+public:
     KVector3    m_vPos;
     KVector3    m_vTarget;
     KVector3    m_vDir;
+    KVector3    m_vPreviousDir;
     KVector3    m_vRotation;
     KVector4    m_vLightColor;
 public:
@@ -17,39 +22,9 @@ public:
     KMatrix     m_matProj;
     KMatrix     m_matWorld;
 public:
-    virtual void  SetLight(KVector3 vPos, KVector3 vTarget)
-    {
-        //색깔 기본
-        m_vLightColor = { 0.9f,0.85f,0.85f,1.0f};
-        m_vPos = vPos;
-        m_vTarget = vTarget;
-        m_vDir = m_vTarget - m_vPos;
-        D3DXVec3Normalize(&m_vDir, &m_vDir);
-        //월드행렬 만들기 ----------------------
-        m_matWorld._41 = m_vPos.x;
-        m_matWorld._42 = m_vPos.y;
-        m_matWorld._43 = m_vPos.z;
-        //뷰행렬만들기---------------------------
-        KVector3 vUp(0, 1, 0);
-        D3DKMatrixLookAtLH(&m_matView, &m_vPos, &m_vTarget, &vUp);
-        //원근투영 투영행렬 만들기---------------
-        D3DKMatrixPerspectiveFovLH(&m_matProj, XM_PI * 0.45f, 1.0f, 1.0f, 10000.0f);
-    }
-    virtual bool    Frame()
-    {
-        KMatrix mRotation;
-        D3DKMatrixRotationY(&mRotation, g_fSecPerFrame * 0.1f);
-        D3DKMatrixMultiply(&m_matWorld, &m_matWorld, &mRotation);
-
-        m_vPos.x = m_matWorld._41;
-        m_vPos.y = m_matWorld._42;
-        m_vPos.z = m_matWorld._43;
-
-        //뷰행렬만들기---------------------------
-        KVector3 vUp(0, 1, 0);
-        D3DKMatrixLookAtLH(&m_matView, &m_vPos, &m_vTarget, &vUp);
-        return true;
-    }
+    virtual void  SetLight(KVector3 vPos, KVector3 vTarget);
+    virtual bool    Frame();
+    virtual bool    Render();
 public:
     KLight()
     {
