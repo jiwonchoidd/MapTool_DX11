@@ -5,13 +5,17 @@
 //콜라이더 역활을 하는 KBOX 클래스로
 //물체 충돌, 프러스텀 내에 들어가는지 탐색이 가능하다.
 //물체를 추가하면, KBOX를 업데이트해서 사이즈에 맞게 계산
+class KNode;
 struct KMapObject
 {
+public:
+	KNode*			obj_node;
 	std::wstring	obj_name;
 	KMatrix			obj_matWorld;//오브젝트마다 위치만 다름
 	KVector3		obj_pos;
 	KBox			obj_box; // 오브젝트 위치 OBB AABB 포함
 	K3DAsset*		obj_pObject;
+public:
 	KVector3		m_vRight;
 	KVector3		m_vUp;
 	KVector3		m_vLook;
@@ -97,12 +101,12 @@ public:
 	std::list<KMapObject*>  m_StaticObjectList;
 	std::list<KMapObject*>  m_DynamicObjectList;
 public:
-	//std::vector <DWORD>		m_IndexList; 패치의 인덱스 사용으로 대체
 	std::vector <PNCT_VERTEX>	m_VertexList;
 	wrl::ComPtr<ID3D11Buffer>	m_pVertexBuffer;
 public:
 	void   AddObject(KMapObject* obj);
 	void   AddDynamicObject(KMapObject* obj);
+	void   DeleteObject(KMapObject* obj);
 public:
 	bool isRect(KVector2 pos)
 	{

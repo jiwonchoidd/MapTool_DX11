@@ -255,7 +255,10 @@ bool KMapSpace::Init()
 
 bool KMapSpace::Frame()
 {
-	return false;
+	//오브젝트 이동시 새로운 노드에 넣는다.
+	//기존 노드에 오브젝트 nullptr
+	UpdateObject();
+	return true;
 }
 //전체 노드의 LOD레벨을 저장
 bool KMapSpace::SetLOD(KVector3* vCamera)
@@ -316,13 +319,12 @@ bool KMapSpace::Render(ID3D11DeviceContext* pContext)
 	//전체 리프노드 LOD 레벨을 저장
 	SetLOD(m_pCamera->GetCameraPos());
 
-	//프로스텀에 있는 보이는 리프노드만 타입을 정해줌
-
 	m_pMap->PreRender(pContext);
 	for (int iNode = 0; iNode < m_pDrawableLeafList.size(); iNode++)
 	{
 		KNode* pNode = m_pDrawableLeafList[iNode];
 
+		//프로스텀에 있는 보이는 리프노드만 타입을 정해줌
 		SetLODType(pNode);
 
 		pContext->IASetInputLayout(m_pMap->m_pVertexLayout.Get());
@@ -356,6 +358,7 @@ bool KMapSpace::Render(ID3D11DeviceContext* pContext)
 
 		for (auto obj : m_ObjectList_Static)
 		{
+			if(obj!=nullptr)
 			DrawDebugRender(&obj->obj_box, pContext, 0.85f);
 		}
 	}
@@ -564,6 +567,37 @@ bool KMapSpace::AddObject(KMapObject* obj)
 	return false;
 }
 
+bool KMapSpace::UpdateObject()
+{
+	//만약에 위치가 변동 되었다면 노드에 있는 오브젝트를
+	//이동시켜야한다.
+	//인터페이스에서는 pos값만 바꾼다.
+	for (auto pObj : m_ObjectMap)
+	{
+		if (pObj.second->obj_pos.x != pObj.second->obj_matWorld._41 ||
+			pObj.second->obj_pos.y != pObj.second->obj_matWorld._42 ||
+			pObj.second->obj_pos.z != pObj.second->obj_matWorld._43)
+		{
+			//위치를 업데이트 한다.
+			pObj.second->obj_matWorld._41 = pObj.second->obj_pos.x;
+			pObj.second->obj_matWorld._42 = pObj.second->obj_pos.y;
+			pObj.second->obj_matWorld._43 = pObj.second->obj_pos.z;
+			//콜라이더도 업데이트한다.
+			pObj.second->UpdateCollision();
+			//노드도 업데이트한다.
+			KNode* curNode = pObj.second->obj_node;
+			curNode->DeleteObject(pObj.second);
+			KNode* pFindNode = FindNode(m_pRootNode, pObj.second->obj_box);
+			if (pFindNode != nullptr)
+			{
+				pFindNode->AddObject(pObj.second);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 bool KMapSpace::AddDynamicObject(KMapObject* obj)
 {
 	KNode* pFindNode =
@@ -630,7 +664,6 @@ void KMapSpace::DrawDebugRender(KBox* pBox, ID3D11DeviceContext* pContext, float
 	///		4		5
 	/// 0		1
 	/// </summary> 0 1 2 3 -> 5 4 7 6
-
 	pBox->List[0] = KVector3(pBox->min.x,
 		pBox->min.y,
 		pBox->min.z);
