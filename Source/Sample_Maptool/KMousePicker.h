@@ -19,6 +19,8 @@ public:
 	KMapSpace*			 m_pSpace;
 	KCamera*			 m_pCamera;
 public:
+	KMapObject*			m_SeletedObj;
+public:
 	bool					m_bImgui; // UI 조작에는 높이가 들어가면 안됨
 	KVector3				m_vIntersect;
 	KBox					m_Sel_Box;
@@ -28,6 +30,7 @@ public:
 	float					m_Sel_Brush_Strenght= 50.0f;
 public:
 	bool IntersectTriangle(const KVector3& orig, const KVector3& dir, KVector3& v0, KVector3& v1, KVector3& v2, FLOAT* t, FLOAT* u, FLOAT* v);
+	bool GetIntersection(KVector3 vStart, KVector3 vEnd, KVector3 vNormal, KVector3 v0, KVector3 v1, KVector3 v2);
 public:
 	bool Init(ID3D11DeviceContext* pContext, KMapSpace* pSpace, KCamera* pCam);
 	bool Frame();
@@ -36,6 +39,8 @@ public:
 public:
 	bool Map_HeightControl(float HeightScale, float BrushSize);
 	bool Map_HeightControl_MakeSameHeight(KNode* pNode);
+public:
+	bool Map_ObjControl();
 public:
 	KMousePicker();
 	~KMousePicker();

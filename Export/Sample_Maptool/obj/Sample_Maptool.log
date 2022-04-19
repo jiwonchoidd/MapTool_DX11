@@ -1,23 +1,22 @@
-﻿  KScene_Maptool.cpp
-E:\github\PokemonDP_DX11Proj_DD\MapTool_DX11\Include\KD3DLib\KNode.h(161,26): warning C4244: '인수': 'float'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+﻿  KMousePicker.cpp
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\제출처\최지원Maptool\MapTool_DX11\Include\KD3DLib\KNode.h(161,26): warning C4244: '인수': 'float'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
           with
           [
               _Ty=DWORD
           ]
-E:\github\PokemonDP_DX11Proj_DD\MapTool_DX11\Include\KD3DLib\KNode.h(162,26): warning C4244: '인수': 'float'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\제출처\최지원Maptool\MapTool_DX11\Include\KD3DLib\KNode.h(162,26): warning C4244: '인수': 'float'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
           with
           [
               _Ty=DWORD
           ]
-E:\github\PokemonDP_DX11Proj_DD\MapTool_DX11\Include\KD3DLib\KNode.h(163,26): warning C4244: '인수': 'float'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\제출처\최지원Maptool\MapTool_DX11\Include\KD3DLib\KNode.h(163,26): warning C4244: '인수': 'float'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
           with
           [
               _Ty=DWORD
           ]
-E:\github\PokemonDP_DX11Proj_DD\MapTool_DX11\Include\KD3DLib\KNode.h(164,26): warning C4244: '인수': 'float'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\제출처\최지원Maptool\MapTool_DX11\Include\KD3DLib\KNode.h(164,26): warning C4244: '인수': 'float'에서 '_Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
           with
           [
               _Ty=DWORD
           ]
-E:\github\PokemonDP_DX11Proj_DD\MapTool_DX11\Source\Sample_Maptool\KFBXObj.h(27,1): warning C4267: '초기화 중': 'size_t'에서 'DWORD'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  Sample_Maptool.vcxproj -> E:\github\PokemonDP_DX11Proj_DD\MapTool_DX11\Export\Sample_Maptool\Sample_Maptool.exe
+  Sample_Maptool.vcxproj -> C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\제출처\최지원Maptool\MapTool_DX11\Export\Sample_Maptool\Sample_Maptool.exe

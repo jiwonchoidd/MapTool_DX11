@@ -52,6 +52,20 @@ bool KMousePicker::IntersectTriangle(const KVector3& orig, const KVector3& dir, 
 	return true;
 }
 
+bool KMousePicker::GetIntersection(KVector3 vStart, KVector3 vEnd, KVector3 vNormal, KVector3 v0, KVector3 v1, KVector3 v2)
+{
+	KVector3 vDirection = vEnd - vStart;
+	float D = D3DXVec3Dot(&vNormal, &vDirection);
+	float a0 = D3DXVec3Dot(&vNormal, &(v0 - vStart));
+	float fT = a0 / D;
+	if (fT < 0.0f || fT > 1.0f)
+	{
+		return false;
+	}
+	m_vIntersect = vStart + vDirection * fT;
+	return true;
+}
+
 bool KMousePicker::Map_HeightControl(float HeightScale, float BrushSize)
 {
 #pragma region 맵 지형 높낮이
@@ -189,6 +203,29 @@ bool KMousePicker::Map_HeightControl_MakeSameHeight(KNode* pNode)
 		&pNode->m_VertexList.at(0), 0, 0);
 	return true;
 }
+bool KMousePicker::Map_ObjControl()
+{
+	for (auto pObj : m_pSpace->m_ObjectList_Static)
+	{
+		KRect obj_Rect = KRect(KVector2(pObj->obj_box.min.x, pObj->obj_box.min.z), KVector2(pObj->obj_box.max.x, pObj->obj_box.max.z));
+		KRect brush_Rect = KRect(KVector2(m_Sel_Box.min.x, m_Sel_Box.min.z), KVector2(m_Sel_Box.max.x, m_Sel_Box.max.z));
+		int result = KCollision::RectToRect(brush_Rect, obj_Rect);
+		// 0 :  떨어져 있다.
+		// 1 :  중간만 걸쳐 있다.
+		// 2 :  완전 안에 들어가있다.	
+		if (result == 0)
+		{
+			//포함되지 않는 노드
+			continue;
+		}
+		else
+		{
+			m_SeletedObj = pObj;
+			break;
+		}
+	}
+	return true;
+}
 bool KMousePicker::Init(ID3D11DeviceContext* pContext, KMapSpace* pSpace, KCamera* pCam)
 {
 	m_pContext = pContext;
@@ -211,90 +248,89 @@ bool KMousePicker::Frame()
 {
 	//마우스 피킹
 	//오른쪽 마우스 눌렀을때,
-	if (m_iState == C_Height || m_iState == C_Texture)
+	//화면 좌표계이기때문에, y를 음수
+	//화면 크기
+	POINT ptCursor;
+	GetCursorPos(&ptCursor);
+	ScreenToClient(g_hWnd, &ptCursor);
+	KVector3 vView, vProj;
+
+	//Direction 계산
+	//현재 아래 계산으로는 미니맵 클릭시 어려움, 무조건 전체 화면 크기 기준으로
+	vProj.x = (((2.0f * ptCursor.x - 2.0f * g_rtClient.left) / g_rtClient.right) - 1);
+	vProj.y = -(((2.0f * ptCursor.y - 2.0f * g_rtClient.top) / g_rtClient.bottom) - 1);
+	vProj.z = 1.0f;
+	vView.x = vProj.x / m_pCamera->m_matProj._11;
+	vView.y = vProj.y / m_pCamera->m_matProj._22;
+	vView.z = vProj.z;
+
+	//뷰좌표계에서는 시작은 무조건 0,0,0
+	KMatrix matInverse;
+	D3DKMatrixInverse(&matInverse, nullptr, &m_pCamera->m_matView);
+
+	//카메라의 월드 좌표의 레이를 만든다.
+	TRay ray;
+	ray.direction.x = vView.x * matInverse._11 + vView.y * matInverse._21 + vView.z * matInverse._31;
+	ray.direction.y = vView.x * matInverse._12 + vView.y * matInverse._22 + vView.z * matInverse._32;
+	ray.direction.z = vView.x * matInverse._13 + vView.y * matInverse._23 + vView.z * matInverse._33;
+
+	ray.position.x = matInverse._41;
+	ray.position.y = matInverse._42;
+	ray.position.z = matInverse._43;
+	//정규화
+	D3DXVec3Normalize(&ray.direction, &ray.direction);
+	KVector3  vStart = ray.position;
+	KVector3  vEnd = ray.position + ray.direction * m_pCamera->m_fFar;
+
+	//전체 보여지는 노드 돈다.
+	for (int iNode = 0; iNode < m_pSpace->m_pDrawableLeafList.size(); iNode++)
 	{
-		//화면 좌표계이기때문에, y를 음수
-		//화면 크기
-		POINT ptCursor;
-		GetCursorPos(&ptCursor);
-		ScreenToClient(g_hWnd, &ptCursor);
-		KVector3 vView, vProj;
+		KNode* pNode = m_pSpace->m_pDrawableLeafList[iNode];
 
-		//Direction 계산
-		//현재 아래 계산으로는 미니맵 클릭시 어려움, 무조건 전체 화면 크기 기준으로
-		vProj.x = (((2.0f * ptCursor.x - 2.0f * g_rtClient.left) / g_rtClient.right) - 1);
-		vProj.y = -(((2.0f * ptCursor.y - 2.0f * g_rtClient.top) / g_rtClient.bottom) - 1);
-		vProj.z = 1.0f;
-		vView.x = vProj.x / m_pCamera->m_matProj._11;
-		vView.y = vProj.y / m_pCamera->m_matProj._22;
-		vView.z = vProj.z;
-
-		//뷰좌표계에서는 시작은 무조건 0,0,0
-		KMatrix matInverse;
-		D3DKMatrixInverse(&matInverse, nullptr, &m_pCamera->m_matView);
-
-		//카메라의 월드 좌표의 레이를 만든다.
-		TRay ray;
-		ray.direction.x = vView.x * matInverse._11 + vView.y * matInverse._21 + vView.z * matInverse._31;
-		ray.direction.y = vView.x * matInverse._12 + vView.y * matInverse._22 + vView.z * matInverse._32;
-		ray.direction.z = vView.x * matInverse._13 + vView.y * matInverse._23 + vView.z * matInverse._33;
-
-		ray.position.x = matInverse._41;
-		ray.position.y = matInverse._42;
-		ray.position.z = matInverse._43;
-		//정규화
-		D3DXVec3Normalize(&ray.direction, &ray.direction);
-		KVector3  vStart = ray.position;
-		KVector3  vEnd = ray.position + ray.direction * m_pCamera->m_fFar;
-
-		//전체 보여지는 노드 돈다.
-		for (int iNode = 0; iNode < m_pSpace->m_pDrawableLeafList.size(); iNode++)
+		for (int i = 0; i < m_pSpace->m_IndexList.size(); i += 6)
 		{
-			KNode* pNode = m_pSpace->m_pDrawableLeafList[iNode];
+			KVector3 v0, v1, v2;
+			DWORD i0 = m_pSpace->m_IndexList[i + 0];
+			DWORD i1 = m_pSpace->m_IndexList[i + 1];
+			DWORD i2 = m_pSpace->m_IndexList[i + 2];
+			v0 = pNode->m_VertexList[i0].pos;
+			v1 = pNode->m_VertexList[i1].pos;
+			v2 = pNode->m_VertexList[i2].pos;
 
-			for (int i = 0; i < m_pSpace->m_IndexList.size(); i += 6)
+			//2번 교점
+			float t, u, v;
+			if (IntersectTriangle(ray.position, ray.direction,
+				v0, v1, v2, &t, &u, &v))
 			{
-				KVector3 v0, v1, v2;
-				DWORD i0 = m_pSpace->m_IndexList[i + 0];
-				DWORD i1 = m_pSpace->m_IndexList[i + 1];
-				DWORD i2 = m_pSpace->m_IndexList[i + 2];
-				v0 = pNode->m_VertexList[i0].pos;
-				v1 = pNode->m_VertexList[i1].pos;
-				v2 = pNode->m_VertexList[i2].pos;
+				m_vIntersect = ray.position + ray.direction * t;
 
-				//2번 교점
-				float t, u, v;
-			
-				if (IntersectTriangle(ray.position, ray.direction,
-					v0, v1, v2, &t, &u, &v))
+				if (g_InputData.bMouseState[0] && !m_bImgui)
 				{
-					m_vIntersect = ray.position + ray.direction * t;
- 					
-					if (g_InputData.bMouseState[0] && !m_bImgui)
+					switch (m_iState)
 					{
-						switch (m_iState)
-						{
-						case 0: {
+					case 0: {
+						Map_ObjControl();
+						m_Sel_Box = KBox(KVector3(-10 + m_vIntersect.x, -10 * (10 * 2), -10 + m_vIntersect.z),
+							KVector3(10 + m_vIntersect.x, m_vIntersect.y + 5, 10 + m_vIntersect.z));
+					}break;
+					case 1: {
+						Map_HeightControl(m_Sel_Brush_Strenght, m_Sel_Brush_Size);
+						m_Sel_Box = KBox(KVector3(-m_Sel_Brush_Size + m_vIntersect.x, -1 * (m_Sel_Brush_Size * 2), -m_Sel_Brush_Size + m_vIntersect.z),
+							KVector3(m_Sel_Brush_Size + m_vIntersect.x, m_vIntersect.y + 5, m_Sel_Brush_Size + m_vIntersect.z));
+					}break;
+					case 2: {
 
-						}break;
-						case 1: {
-							Map_HeightControl(m_Sel_Brush_Strenght, m_Sel_Brush_Size);
-						}break;
-						case 2: {
-
-						}break;
-						default:
-							break;
-						}
-
+					}break;
+					default:
+						break;
 					}
+
 				}
-				
 			}
+
 		}
 	}
-	m_Sel_Box = KBox(KVector3(-m_Sel_Brush_Size + m_vIntersect.x, -1 * (m_Sel_Brush_Size * 2), -m_Sel_Brush_Size + m_vIntersect.z),
-		KVector3(m_Sel_Brush_Size + m_vIntersect.x, m_vIntersect.y + 5, m_Sel_Brush_Size + m_vIntersect.z));
+
 
 	//m_bImgui = false;
 	return true;

@@ -7,7 +7,7 @@ bool KMap::Init(ID3D11DeviceContext* context, std::wstring heightmap)
 	m_pContext = context;
 	m_tex_offset = 3.0f;
 	CreateHeightMap(heightmap);
-	CreateMap(m_num_row, m_num_col, 8.0f);
+	CreateMap(m_num_row, m_num_col, 10.0f);
 	//CreateMap(33,33, 2.0f);
 	return true;
 }

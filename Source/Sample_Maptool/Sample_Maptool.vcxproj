@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FileDirParser.h" />
     <ClInclude Include="KDepthShadow.h" />
     <ClInclude Include="KFBXAsset.h" />
     <ClInclude Include="KFbxLoader.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="KScene_Maptool.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FileDirParser.cpp" />
     <ClCompile Include="KFBXAsset.cpp" />
     <ClCompile Include="KFbxLoader.cpp" />
     <ClCompile Include="KFBXManager.cpp" />

@@ -1,5 +1,9 @@
-﻿  KCamera.cpp
-  KD3DLib.vcxproj -> E:\github\PokemonDP_DX11Proj_DD\MapTool_DX11\Export\KD3DLib\KD3DLib.lib
+﻿  KMap.cpp
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KMap.cpp(106,26): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KMap.cpp(108,27): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KMap.cpp(135,26): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KMap.cpp(137,27): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+  KD3DLib.vcxproj -> C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\제출처\최지원Maptool\MapTool_DX11\Export\KD3DLib\KD3DLib.lib
           1개 파일이 복사되었습니다.
   ImGuiManager.h
   K2DAsset.h

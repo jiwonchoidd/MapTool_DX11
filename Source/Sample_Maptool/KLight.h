@@ -15,6 +15,7 @@ public:
     KVector3    m_vTarget;
     KVector3    m_vDir;
     KVector3    m_vPreviousDir;
+    KVector3    m_vPreviousPos;
     KVector3    m_vRotation;
     KVector4    m_vLightColor;
 public:

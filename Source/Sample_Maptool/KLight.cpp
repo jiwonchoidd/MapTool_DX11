@@ -8,10 +8,12 @@ void KLight::SetLight(KVector3 vPos, KVector3 vTarget)
     m_vTarget = vTarget;
     m_vDir = m_vTarget - m_vPos;
     D3DXVec3Normalize(&m_vDir, &m_vDir);
+    m_vPreviousPos = m_vPos;
     //월드행렬 만들기 ----------------------
     m_matWorld._41 = m_vPos.x;
     m_matWorld._42 = m_vPos.y;
     m_matWorld._43 = m_vPos.z;
+
     //뷰행렬만들기---------------------------
     KVector3 vUp(0, 1, 0);
     D3DKMatrixLookAtLH(&m_matView, &m_vPos, &m_vTarget, &vUp);
@@ -22,29 +24,8 @@ void KLight::SetLight(KVector3 vPos, KVector3 vTarget)
 
 bool KLight::Frame()
 {
-   
-    if (m_vPreviousDir != m_vDir)
-    {
-
-        KQuaternion q;
-        KVector3 vUp(0, 1, 0);
-        KVector3 vPlane(0, 0, 1);
-        KVector3 vRight;
-        vRight = vUp.Cross(m_vDir);
-        m_fPitch = acosf((vRight.x * vPlane.x + vRight.y * vPlane.y + vRight.z * vPlane.z) / (D3DXVec3Length(&vRight) * D3DXVec3Length(&vPlane)));
-        D3DXQuaternionRotationAxis(&q, &m_vDir, m_fPitch * 180.0f / XM_PI);
-        KMatrix matRotation;
-        D3DKMatrixAffineTransformation(&matRotation, 1.0f, NULL, &q, &m_vPos);
-        D3DKMatrixInverse(&m_matWorld, NULL, &matRotation);
-        m_vPos.x = m_matWorld._41;
-        m_vPos.y = m_matWorld._42;
-        m_vPos.z = m_matWorld._43;
-    }
-    
-    if (ImGui::Begin("dd"))
-    {
-        ImGui::Text("dd %f", m_fPitch);
-    }ImGui::End();
+    m_vDir = m_vTarget - m_vPos;
+    D3DXVec3Normalize(&m_vDir, &m_vDir);
 
     //뷰행렬만들기---------------------------
     KVector3 vUp(0, 1, 0);

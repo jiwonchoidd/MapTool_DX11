@@ -3,6 +3,7 @@
 #include "KState.h"
 #include "KFBXManager.h"
 #include "ImGuiManager.h"
+#include "FileDirParser.h"
 bool KScene_Maptool::Load(std::wstring file)
 {
 	//todo:파일입출력 맵 구성
@@ -25,20 +26,16 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 	//Fbx 파일 로드-------------------------------------------------------------
 	
 	std::vector<std::wstring> listname;
-	listname.push_back(L"../../data/model/SM_Rock.FBX");
-	//listname.push_back(L"../../data/model/SM_Barrel.FBX");
+	FileDirParser::LoadAllPath(L"../../data/model/Map/Mesh", listname);
 	m_Scene_FBXList.resize(listname.size());
 	for (int iObj = 0; iObj < m_Scene_FBXList.size(); iObj++)
 	{
 		std::shared_ptr<KFBXAsset> pFbx = std::make_shared<KFBXAsset>();
 		pFbx->Init();
-		pFbx->m_matWorld._11 = 0.2f;
-		pFbx->m_matWorld._22 = 0.2f;
-		pFbx->m_matWorld._33 = 0.2f;
-		pFbx->m_matWorld._42 = 0.0f;
+		//float fHeight = m_Terrian.GetHeight(3, 3);
+		pFbx->SetPosition(KVector3(3 * iObj * 10, 3, 3 * iObj));
  		pFbx->m_pLoader = g_FBXManager.Load(listname[iObj]);
 		m_Scene_FBXList[iObj]= pFbx;
-		
 	}
 
 	//지형-------------------------------------------------------------
@@ -61,7 +58,7 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 		static_cast<float>(g_rtClient.right) / static_cast<float>(g_rtClient.bottom));
 
 	//라이트 그림자----------------------------------------------------------------
-	m_Light.SetLight(KVector3(200.0f,1000.0f,0.0f), KVector3(0.0f, 0.0f, 0.0f));
+	m_Light.SetLight(KVector3(300.0f,1000.0f,0.0f), KVector3(0.0f, 0.0f, 0.0f));
 	m_Shadow.CreateShadow(&m_Light);
 
 	//마우스 피커------------------------------------------------------------
@@ -81,13 +78,41 @@ bool KScene_Maptool::Frame()
 	if (ImGui::Begin("Inspector"))
 	{
 		//----------------------------------------------------------------------------------------
-		float* lightDir[3] = { &m_Light.m_vDir.x,&m_Light.m_vDir.y,&m_Light.m_vDir.z };
+		// 오브젝트
+		ImGui::Dummy(ImVec2(0.0f, 5.0f));
+		ImGui::Text("[ Object ]");
+		ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+		ImGui::BeginChild("object", ImVec2(0, 150));
+		if (m_MousePicker.m_SeletedObj != nullptr)
+		{
+			ImGui::TextColored(ImVec4(1,0,0,1),to_wm(m_MousePicker.m_SeletedObj->obj_name).c_str());
+		}
+		else
+		{
+			ImGui::TextColored(ImVec4(1, 0, 1, 1), u8"선택된 오브젝트가 없습니다.");
+		}
+		if (ImGui::ListBoxHeader("List"))
+		{
+			m_MousePicker.m_SeletedObj->obj_name;
+			for (auto it : m_Terrian_Space.m_ObjectMap)
+			{
+				if (ImGui::Selectable(to_wm(it.first).c_str()))
+				{
+					m_MousePicker.m_SeletedObj = it.second;
+				}
+			}
+			ImGui::ListBoxFooter();
+		}
+		ImGui::EndChild();
+		//----------------------------------------------------------------------------------------	
 		float* lightColor[3] = { &m_Light.m_vLightColor.x,&m_Light.m_vLightColor.y,&m_Light.m_vLightColor.z };
 		ImGui::Text("[ LIGHT ]");
 		ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
 		ImGui::BeginChild("light", ImVec2(0, 50));
-		ImGui::SliderFloat3("Dir", *lightDir, -1.0f, 1.0f);
+		ImGui::SliderFloat("X", &m_Light.m_vPos.x, -200.0f, 200.0f);
+		ImGui::SliderFloat("Z", &m_Light.m_vPos.z, -200.0f, 200.0f); 
 		ImGui::InputFloat3("Color", *lightColor, 2, 0);
 		ImGui::EndChild();
 		//----------------------------------------------------------------------------------------
@@ -101,7 +126,6 @@ bool KScene_Maptool::Frame()
 		if (ImGui::RadioButton("None", (m_iImguiSelected == 0)))
 		{
 			m_iImguiSelected = 0;
-			m_MousePicker.m_vIntersect = KVector3(0, -100, 0);
 		}ImGui::SameLine();
 		if (ImGui::RadioButton("Height", (m_iImguiSelected == 1)))
 		{
@@ -122,7 +146,7 @@ bool KScene_Maptool::Frame()
 			{
 				m_MousePicker.m_bImgui = false;
 			}
-			if(ImGui::SliderFloat("Brush Strenght", &m_MousePicker.m_Sel_Brush_Strenght, -500, 500))
+			if(ImGui::SliderFloat("Brush Strenght", &m_MousePicker.m_Sel_Brush_Strenght, -200, 200))
 			{
 				m_MousePicker.m_bImgui = true;
 			}
@@ -149,24 +173,6 @@ bool KScene_Maptool::Frame()
 		ImGui::InputFloat("##Distance", &m_Terrian_Space.m_fStartDistance, 2);
 		ImGui::Text(u8"LOD Mul"); ImGui::SameLine();
 		ImGui::InputFloat("##Multiple", &m_Terrian_Space.m_fDistance_Multiply, 2);
-		ImGui::EndChild();
-		//----------------------------------------------------------------------------------------	
-		ImGui::Dummy(ImVec2(0.0f, 5.0f));
-		ImGui::Text("[ Object ]");
-		ImGui::Dummy(ImVec2(0.0f, 5.0f));
-
-		ImGui::BeginChild("object", ImVec2(0, 150));
-		if (ImGui::ListBoxHeader("List"))
-		{
-			for (auto it : m_Terrian_Space.m_ObjectMap)
-			{
-				if (ImGui::Selectable(to_wm(it.first).c_str()))
-				{
-					int k = 0;
-				}
-			}
-			ImGui::ListBoxFooter();
-		}
 		ImGui::EndChild();
 		//----------------------------------------------------------------------------------------	
 	}
@@ -201,12 +207,12 @@ bool KScene_Maptool::Render()
 				obj->obj_pObject->m_iNumIndex);
 		}
 		//FBX OBJ Render------------------------------------------
-		for (int iObj = 0; iObj < m_Scene_FBXList.size(); iObj++)
+		/*for (int iObj = 0; iObj < m_Scene_FBXList.size(); iObj++)
 		{
 			m_Scene_FBXList[iObj]->SetMatrix(&m_Scene_FBXList[iObj]->m_matWorld, &m_Light.m_matView, &m_Light.m_matProj);
 			m_Scene_FBXList[iObj]->SwapPSShader(m_Shadow.m_pPSShadow);
 			m_Scene_FBXList[iObj]->Render(m_pContext);
-		}
+		}*/
 		//복원 작업
 		m_Shadow.m_ShadowRT.End(m_pContext);
 	}
@@ -239,7 +245,7 @@ bool KScene_Maptool::Render()
 	m_Terrian_Space.Render_MapObject(m_pContext);
 
 	//FBX OBJ Render------------------------------------------
-	for (int iObj = 0; iObj < m_Scene_FBXList.size(); iObj++)
+	/*for (int iObj = 0; iObj < m_Scene_FBXList.size(); iObj++)
 	{
 		m_Scene_FBXList[iObj]->SetMatrix(&m_Scene_FBXList[iObj]->m_matWorld, &g_SceneManager.m_pCamera->m_matView, &g_SceneManager.m_pCamera->m_matProj);
 		m_Scene_FBXList[iObj]-> m_cbDataEX.vLightColor = { m_Light.m_vLightColor.x,m_Light.m_vLightColor.y,m_Light.m_vLightColor.z,1.0f };
@@ -249,7 +255,7 @@ bool KScene_Maptool::Render()
 		m_pContext->PSSetShaderResources(3, 1, m_Shadow.m_ShadowRT.m_pTextureSRV.GetAddressOf());
 		m_Scene_FBXList[iObj]->SwapPSShader();
 		m_Scene_FBXList[iObj]->Render(m_pContext);
-	}
+	}*/
 
 	////미니맵------------------------------------------------
 	if (g_InputData.bDebugRender)
