@@ -3,7 +3,6 @@
 #include "KState.h"
 #include "KFBXManager.h"
 #include "ImGuiManager.h"
-#include "FileDirParser.h"
 bool KScene_Maptool::Load(std::wstring file)
 {
 	//todo:파일입출력 맵 구성
@@ -25,7 +24,7 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 	
 	//Fbx 파일 로드-------------------------------------------------------------
 	std::vector<std::wstring> fbx_name_list;
-	FileDirParser::LoadAllPath(L"../../data/model/Map/Mesh", fbx_name_list);
+	KDirParser::LoadAllPath(L"../../data/model/Mesh", fbx_name_list);
 	m_FBXList.resize(fbx_name_list.size());
 	for (int iObj = 0; iObj < m_FBXList.size(); iObj++)
 	{
@@ -38,8 +37,8 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 	}
 	//텍스쳐 로드----------------------------------------------------------------
 	std::vector<std::wstring> tex_name_list;
-	FileDirParser::LoadAllPath(L"../../data/texture/Map", tex_name_list);
-	m_TextureList.resize(tex_name_list.size());
+	KDirParser::LoadAllPath(L"../../data/Texture/Map", tex_name_list);
+ 	m_TextureList.resize(tex_name_list.size());
 	for (int iTex = 0; iTex < m_TextureList.size(); iTex++)
 	{
 		m_TextureList[iTex] = g_TextureMananger.Load(tex_name_list[iTex]);
@@ -259,6 +258,7 @@ bool KScene_Maptool::Frame()
 		//----------------------------------------------------------------------------------------	
 	}
 	ImGui::End();
+#pragma endregion
 
 	m_Terrian_Space.Frame();
 	KScene::Frame();

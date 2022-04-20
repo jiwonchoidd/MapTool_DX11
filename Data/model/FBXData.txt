@@ -1,0 +1,3 @@
+2
+SM_Barrel.FBX	SM_Barrel_D.dds	Default_Specular.jpg	SM_Barrel_N.dds
+SM_Rock.FBX	SM_Rock.D.dds	Default_Specular.jpg	SM_Rock_N.dds

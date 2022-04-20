@@ -238,11 +238,11 @@ void KFbxLoader::ParseMesh(KFBXObj* pObject)
 			if (pSurface)
 			{
 				//메터리얼의 텍스쳐 이름을 가져와서 리스트 추가 및 SRV 생성
-				std::wstring strFbxPath = L"../../data/model/";
+				std::wstring strFbxPath = L"../../data/model/Texture/";
 				std::wstring strFBXTexName = to_mw(ParseMaterial(pSurface));
-				std::wstring strTexDefault1 = L"../../data/model/Default_Diffuse.jpg";
-				std::wstring strTexDefault2 = L"../../data/model/Default_Specular.jpg";
-				std::wstring strTexDefault3 = L"../../data/model/Default_Normal.jpg";
+				std::wstring strTexDefault1 = L"../../data/model/Texture/Default_Diffuse.jpg";
+				std::wstring strTexDefault2 = L"../../data/model/Texture/Default_Specular.jpg";
+				std::wstring strTexDefault3 = L"../../data/model/Texture/Default_Normal.jpg";
 
 				strFbxPath += strFBXTexName;
 				//자동으로 텍스쳐를 만드는데, 실패할 경우

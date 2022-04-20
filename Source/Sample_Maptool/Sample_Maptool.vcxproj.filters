@@ -48,9 +48,6 @@
     <ClCompile Include="KLight.cpp">
       <Filter>Code</Filter>
     </ClCompile>
-    <ClCompile Include="FileDirParser.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -88,9 +85,6 @@
     </ClInclude>
     <ClInclude Include="KFBXManager.h">
       <Filter>FBX</Filter>
-    </ClInclude>
-    <ClInclude Include="FileDirParser.h">
-      <Filter>Code</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
