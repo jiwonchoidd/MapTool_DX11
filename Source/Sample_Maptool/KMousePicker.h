@@ -36,7 +36,9 @@ public:
 	KPlane					m_Plane[6];
 	KDebugBoxRenderer		m_Sel_BoxRender;
 	float					m_Sel_Brush_Size = 30.0f;
-	float					m_Sel_Brush_Strenght= 50.0f;
+	float					m_Sel_Brush_Strenght= 20.0f;
+	float					m_Sel_Node_Height;
+	std::vector<KNode*>     m_Sel_NodeList;
 public:
 	bool IntersectTriangle(const KVector3& orig, const KVector3& dir, KVector3& v0, KVector3& v1, KVector3& v2, FLOAT* t, FLOAT* u, FLOAT* v);
 	bool GetIntersectionBox(TRay ray, KBox box);
@@ -46,9 +48,9 @@ public:
 	bool Render(ID3D11DeviceContext* pContext);
 	bool Release();
 public:
-	bool Map_HeightBrushType(KVector3 pos, float& height, float scale);
+	bool Map_HeightBrushType(float scale);
 	bool Map_HeightControl(float HeightScale, float BrushSize);
-	bool Map_HeightControl_MakeSameHeight(KNode* pNode);
+	bool Map_HeightControl_MakeSameHeight();
 	bool Map_TextureControl(float HeightScale, float BrushSize);
 public:
 	KMousePicker();

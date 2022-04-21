@@ -52,6 +52,8 @@ bool KMousePicker::IntersectTriangle(const KVector3& orig, const KVector3& dir, 
 	return true;
 }
 
+// 기존 삼각형에서 교점찾는거 프레임 하락이 너무 커서
+// 레이와 박스로 교점 찾는 함수로 변경
 bool KMousePicker::GetIntersectionBox(TRay ray, KBox box)
 {
 	KVector3 tmin;
@@ -84,26 +86,109 @@ bool KMousePicker::GetIntersectionBox(TRay ray, KBox box)
 	return false;
 }
 
-bool KMousePicker::Map_HeightBrushType(KVector3 pos, float& height, float scale)
+bool KMousePicker::Map_HeightBrushType(float scale)
 {
 	switch (m_iBrushState)
 	{
 	case B_UpBrush:
 	{
-		height = pos.y + scale * g_fSecPerFrame;
+		for (int iNode = 0; iNode < m_Sel_NodeList.size(); iNode++)
+		{
+			float newHeight = 0.0f;
+			float maxHeight = 0.0f;
+			KNode* pNode = m_Sel_NodeList[iNode];
+			//완전히 포함된 노드
+			for (int i = 0; i < 25; i++)
+			{
+				newHeight = pNode->m_VertexList[i].pos.y + scale * g_fSecPerFrame;
+				pNode->m_VertexList[i].pos.y =newHeight;
+					//카메라 프러스텀때문에 박스를 다시 맞게 줄여줘야함
+					//-> 문제 : 리프노드 박스만 수정하면 되는줄 알았는데, 루트 노드 부터 사이즈를 변경해줘야함..
+					//-> 해결 : 해당 노드부터 부모 노드까지 재귀함수를 호출해, 높이 값을 다 늘려줌, 자식 -> 부모 거슬러 올라감
+				if (newHeight > maxHeight)maxHeight = newHeight; //가장 높은 값으로 콜라이더높이를 높여줌
+			}
+			m_pSpace->UpdateNodeBoundingBox(pNode, maxHeight);
+		}
 	}break;
 	case B_DownBrush:
 	{
-		height = pos.y - scale * g_fSecPerFrame;
+		for (int iNode = 0; iNode < m_Sel_NodeList.size(); iNode++)
+		{
+			float newHeight = 0.0f;
+			float maxHeight = 0.0f;
+			KNode* pNode = m_Sel_NodeList[iNode];
+			//완전히 포함된 노드
+			for (int i = 0; i < 25; i++)
+			{
+				newHeight = pNode->m_VertexList[i].pos.y - scale * g_fSecPerFrame;
+				if (newHeight > -10)
+				{
+					pNode->m_VertexList[i].pos.y = newHeight;
+					//카메라 프러스텀때문에 박스를 다시 맞게 줄여줘야함
+					//-> 문제 : 리프노드 박스만 수정하면 되는줄 알았는데, 루트 노드 부터 사이즈를 변경해줘야함..
+					//-> 해결 : 해당 노드부터 부모 노드까지 재귀함수를 호출해, 높이 값을 다 늘려줌, 자식 -> 부모 거슬러 올라감
+				}
+				if (newHeight > maxHeight)maxHeight = newHeight; //가장 높은 값으로 콜라이더높이를 높여줌
+			}
+			m_pSpace->UpdateNodeBoundingBox(pNode, maxHeight);
+		}
 	}break;
 	case B_SmoothBrush:
 	{
-
-
+		for (int iNode = 0; iNode < m_Sel_NodeList.size(); iNode++)
+		{
+			float average = 0.0f;
+			float amount = 0.0f;
+			KNode* pNode = m_Sel_NodeList[iNode];
+			for (int iNei = 0; iNei < pNode->m_pNeighborlist.size(); iNei++)
+			{
+				if (pNode->m_pNeighborlist[iNei] == nullptr)continue;
+				for (int iVer = 0; iVer < pNode->m_pNeighborlist[iNei]->m_VertexList.size(); iVer++)
+				{
+					float fneighHeight = pNode->m_pNeighborlist[iNei]->m_VertexList[iVer].pos.y;
+					average += fneighHeight;
+					amount++;
+				}
+			}
+			average = average / amount;
+			for (int i = 0; i < 25; i++)
+			{
+				pNode->m_VertexList[i].pos.y = average;
+			}
+			m_pSpace->UpdateNodeBoundingBox(pNode, average);
+		}
 	}break;
 	case B_FlattenBrush:
 	{
-
+		float average = 0.0f;
+		float amount = 0.0f;
+		for (int iNode = 0; iNode < m_Sel_NodeList.size(); iNode++)
+		{
+			KNode* pNode = m_Sel_NodeList[iNode];
+			for (int iNei = 0; iNei < pNode->m_pNeighborlist.size(); iNei++)
+			{
+				if (pNode->m_pNeighborlist[iNei] == nullptr)continue;
+				for (int iVer = 0; iVer < pNode->m_pNeighborlist[iNei]->m_VertexList.size(); iVer++)
+				{
+					float fneighHeight = pNode->m_pNeighborlist[iNei]->m_VertexList[iVer].pos.y;
+					average += fneighHeight;
+					amount++;
+				}
+			}
+		}
+		average = average / amount;
+		for (int iNode = 0; iNode < m_Sel_NodeList.size(); iNode++)
+		{
+			KNode* pNode = m_Sel_NodeList[iNode];
+			for (int i = 0; i < 25; i++)
+			{
+				if (average > -10)
+				{
+					pNode->m_VertexList[i].pos.y = average;
+				}
+			}
+			m_pSpace->UpdateNodeBoundingBox(pNode, average);
+		}
 	}break;
 	default:
 		break;
@@ -113,9 +198,8 @@ bool KMousePicker::Map_HeightBrushType(KVector3 pos, float& height, float scale)
 
 bool KMousePicker::Map_HeightControl(float HeightScale, float BrushSize)
 {
-#pragma region 맵 지형 높낮이
-
 	//브러쉬 박스 안에 있는 노드 검출, Rect to Rect 으로 검출함
+	m_Sel_NodeList.clear();
 	for (int i = 0; i < m_pSpace->m_pDrawableLeafList.size(); i++)
 	{
 		KNode* pNode = m_pSpace->m_pDrawableLeafList[i];
@@ -133,119 +217,108 @@ bool KMousePicker::Map_HeightControl(float HeightScale, float BrushSize)
 		}
 		else
 		{
-			//완전히 포함된 노드
-			for (int i = 1; i < 20; i++)
-			{
-				if (i == 5 || i == 10 || i == 15) // 코너는 동, 북만 올림
-					continue;
-				//float newHeight = pos.y + HeightScale * g_fSecPerFrame;
-				KVector3 pos = pNode->m_VertexList[i].pos;
-				float newHeight =pos.y;
-				Map_HeightBrushType(pos, newHeight, HeightScale);
-				if (newHeight > -10)
-				{
-					pNode->m_VertexList[i].pos = KVector3(pos.x, newHeight, pos.z);
-					//카메라 프러스텀때문에 박스를 다시 맞게 줄여줘야함
-					//-> 문제 : 리프노드 박스만 수정하면 되는줄 알았는데, 루트 노드 부터 사이즈를 변경해줘야함..
-					//-> 해결 : 해당 노드부터 부모 노드까지 재귀함수를 호출해, 높이 값을 다 늘려줌, 자식 -> 부모 거슬러 올라감
-					m_pSpace->UpdateNodeBoundingBox(pNode, newHeight);
-
-				}
-			}
-			Map_HeightControl_MakeSameHeight(pNode);
+			//들어온 노드들 리스트에 추가
+			m_Sel_NodeList.push_back(pNode);
 		}
 	}
+	//추가된 노드 리스트로 작업 : 브러쉬 타입에 따라 높이값 다르게, 이웃노드와 찢어짐 방지 함수
+	Map_HeightBrushType(HeightScale);
+	Map_HeightControl_MakeSameHeight();
 	return true;
-#pragma endregion
 }
 //노드 단위 렌더링으로 리프 노드 사이 사이 찢어짐이 발생,
 //강제로 같은 높이로 기입하고 업데이트.
-bool KMousePicker::Map_HeightControl_MakeSameHeight(KNode* pNode)
+bool KMousePicker::Map_HeightControl_MakeSameHeight()
 {
-	KVector3 temp;
-	if (pNode == nullptr)
+	for (int iNode = 0; iNode < m_Sel_NodeList.size(); iNode++)
 	{
-		return false;
-	}
-	//동쪽 리프노드
-	for (int east = 4; east <= 24; east += 5)
-	{
-		if (pNode->m_pNeighborlist[0] != nullptr)
+		KVector3 temp;
+		KNode* pNode = m_Sel_NodeList[iNode];
+		if (pNode == nullptr)
 		{
-			temp = pNode->m_VertexList[east].pos;
-			pNode->m_pNeighborlist[0]->m_VertexList[east - 4].pos = temp;
-			if (east == 4 && pNode->m_pNeighborlist[0]->m_pNeighborlist[3] != nullptr)
-			{
-				pNode->m_pNeighborlist[0]->m_pNeighborlist[3]->m_VertexList[20].pos = temp;
-				m_pContext->UpdateSubresource(
-					pNode->m_pNeighborlist[0]->m_pNeighborlist[3]->m_pVertexBuffer.Get(), 0, NULL,
-					&pNode->m_pNeighborlist[0]->m_pNeighborlist[3]->m_VertexList.at(0), 0, 0);
-			}
-			if (east == 24 && pNode->m_pNeighborlist[0]->m_pNeighborlist[2] != nullptr)
-			{
-				pNode->m_pNeighborlist[0]->m_pNeighborlist[2]->m_VertexList[0].pos = temp;
-				m_pContext->UpdateSubresource(
-					pNode->m_pNeighborlist[0]->m_pNeighborlist[2]->m_pVertexBuffer.Get(), 0, NULL,
-					&pNode->m_pNeighborlist[0]->m_pNeighborlist[2]->m_VertexList.at(0), 0, 0);
-			}
+			return false;
 		}
-	}
-	//서
-	for (int west = 0; west <= 20; west += 5)
-	{
-		if (pNode->m_pNeighborlist[1] != nullptr)
+		//동쪽 리프노드
+		for (int east = 4; east <= 24; east += 5)
 		{
-			temp = pNode->m_VertexList[west].pos;
-			pNode->m_pNeighborlist[1]->m_VertexList[west + 4].pos = temp;
-			if (west == 0 && pNode->m_pNeighborlist[1]->m_pNeighborlist[3] != nullptr)
+			if (pNode->m_pNeighborlist[0] != nullptr)
 			{
-				pNode->m_pNeighborlist[1]->m_pNeighborlist[3]->m_VertexList[24].pos = temp;
-				m_pContext->UpdateSubresource(
-					pNode->m_pNeighborlist[1]->m_pNeighborlist[3]->m_pVertexBuffer.Get(), 0, NULL,
-					&pNode->m_pNeighborlist[1]->m_pNeighborlist[3]->m_VertexList.at(0), 0, 0);
-			}
-			if (west == 20 && pNode->m_pNeighborlist[1]->m_pNeighborlist[2] != nullptr)
-			{
-				pNode->m_pNeighborlist[1]->m_pNeighborlist[2]->m_VertexList[4].pos = temp;
-				m_pContext->UpdateSubresource(
-					pNode->m_pNeighborlist[1]->m_pNeighborlist[2]->m_pVertexBuffer.Get(), 0, NULL,
-					&pNode->m_pNeighborlist[1]->m_pNeighborlist[2]->m_VertexList.at(0), 0, 0);
+				temp = pNode->m_VertexList[east].pos;
+				pNode->m_pNeighborlist[0]->m_VertexList[east - 4].pos = temp;
+				if (east == 4 && pNode->m_pNeighborlist[0]->m_pNeighborlist[3] != nullptr)
+				{
+					pNode->m_pNeighborlist[0]->m_pNeighborlist[3]->m_VertexList[20].pos = temp;
+					m_pContext->UpdateSubresource(
+						pNode->m_pNeighborlist[0]->m_pNeighborlist[3]->m_pVertexBuffer.Get(), 0, NULL,
+						&pNode->m_pNeighborlist[0]->m_pNeighborlist[3]->m_VertexList.at(0), 0, 0);
+				}
+				if (east == 24 && pNode->m_pNeighborlist[0]->m_pNeighborlist[2] != nullptr)
+				{
+					pNode->m_pNeighborlist[0]->m_pNeighborlist[2]->m_VertexList[0].pos = temp;
+					m_pContext->UpdateSubresource(
+						pNode->m_pNeighborlist[0]->m_pNeighborlist[2]->m_pVertexBuffer.Get(), 0, NULL,
+						&pNode->m_pNeighborlist[0]->m_pNeighborlist[2]->m_VertexList.at(0), 0, 0);
+				}
 			}
 		}
-	}
-	//남
-	for (int south = 20; south <= 24; south += 1)
-	{
-		if (pNode->m_pNeighborlist[2] != nullptr)
+		//서
+		for (int west = 0; west <= 20; west += 5)
 		{
-			temp = pNode->m_VertexList[south].pos;
-			pNode->m_pNeighborlist[2]->m_VertexList[south - 20].pos = temp;
+			if (pNode->m_pNeighborlist[1] != nullptr)
+			{
+				temp = pNode->m_VertexList[west].pos;
+				pNode->m_pNeighborlist[1]->m_VertexList[west + 4].pos = temp;
+				if (west == 0 && pNode->m_pNeighborlist[1]->m_pNeighborlist[3] != nullptr)
+				{
+					pNode->m_pNeighborlist[1]->m_pNeighborlist[3]->m_VertexList[24].pos = temp;
+					m_pContext->UpdateSubresource(
+						pNode->m_pNeighborlist[1]->m_pNeighborlist[3]->m_pVertexBuffer.Get(), 0, NULL,
+						&pNode->m_pNeighborlist[1]->m_pNeighborlist[3]->m_VertexList.at(0), 0, 0);
+				}
+				if (west == 20 && pNode->m_pNeighborlist[1]->m_pNeighborlist[2] != nullptr)
+				{
+					pNode->m_pNeighborlist[1]->m_pNeighborlist[2]->m_VertexList[4].pos = temp;
+					m_pContext->UpdateSubresource(
+						pNode->m_pNeighborlist[1]->m_pNeighborlist[2]->m_pVertexBuffer.Get(), 0, NULL,
+						&pNode->m_pNeighborlist[1]->m_pNeighborlist[2]->m_VertexList.at(0), 0, 0);
+				}
+			}
 		}
-	}
-	//북
-	for (int north = 0; north <= 4; north += 1)
-	{
-		if (pNode->m_pNeighborlist[3] != nullptr)
+		//남
+		for (int south = 20; south <= 24; south += 1)
 		{
-			temp = pNode->m_VertexList[north].pos;
-			pNode->m_pNeighborlist[3]->m_VertexList[north + 20].pos = temp;
+			if (pNode->m_pNeighborlist[2] != nullptr)
+			{
+				temp = pNode->m_VertexList[south].pos;
+				pNode->m_pNeighborlist[2]->m_VertexList[south - 20].pos = temp;
+			}
 		}
-	}
-	for (int iNei = 0; iNei < 4; iNei++)
-	{
-		if (pNode->m_pNeighborlist[iNei] != nullptr)
+		//북
+		for (int north = 0; north <= 4; north += 1)
 		{
-			m_pContext->UpdateSubresource(
-				pNode->m_pNeighborlist[iNei]->m_pVertexBuffer.Get(), 0, NULL,
-				&pNode->m_pNeighborlist[iNei]->m_VertexList.at(0), 0, 0);
+			if (pNode->m_pNeighborlist[3] != nullptr)
+			{
+				temp = pNode->m_VertexList[north].pos;
+				pNode->m_pNeighborlist[3]->m_VertexList[north + 20].pos = temp;
+			}
 		}
+		for (int iNei = 0; iNei < 4; iNei++)
+		{
+			if (pNode->m_pNeighborlist[iNei] != nullptr)
+			{
+				m_pContext->UpdateSubresource(
+					pNode->m_pNeighborlist[iNei]->m_pVertexBuffer.Get(), 0, NULL,
+					&pNode->m_pNeighborlist[iNei]->m_VertexList.at(0), 0, 0);
+			}
+		}
+		m_pContext->UpdateSubresource(
+			pNode->m_pVertexBuffer.Get(), 0, NULL,
+			&pNode->m_VertexList.at(0), 0, 0);
 	}
-	m_pContext->UpdateSubresource(
-		pNode->m_pVertexBuffer.Get(), 0, NULL,
-		&pNode->m_VertexList.at(0), 0, 0);
 	return true;
 }
 
+//텍스쳐
 bool KMousePicker::Map_TextureControl(float HeightScale, float BrushSize)
 {
 	//브러쉬 박스 안에 있는 노드 검출, Rect to Rect 으로 검출함
@@ -270,7 +343,13 @@ bool KMousePicker::Map_TextureControl(float HeightScale, float BrushSize)
 		else
 		{
 			//완전히 포함된 노드
-			pNode;
+			for (int i = 0; i < 25; i++)
+			{
+				pNode->m_VertexList[i].color = KVector4{ 0.5f,0.5f,0.5f,1.0f };
+			}
+			m_pContext->UpdateSubresource(
+				pNode->m_pVertexBuffer.Get(), 0, NULL,
+				&pNode->m_VertexList.at(0), 0, 0);
 		}
 	}
 	return true;
@@ -370,7 +449,7 @@ bool KMousePicker::Frame()
 				KNode* pNode = m_pSpace->m_pDrawableLeafList[iNode];
 				if (GetIntersectionBox(ray, pNode->m_node_box))
 				{
-					Map_HeightControl(m_Sel_Brush_Strenght, m_Sel_Brush_Size);
+					Map_TextureControl(m_Sel_Brush_Strenght, m_Sel_Brush_Size);
 					m_Sel_Box = KBox(KVector3(-m_Sel_Brush_Size + m_vIntersect.x, -1 * (m_Sel_Brush_Size * 2), -m_Sel_Brush_Size + m_vIntersect.z),
 						KVector3(m_Sel_Brush_Size + m_vIntersect.x, m_vIntersect.y + 5, m_Sel_Brush_Size + m_vIntersect.z));
 				}

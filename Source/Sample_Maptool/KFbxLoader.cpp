@@ -1,4 +1,5 @@
 #include "KFbxLoader.h"
+#include "KFBXManager.h"
 //------------------------------------------------------------------------
 // FBX 로더 
 // 스키닝 애니메이션
@@ -107,7 +108,7 @@ bool KFbxLoader::Load(std::wstring filename)
 		for (int iobj = 0; iobj < m_MeshList.size(); iobj++)
 		{
 			//오브젝트 생성
-			if (!m_MeshList[iobj]->CreateObject(L"../../data/shader/VSPS_FBXShadow.hlsl", L"../../data/shader/VSPS_FBXShadow.hlsl"))
+			if (!m_MeshList[iobj]->CreateObject(L"../../data/shader/VSPS_FBX.hlsl", L"../../data/shader/VSPS_FBX.hlsl"))
 			{
 				return false;
 			}
@@ -116,6 +117,7 @@ bool KFbxLoader::Load(std::wstring filename)
 	}
 	return false;
 }
+
 
 void KFbxLoader::NodeProcess(KFBXObj* pParentObj, FbxNode* pNode)
 {
@@ -239,26 +241,19 @@ void KFbxLoader::ParseMesh(KFBXObj* pObject)
 			{
 				//메터리얼의 텍스쳐 이름을 가져와서 리스트 추가 및 SRV 생성
 				std::wstring strFbxPath = L"../../data/model/Texture/";
-				std::wstring strFBXTexName = to_mw(ParseMaterial(pSurface));
-				std::wstring strTexDefault1 = L"../../data/model/Texture/Default_Diffuse.jpg";
-				std::wstring strTexDefault2 = L"../../data/model/Texture/Default_Specular.jpg";
-				std::wstring strTexDefault3 = L"../../data/model/Texture/Default_Normal.jpg";
-
-				strFbxPath += strFBXTexName;
+				//std::wstring strFBXTexName = to_mw(ParseMaterial(pSurface));
+				//strFbxPath += strFBXTexName;
+				std::wstring strTexDefault1 = L"Default_Diffuse.jpg";
+				std::wstring strTexDefault2 = L"Default_Specular.jpg";
+				std::wstring strTexDefault3 = L"Default_Normal.jpg";
+				
+				g_FBXManager.GetFBXTexList(pObject->m_ObjName + L".FBX", strTexDefault1, strTexDefault2, strTexDefault3);
 				//자동으로 텍스쳐를 만드는데, 실패할 경우
-				KTexture* pTex1 = g_TextureMananger.Load(strFbxPath);
-				KTexture* pTex2 = g_TextureMananger.Load(strTexDefault2);
-				KTexture* pTex3 = g_TextureMananger.Load(strTexDefault3);
-				if (pTex1 != nullptr)
-				{
-					pObject->m_pTexture_Diffuse = pTex1;
-				}
-				else
-				{
-					KTexture* pNoDir = g_TextureMananger.Load(strTexDefault1);
-					pObject->m_pTexture_Diffuse = pNoDir;
-				}
+				KTexture* pTex1 = g_TextureMananger.Load(strFbxPath + strTexDefault1);
+				KTexture* pTex2 = g_TextureMananger.Load(strFbxPath + strTexDefault2);
+				KTexture* pTex3 = g_TextureMananger.Load(strFbxPath + strTexDefault3);
 
+				pObject->m_pTexture_Diffuse = pTex1;
 				pObject->m_pTexture_Specular = pTex2;
 				pObject->m_pTexture_Normal = pTex3;
 
@@ -411,78 +406,6 @@ void KFbxLoader::ParseMesh(KFBXObj* pObject)
 					pObject->m_pSubBTList[iSubMtrl].push_back(bt_vertex);
 				}
 			}
-			#pragma region 탄젠트 공간 구하는 함수, FBX 내장함수로 대체
-			////3점의 버텍스 작업이 끝난 후 바이노말, 탄젠트값이 들어가지 않았다면??
-			////조건 없이 일단 바이노말 작업함
-			//if (pObject->m_pSubBTList[iSubMtrl].back().binormal == KVector3{0,0,0} &&
-			//	pObject->m_pSubBTList[iSubMtrl].back().tangent == KVector3{ 0,0,0 })
-			//{
-			//	IW_VERTEX iWvertex;
-			//	KVector3 t, b, n;
-
-			//	int iVertexCount = pObject->m_pSubVertexList[iSubMtrl].size();
-			//	if (iPolySize == 4)
-			//	{
-			//		int iStart = iVertexCount - 6;
-			//		int iEnd = iStart + 6;
-			//		while (iStart < iEnd)
-			//		{
-			//			pObject->CreateTangentSpace(&pObject->m_pSubVertexList[iSubMtrl][iStart].pos
-			//				, &pObject->m_pSubVertexList[iSubMtrl][iStart + 1].pos, &pObject->m_pSubVertexList[iSubMtrl][iStart + 2].pos,
-			//				&pObject->m_pSubVertexList[iSubMtrl][iStart].tex, &pObject->m_pSubVertexList[iSubMtrl][iStart + 1].tex,
-			//				&pObject->m_pSubVertexList[iSubMtrl][iStart + 2].tex, &n, &t, &b);
-			//			pObject->m_pSubBTList[iSubMtrl][iStart].tangent = t;
-			//			pObject->m_pSubBTList[iSubMtrl][iStart].binormal = b;
-			//			//pObject->m_pSubVertexList[iSubMtrl][iCurpolyIndex].normal = n;
-
-			//			pObject->CreateTangentSpace(&pObject->m_pSubVertexList[iSubMtrl][iStart + 1].pos
-			//				, &pObject->m_pSubVertexList[iSubMtrl][iStart + 2].pos, &pObject->m_pSubVertexList[iSubMtrl][iStart].pos,
-			//				&pObject->m_pSubVertexList[iSubMtrl][iStart + 1].tex, &pObject->m_pSubVertexList[iSubMtrl][iStart + 2].tex,
-			//				&pObject->m_pSubVertexList[iSubMtrl][iStart].tex, &n, &t, &b);
-			//			pObject->m_pSubBTList[iSubMtrl][iStart + 1].tangent = t;
-			//			pObject->m_pSubBTList[iSubMtrl][iStart + 1].binormal = b;
-			//			//pObject->m_pSubVertexList[iSubMtrl][iCurpolyIndex + 1].normal = n;
-
-			//			pObject->CreateTangentSpace(&pObject->m_pSubVertexList[iSubMtrl][iStart + 2].pos
-			//				, &pObject->m_pSubVertexList[iSubMtrl][iStart].pos, &pObject->m_pSubVertexList[iSubMtrl][iStart + 1].pos,
-			//				&pObject->m_pSubVertexList[iSubMtrl][iStart + 2].tex, &pObject->m_pSubVertexList[iSubMtrl][iStart].tex,
-			//				&pObject->m_pSubVertexList[iSubMtrl][iStart + 1].tex, &n, &t, &b);
-			//			pObject->m_pSubBTList[iSubMtrl][iStart + 2].tangent = t;
-			//			pObject->m_pSubBTList[iSubMtrl][iStart + 2].binormal = b;
-			//			//pObject->m_pSubVertexList[iSubMtrl][iCurpolyIndex + 2].normal = n;
-			//			iStart += 3;
-			//		}
-			//	}
-			//	else
-			//	{
-			//		int iStart = iVertexCount - 3;
-			//		pObject->CreateTangentSpace(&pObject->m_pSubVertexList[iSubMtrl][iStart].pos
-			//			, &pObject->m_pSubVertexList[iSubMtrl][iStart + 1].pos, &pObject->m_pSubVertexList[iSubMtrl][iStart + 2].pos,
-			//			&pObject->m_pSubVertexList[iSubMtrl][iStart].tex, &pObject->m_pSubVertexList[iSubMtrl][iStart + 1].tex,
-			//			&pObject->m_pSubVertexList[iSubMtrl][iStart + 2].tex, &n, &t, &b);
-			//		pObject->m_pSubBTList[iSubMtrl][iStart].tangent = t;
-			//		pObject->m_pSubBTList[iSubMtrl][iStart].binormal = b;
-			//		//pObject->m_pSubVertexList[iSubMtrl][iCurpolyIndex].normal = n;
-
-			//		pObject->CreateTangentSpace(&pObject->m_pSubVertexList[iSubMtrl][iStart + 1].pos
-			//			, &pObject->m_pSubVertexList[iSubMtrl][iStart + 2].pos, &pObject->m_pSubVertexList[iSubMtrl][iStart].pos,
-			//			&pObject->m_pSubVertexList[iSubMtrl][iStart + 1].tex, &pObject->m_pSubVertexList[iSubMtrl][iStart + 2].tex,
-			//			&pObject->m_pSubVertexList[iSubMtrl][iStart].tex, &n, &t, &b);
-			//		pObject->m_pSubBTList[iSubMtrl][iStart + 1].tangent = t;
-			//		pObject->m_pSubBTList[iSubMtrl][iStart + 1].binormal = b;
-			//		//pObject->m_pSubVertexList[iSubMtrl][iCurpolyIndex + 1].normal = n;
-
-			//		pObject->CreateTangentSpace(&pObject->m_pSubVertexList[iSubMtrl][iStart + 2].pos
-			//			, &pObject->m_pSubVertexList[iSubMtrl][iStart].pos, &pObject->m_pSubVertexList[iSubMtrl][iStart + 1].pos,
-			//			&pObject->m_pSubVertexList[iSubMtrl][iStart + 2].tex, &pObject->m_pSubVertexList[iSubMtrl][iStart].tex,
-			//			&pObject->m_pSubVertexList[iSubMtrl][iStart + 1].tex, &n, &t, &b);
-			//		pObject->m_pSubBTList[iSubMtrl][iStart + 2].tangent = t;
-			//		pObject->m_pSubBTList[iSubMtrl][iStart + 2].binormal = b;
-			//		//pObject->m_pSubVertexList[iSubMtrl][iCurpolyIndex + 2].normal = n;
-			//	}
-			//}
-
-#pragma endregion
 			iCurpolyIndex += iPolySize;
 		}
 

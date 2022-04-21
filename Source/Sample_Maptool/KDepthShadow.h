@@ -25,8 +25,8 @@ public:
 		m_matTexture._41 = 0.5f; m_matTexture._42 = 0.5f;
 		m_ShadowRT.Create(1024, 1024);
 
-		m_pPSShadowFBX = g_ShaderManager.CreatePixelShader(L"../../data/shader/VSPS_FBXShadow.hlsl", "PSDepth");//∏ 
-		m_pPSShadow = g_ShaderManager.CreatePixelShader(L"../../data/shader/VSPS_DepthShadow.hlsl", "PSDepth");//ø¿∫Í¡ß∆Æ
+		m_pPSShadowFBX = g_ShaderManager.CreatePixelShader(L"../../data/shader/VSPS_FBX.hlsl", "PSDepth");//∏ 
+		m_pPSShadow = g_ShaderManager.CreatePixelShader(L"../../data/shader/VSPS_Default.hlsl", "PSDepth");//ø¿∫Í¡ß∆Æ
 		if (!CreateConstantBuffer())
 		{
 			return false;

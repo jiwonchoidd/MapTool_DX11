@@ -34,4 +34,4 @@ Sample::~Sample()
 {
 }
 
-WinMain_OPT(DirectX11 맵툴 [최지원], 960, 540);
+WinMain_OPT(DirectX11 맵툴 [최지원], 1280, 720);

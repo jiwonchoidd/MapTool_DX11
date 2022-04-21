@@ -23,8 +23,10 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 	m_MiniMap_DebugCamera.SwapVisibility();
 	
 	//Fbx 파일 로드-------------------------------------------------------------
+
+	g_FBXManager.LoadTextureData(L"../../data/model/FBXData.txt"); //전체 텍스쳐 정보를 가진 파일 파싱
 	std::vector<std::wstring> fbx_name_list;
-	KDirParser::LoadAllPath(L"../../data/model/Mesh", fbx_name_list);
+	KDirParser::LoadAllPath(L"../../data/model/Mesh", fbx_name_list); // 해당 경로 FBX 파일 이름 파싱
 	m_FBXList.resize(fbx_name_list.size());
 	for (int iObj = 0; iObj < m_FBXList.size(); iObj++)
 	{
@@ -35,9 +37,11 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
  		pFbx->m_pLoader = g_FBXManager.Load(fbx_name_list[iObj]);
 		m_FBXList[iObj]= pFbx;
 	}
-	//텍스쳐 로드----------------------------------------------------------------
+
+
+	//지형 텍스쳐 로드----------------------------------------------------------------
 	std::vector<std::wstring> tex_name_list;
-	KDirParser::LoadAllPath(L"../../data/Texture/Map", tex_name_list);
+	KDirParser::LoadAllPath(L"../../data/map/texture", tex_name_list);
  	m_TextureList.resize(tex_name_list.size());
 	for (int iTex = 0; iTex < m_TextureList.size(); iTex++)
 	{
@@ -46,17 +50,17 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 
 	//지형-------------------------------------------------------------
 	m_Terrian.Init(m_pContext, L"../../data/map/129_heightmap.jpg");
-	m_Terrian.CreateObject(L"../../data/shader/VSPS_DepthShadow.hlsl", L"../../data/shader/VSPS_DepthShadow.hlsl", L"../../data/map/Ground_Grass_001_COLOR.jpg",
-		L"../../data/map/Ground_Grass_001_ROUGH.jpg", L"../../data/map/Ground_Grass_001_NORM.jpg");
+	m_Terrian.CreateObject(L"../../data/shader/VSPS_Terrain.hlsl", L"../../data/shader/VSPS_Terrain.hlsl", L"../../data/map/texture/base.jpg",
+		L"../../data/map/texture/base_s.jpg", L"../../data/map/texture/base_n.jpg");
 
 	m_Terrian_Space.Build(&m_Terrian, g_SceneManager.m_pCamera);
 	m_Terrian_Space.DrawDebugInit(m_pContext);
 
 	KBoxObj* tempBox = new KBoxObj();
 	tempBox->m_ObjName = L"textbox";
-	tempBox->Init(L"../../data/shader/VSPS_DepthShadow.hlsl", L"../../data/shader/VSPS_DepthShadow.hlsl", 
-		L"../../data/texture/brick.jpg", L"../../data/texture/brick.jpg", L"../../data/texture/brick_normal.jpg");
-	m_Terrian_Space.RandomSetupObject(tempBox,10);
+	tempBox->Init(L"../../data/shader/VSPS_Default.hlsl", L"../../data/shader/VSPS_Default.hlsl", 
+		L"../../data/texture/brick.jpg", L"../../data/texture/brick_specular.jpg", L"../../data/texture/brick_normal.jpg");
+	m_Terrian_Space.RandomSetupObject(tempBox,50);
 	
 	m_TopView.Init(m_pContext);
 	m_TopView.CreateViewMatrix(KVector3(0, 1000.0f, -1),KVector3(0, 0, 0));
@@ -64,7 +68,7 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 		static_cast<float>(g_rtClient.right) / static_cast<float>(g_rtClient.bottom));
 
 	//라이트 그림자----------------------------------------------------------------
-	m_Light.SetLight(KVector3(-200.0f,1000.0f,0.0f), KVector3(0.0f, 0.0f, 0.0f));
+	m_Light.SetLight(KVector3(10.0f,1000.0f,0.0f), KVector3(0.0f, 0.0f, 0.0f));
 	m_Shadow.CreateShadow(&m_Light);
 
 	//마우스 피커------------------------------------------------------------
@@ -215,7 +219,7 @@ bool KScene_Maptool::Frame()
 				{
 					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"브러쉬 조절");
 					ImGui::SliderFloat("Brush Size", &m_MousePicker.m_Sel_Brush_Size, 50, 150);
-					ImGui::SliderFloat("Brush Strenght", &m_MousePicker.m_Sel_Brush_Strenght, 50, 150);
+					ImGui::SliderFloat("Brush Strenght", &m_MousePicker.m_Sel_Brush_Strenght, 1, 100);
 				}
 #pragma endregion
 			}
@@ -325,17 +329,17 @@ bool KScene_Maptool::Render()
 	m_Terrian_Space.Render_MapObject(m_pContext);
 
 	//FBX OBJ Render------------------------------------------
-	/*for (int iObj = 0; iObj < m_Scene_FBXList.size(); iObj++)
+	for (int iObj = 0; iObj < m_FBXList.size(); iObj++)
 	{
-		m_Scene_FBXList[iObj]->SetMatrix(&m_Scene_FBXList[iObj]->m_matWorld, &g_SceneManager.m_pCamera->m_matView, &g_SceneManager.m_pCamera->m_matProj);
-		m_Scene_FBXList[iObj]-> m_cbDataEX.vLightColor = { m_Light.m_vLightColor.x,m_Light.m_vLightColor.y,m_Light.m_vLightColor.z,1.0f };
-		m_Scene_FBXList[iObj]-> m_cbDataEX.vLightPos = { m_Light.m_vPos.x,m_Light.m_vPos.y,m_Light.m_vPos.z,1.0f };
-		m_Scene_FBXList[iObj]-> m_cbDataEX.vLightDir = { m_Light.m_vDir.x,m_Light.m_vDir.y,m_Light.m_vDir.z,1.0f };
-		m_Scene_FBXList[iObj]->	m_cbDataEX.vCamPos = { g_SceneManager.m_pCamera->GetCameraPos()->x, g_SceneManager.m_pCamera->GetCameraPos()->y, g_SceneManager.m_pCamera->GetCameraPos()->z, 1.0f };
+		m_FBXList[iObj]->SetMatrix(&m_FBXList[iObj]->m_matWorld, &g_SceneManager.m_pCamera->m_matView, &g_SceneManager.m_pCamera->m_matProj);
+		m_FBXList[iObj]-> m_cbDataEX.vLightColor = { m_Light.m_vLightColor.x,m_Light.m_vLightColor.y,m_Light.m_vLightColor.z,1.0f };
+		m_FBXList[iObj]-> m_cbDataEX.vLightPos = { m_Light.m_vPos.x,m_Light.m_vPos.y,m_Light.m_vPos.z,1.0f };
+		m_FBXList[iObj]-> m_cbDataEX.vLightDir = { m_Light.m_vDir.x,m_Light.m_vDir.y,m_Light.m_vDir.z,1.0f };
+		m_FBXList[iObj]-> m_cbDataEX.vCamPos = { g_SceneManager.m_pCamera->GetCameraPos()->x, g_SceneManager.m_pCamera->GetCameraPos()->y, g_SceneManager.m_pCamera->GetCameraPos()->z, 1.0f };
 		m_pContext->PSSetShaderResources(3, 1, m_Shadow.m_ShadowRT.m_pTextureSRV.GetAddressOf());
-		m_Scene_FBXList[iObj]->SwapPSShader();
-		m_Scene_FBXList[iObj]->Render(m_pContext);
-	}*/
+		m_FBXList[iObj]->SwapPSShader();
+		m_FBXList[iObj]->Render(m_pContext);
+	}
 
 	////미니맵------------------------------------------------
 	if (g_InputData.bDebugRender)

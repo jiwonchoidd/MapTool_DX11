@@ -218,9 +218,9 @@ bool K3DAsset::CreateTangentSpace(KVector3* v1, KVector3* v2, KVector3* v3, KVec
 
     if (fDenominator < 0.0001f && fDenominator>-0.0001f)
     {
-        *tangent = KVector3(1.0f, 0.0f, 0.0f);
-        *binormal = KVector3(0.0f, 1.0f, 0.0f);
-        *normal = KVector3(0.0f, 0.0f, 1.0f);
+        *tangent = KVector3(0.0f, 0.0f, 1.0f);
+        *binormal = KVector3(1.0f, 0.0f, 0.0f);
+        *normal = KVector3(0.0f, 1.0f, 0.0f);
     }
     else
     {

@@ -5,10 +5,6 @@ cbuffer CBuf : register(b0)
 	matrix g_matProj : packoffset(c8);
 	matrix g_matNormal : packoffset(c12);
 };
-cbuffer CBuf_Bone: register(b1)
-{
-	float4x4 g_matBoneWorld[255]; //65535 / 4
-};
 cbuffer CBuf_Shadow: register(b2)
 {
 	matrix g_matShadow	: packoffset(c0);
@@ -36,10 +32,12 @@ struct VS_OUTPUT
 	float2 t : TEXCOORD0;
 	float4 c : COLOR0;
 	float3 mViewDir  : TEXCOORD1;
-	float4 mShadow	 : TEXCOORD2; //µª½º ¸Ê ½¦µµ¿ì Ãß°¡
-	float3 mT        : TEXCOORD3;
-	float3 mB        : TEXCOORD4;
-	float3 mN        : TEXCOORD5;
+	float3 mLightDir : TEXCOORD2;
+	float4 mShadow	 : TEXCOORD3; //µª½º ¸Ê ½¦µµ¿ì Ãß°¡
+	float3 mT        : TEXCOORD4;
+	float3 mB        : TEXCOORD5;
+	float3 mN        : TEXCOORD6;
+	float3 mR        : TEXCOORD7;
 };
 
 VS_OUTPUT VS(VS_INPUT Input)
@@ -53,7 +51,8 @@ VS_OUTPUT VS(VS_INPUT Input)
 	//º¸´Â ¹æÇâ
 	float3 viewDir = vWorld.xyz - g_camPos.xyz;
 	Output.mViewDir = normalize(viewDir);
-
+	float3 lightDir = vWorld.xyz - g_lightPos.xyz;
+	Output.mLightDir = normalize(lightDir);
 	//½¦µµ¿ì Çà·Ä°ö
 	Output.mShadow = mul(vWorld, g_matShadow);
 
@@ -119,7 +118,7 @@ float4 PS(VS_OUTPUT Input) : SV_TARGET
    }
 
    //¹æÇâ º¤ÅÍ Á¤±ÔÈ­
-   float3 lightDir = normalize(g_lightDir);
+   float3 lightDir = normalize(Input.mLightDir);
    float3 viewDir = normalize(Input.mViewDir);
 
    //µðÇ»Áî ¹Ý»ç, ³­¹Ý»ç

@@ -40,6 +40,9 @@
     <Filter Include="Code\Obj\3D\Debug">
       <UniqueIdentifier>{d5e9bd45-a907-4d54-a36f-c871e1a79f80}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Prev">
+      <UniqueIdentifier>{d08ae5c8-829a-43a3-a47d-bb7678a12287}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImGuiManager.cpp">
@@ -332,67 +335,41 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\data\shader\PS_2D.txt">
-      <Filter>Shader</Filter>
-    </Text>
-    <Text Include="..\..\data\shader\PS_2D_Map.txt">
-      <Filter>Shader</Filter>
-    </Text>
-    <Text Include="..\..\data\shader\PS_UI_0.txt">
-      <Filter>Shader</Filter>
-    </Text>
-    <Text Include="..\..\data\shader\PS_UI_Mask.txt">
-      <Filter>Shader</Filter>
-    </Text>
-    <Text Include="..\..\data\shader\VS_2D.txt">
-      <Filter>Shader</Filter>
-    </Text>
-    <Text Include="..\..\data\shader\VS_2D_Map.txt">
-      <Filter>Shader</Filter>
-    </Text>
-    <Text Include="..\..\data\shader\VS_UI_0.txt">
-      <Filter>Shader</Filter>
-    </Text>
-    <Text Include="..\..\data\shader\VS_UI_Move.txt">
-      <Filter>Shader</Filter>
-    </Text>
-    <Text Include="..\..\data\shader\VSPS_Debug_0.txt">
-      <Filter>Shader</Filter>
-    </Text>
-    <Text Include="..\..\data\shader\VSPS_UI_Alpha.txt">
-      <Filter>Shader</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
     <FxCompile Include="..\..\data\shader\Skybox.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\data\shader\PS_Light.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\data\shader\PS_Normalmap.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\data\shader\VS_Light.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\data\shader\VS_Normalmap.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\..\data\shader\VSPS_Frustum.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\data\shader\PS_Plane.hlsl">
+    <FxCompile Include="..\..\Data\shader\VSPS_Default.hlsl">
       <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\shader\VSPS_FBX.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\shader\VSPS_Terrain.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\PS_Plane.hlsl">
+      <Filter>Shader\Prev</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\PS_Normalmap.hlsl">
+      <Filter>Shader\Prev</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\PS_Light.hlsl">
+      <Filter>Shader\Prev</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VS_Light.hlsl">
+      <Filter>Shader\Prev</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\data\shader\VS_Normalmap.hlsl">
+      <Filter>Shader\Prev</Filter>
     </FxCompile>
     <FxCompile Include="..\..\data\shader\VS_Plane.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Prev</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\data\shader\VSPS_DepthShadow.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\data\shader\VSPS_FBXShadow.hlsl">
-      <Filter>Shader</Filter>
+    <FxCompile Include="..\..\Data\shader\VSPS_DepthShadow.hlsl">
+      <Filter>Shader\Prev</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

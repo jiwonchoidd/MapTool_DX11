@@ -124,13 +124,19 @@
     <FxCompile Include="..\..\data\shader\PS_Plane.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="..\..\data\shader\VSPS_FBXShadow.hlsl">
+    <FxCompile Include="..\..\Data\shader\VSPS_Default.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="..\..\data\shader\VSPS_DepthShadow.hlsl">
+    <FxCompile Include="..\..\Data\shader\VSPS_DepthShadow.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\shader\VSPS_FBX.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\..\data\shader\VSPS_Frustum.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\shader\VSPS_Terrain.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\..\data\shader\VS_Light.hlsl">
@@ -145,10 +151,6 @@
     <FxCompile Include="..\..\data\shader\VS_Plane.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <Text Include="..\..\data\shader\PS_2D.txt" />
-    <Text Include="..\..\data\shader\PS_2D_Map.txt" />
-    <Text Include="..\..\data\shader\PS_UI_0.txt" />
-    <Text Include="..\..\data\shader\PS_UI_Mask.txt" />
     <FxCompile Include="..\..\data\shader\PS_Light.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS</EntryPointName>
@@ -161,12 +163,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <FileType>Document</FileType>
     </FxCompile>
-    <Text Include="..\..\data\shader\VSPS_Debug_0.txt" />
-    <Text Include="..\..\data\shader\VSPS_UI_Alpha.txt" />
-    <Text Include="..\..\data\shader\VS_2D.txt" />
-    <Text Include="..\..\data\shader\VS_2D_Map.txt" />
-    <Text Include="..\..\data\shader\VS_UI_0.txt" />
-    <Text Include="..\..\data\shader\VS_UI_Move.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
