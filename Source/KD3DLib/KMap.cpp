@@ -1,14 +1,14 @@
 #include "KMap.h"
-#include "WICTextureLoader.h"
 //2의 2승 + 1
 //init 함수는 자동으로 헤이트 맵을 받아 맵을 만든다.
 bool KMap::Init(ID3D11DeviceContext* context, std::wstring heightmap)
 {
 	m_pContext = context;
 	m_tex_offset = 5.0f;
+	//높이맵 읽어옴
 	CreateHeightMap(heightmap);
+	//높이맵으로 부터 크기 형성
 	CreateMap(m_num_row, m_num_col, 10.0f);
-
 	return true;
 }
 bool KMap::CreateMap(UINT width, UINT height, float distance)

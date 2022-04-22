@@ -33,7 +33,10 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 		std::shared_ptr<KFBXAsset> pFbx = std::make_shared<KFBXAsset>();
 		pFbx->Init();
 		//float fHeight = m_Terrian.GetHeight(3, 3);
-		pFbx->SetPosition(KVector3(3 * iObj * 10, 3, 3 * iObj));
+		pFbx->m_matWorld._11 = 0.1f;
+		pFbx->m_matWorld._22 = 0.1f;
+		pFbx->m_matWorld._33 = 0.1f;
+		pFbx->SetPosition(KVector3(3 * iObj * 20, 3, 3 * iObj));
  		pFbx->m_pLoader = g_FBXManager.Load(fbx_name_list[iObj]);
 		m_FBXList[iObj]= pFbx;
 	}
@@ -63,7 +66,7 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 	m_Terrian_Space.RandomSetupObject(tempBox,50);
 	
 	m_TopView.Init(m_pContext);
-	m_TopView.CreateViewMatrix(KVector3(0, 1000.0f, -1),KVector3(0, 0, 0));
+	m_TopView.CreateViewMatrix(KVector3(0, 2000.0f, -1),KVector3(0, 0, 0));
 	m_TopView.CreateProjMatrix(1.0f, 10000.0f, XM_PI * 0.3f,
 		static_cast<float>(g_rtClient.right) / static_cast<float>(g_rtClient.bottom));
 
@@ -109,7 +112,7 @@ bool KScene_Maptool::Frame()
 				#pragma region 맵툴 IMGUI
 				//--------------------------------------------------------
 				//라디오 버튼
-				if (ImGui::RadioButton("None", (m_MousePicker.m_iControlState == 0)))
+				if (ImGui::RadioButton("Object", (m_MousePicker.m_iControlState == 0)))
 				{
 					m_MousePicker.m_iControlState = 0;
 				}ImGui::SameLine();
@@ -271,7 +274,6 @@ bool KScene_Maptool::Frame()
 
 bool KScene_Maptool::Render()
 {
-	
 	//그림자 ------------------------------------------
 	float shadow[4] = { 1.0f,1.0f,1.0f,1.0f };
 	if (m_Shadow.m_ShadowRT.Begin(m_pContext, shadow))
@@ -291,12 +293,12 @@ bool KScene_Maptool::Render()
 				obj->obj_pObject->m_iNumIndex);
 		}
 		//FBX OBJ Render------------------------------------------
-		/*for (int iObj = 0; iObj < m_Scene_FBXList.size(); iObj++)
+		for (int iObj = 0; iObj < m_FBXList.size(); iObj++)
 		{
-			m_Scene_FBXList[iObj]->SetMatrix(&m_Scene_FBXList[iObj]->m_matWorld, &m_Light.m_matView, &m_Light.m_matProj);
-			m_Scene_FBXList[iObj]->SwapPSShader(m_Shadow.m_pPSShadow);
-			m_Scene_FBXList[iObj]->Render(m_pContext);
-		}*/
+			m_FBXList[iObj]->SetMatrix(&m_FBXList[iObj]->m_matWorld, &m_Light.m_matView, &m_Light.m_matProj);
+			m_FBXList[iObj]->SwapPSShader(m_Shadow.m_pPSShadow);
+			m_FBXList[iObj]->Render(m_pContext);
+		}
 		//복원 작업
 		m_Shadow.m_ShadowRT.End(m_pContext);
 	}

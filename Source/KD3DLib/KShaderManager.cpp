@@ -109,6 +109,24 @@ bool KShader::CreatePixelShader(std::wstring filename, std::string entry)
 	}
 	return true;
 }
+bool KShader::CreateComputeShader(std::wstring filename, std::string entry)
+{
+	m_pPSCodeResult = LoadShaderBlob(filename, entry, "cs_5_0");
+	if (m_pPSCodeResult.Get() == nullptr)
+	{
+		return false;
+	}
+	HRESULT hr = g_pd3dDevice->CreateComputeShader(
+		m_pCSCodeResult.Get()->GetBufferPointer(),
+		m_pCSCodeResult.Get()->GetBufferSize(),
+		NULL, m_pComputeShader.GetAddressOf());
+
+	if (FAILED(hr))
+	{
+		return false;
+	}
+	return true;
+}
 KShader::KShader()
 {
 	m_iIndex = 0;
@@ -161,6 +179,26 @@ KShader* KShaderManager::CreatePixelShader(std::wstring filename, std::string en
 	m_iIndex++;
 	return pData;
 }
+KShader* KShaderManager::CreateComputeShader(std::wstring filename, std::string entry)
+{
+	std::wstring name = Splitpath(filename, to_mw(entry));
+	KShader* pData = GetPtr(name);
+	if (pData != nullptr)
+	{
+		return pData;
+	}
+	pData = new KShader;
+	if (!pData->CreateComputeShader(filename, entry))
+	{
+		delete pData;
+		return nullptr;
+	}
+	pData->m_Name = name;
+	m_list.insert(make_pair(pData->m_Name, pData));
+	m_iIndex++;
+	return pData;
+}
+
 KShaderManager::KShaderManager()
 {
 	m_iIndex = 0;

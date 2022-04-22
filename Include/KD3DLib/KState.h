@@ -13,6 +13,7 @@ public:
 	//RS
 	static	ID3D11RasterizerState*		g_pRSSolid;
 	static	ID3D11RasterizerState*		g_pRSWireFrame;
+	static	ID3D11RasterizerState*		g_pRSAllface;
 	static	ID3D11RasterizerState*		g_pRSBackface;
 	//DSS
 	static	ID3D11DepthStencilState*	g_pDSS;

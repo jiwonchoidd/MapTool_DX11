@@ -177,6 +177,9 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="KMapSprite.cpp">
+      <Filter>Code\Obj\3D\Map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KInput.h">
@@ -322,6 +325,9 @@
     </ClInclude>
     <ClInclude Include="ImGui\imstb_truetype.h">
       <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="KMapSprite.h">
+      <Filter>Code\Obj\3D\Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

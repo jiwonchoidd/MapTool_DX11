@@ -120,6 +120,7 @@ Texture2D		g_txDiffuse : register(t0);
 Texture2D		g_txSpecular : register(t1);
 Texture2D		g_txNormal : register(t2);
 Texture2D		g_txShadow  : register(t3);
+Texture2D		g_txAlpha  : register(t4);
 TextureCube	    g_txCubeMap : register(t6); //환경매핑
 
 SamplerState	g_Sample : register(s0);
@@ -169,6 +170,9 @@ float4 PS(VS_OUTPUT Input) : SV_TARGET
    float4 final = float4(ambient + diffuse + specular + (env * 0.15f), albedo.w);
    //알파 테스팅 작업 (완전 투명과 완전 불투명일때 사용)
    //순서를 구분하기 어려울때 애매한 알파값을 버림, 정렬된 효과를 얻음
+
+   float4 alpha = g_txAlpha.Sample(g_Sample, Input.t);
+   final.a = final.a - alpha.r;
    if (final.a < 0.5f)
    {
 	   discard;

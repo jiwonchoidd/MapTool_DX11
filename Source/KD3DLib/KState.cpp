@@ -15,6 +15,7 @@ ID3D11SamplerState* KState::g_pNoFilterSS =nullptr;
 ID3D11RasterizerState* KState::g_pRSSolid = nullptr;
 ID3D11RasterizerState* KState::g_pRSWireFrame = nullptr;
 ID3D11RasterizerState* KState::g_pRSBackface = nullptr;
+ID3D11RasterizerState* KState::g_pRSAllface = nullptr;
 
 bool KState::SetState()
 {
@@ -128,10 +129,11 @@ HRESULT KState::CreateRasterizeState()
     rd.FillMode = D3D11_FILL_WIREFRAME;
     rd.CullMode = D3D11_CULL_NONE;
     hr = g_pd3dDevice->CreateRasterizerState(&rd, &g_pRSWireFrame);
+
     ZeroMemory(&rd, sizeof(D3D11_RASTERIZER_DESC));
     rd.FillMode = D3D11_FILL_SOLID;
     rd.CullMode = D3D11_CULL_BACK;
-    rd.DepthClipEnable = TRUE; // Clipping 효과 기본이 False임
+    rd.DepthClipEnable = TRUE;
     hr = g_pd3dDevice->CreateRasterizerState(&rd, &g_pRSSolid);
 
     ZeroMemory(&rd, sizeof(D3D11_RASTERIZER_DESC));
@@ -139,6 +141,12 @@ HRESULT KState::CreateRasterizeState()
     rd.CullMode = D3D11_CULL_FRONT;
     rd.DepthClipEnable = TRUE; // Clipping 효과 기본이 False임
     hr = g_pd3dDevice->CreateRasterizerState(&rd, &g_pRSBackface);
+
+    ZeroMemory(&rd, sizeof(D3D11_RASTERIZER_DESC));
+    rd.FillMode = D3D11_FILL_SOLID;
+    rd.CullMode = D3D11_CULL_NONE;
+    rd.DepthClipEnable = TRUE; // Clipping 효과 기본이 False임
+    hr = g_pd3dDevice->CreateRasterizerState(&rd, &g_pRSAllface);
     return hr;
 }
 
@@ -201,6 +209,8 @@ bool KState::ReleaseState()
     if (g_pRSBackface)g_pRSBackface->Release();
     if (g_pRSWireFrame)g_pRSWireFrame->Release();
     if (g_pAlphaBlendState)g_pAlphaBlendState->Release();
+    if (g_pRSAllface) g_pRSAllface->Release();
+    g_pRSAllface = nullptr;
     g_pAlphaBlendState = nullptr;
     g_pBlendState = nullptr;
     g_pDSS = nullptr;

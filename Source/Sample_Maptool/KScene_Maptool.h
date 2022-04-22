@@ -20,6 +20,7 @@ public:
 public:
     KMap           m_Terrian;
     KMapSpace      m_Terrian_Space;
+    
 public:
     KCamera        m_TopView;
     KMiniMap       m_MiniMap_DebugCamera;

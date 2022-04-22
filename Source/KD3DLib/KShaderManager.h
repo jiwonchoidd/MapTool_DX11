@@ -14,12 +14,16 @@ public:
 	wrl::ComPtr<ID3DBlob>  m_pPSCodeResult = nullptr;
 	wrl::ComPtr<ID3DBlob>  m_pErrorMsgs = nullptr;
 public:
+	wrl::ComPtr<ID3D11ComputeShader> m_pComputeShader;
+	wrl::ComPtr<ID3DBlob> m_pCSCodeResult = nullptr;
+public:
 	bool	Init();
 	bool	Frame();
 	bool	Render();
 	bool	Release();
 	virtual bool    CreateVertexShader(std::wstring filename, std::string entry = "VS");
 	virtual bool    CreatePixelShader(std::wstring filename, std::string entry = "PS");
+	virtual bool    CreateComputeShader(std::wstring filename, std::string entry = "CS");
 	HRESULT	Load(std::wstring vs=L"", std::wstring ps= L"");
 	virtual ID3DBlob* LoadShaderBlob(std::wstring vs, std::string function, std::string version);
 public:
@@ -32,6 +36,7 @@ class KShaderManager : public KManager<KShader, KShaderManager>
 public:
 	KShader* CreateVertexShader(std::wstring filename, std::string entry);
 	KShader* CreatePixelShader(std::wstring filename, std::string entry);
+	KShader* CreateComputeShader(std::wstring filename, std::string entry);
 private:
 	KShaderManager();
 public:

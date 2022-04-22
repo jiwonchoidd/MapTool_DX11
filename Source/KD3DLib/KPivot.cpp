@@ -1,5 +1,5 @@
 #include "KPivot.h"
-
+#include "KState.h"
 bool KPivot::Init(ID3D11DeviceContext* pContext)
 {
 	//x, y, z

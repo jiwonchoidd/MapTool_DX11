@@ -1,2 +1,6 @@
-SM_Barrel.FBX	SM_Barrel_D.dds	Default_Specular.jpg	SM_Barrel_N.dds
-SM_Rock.FBX	rock_albedo.png	rock_specular.png	rock_normal.png
+M_Inst_Pack_01	SM_Barrel_D.dds	Default_Specular.jpg	SM_Barrel_N.dds
+M_Rock	rock_albedo.png	rock_specular.png	rock_normal.png
+M_Inst_TreeTrunks	SM_TreeTrunk_D.dds	Default_Specular.jpg	SM_TreeTrunk_N.dds
+M_Inst_TreeLeafs	SM_TreeLeaf_D.dds	Default_Specular.jpg	SM_TreeLeaf_N.dds	SM_TreeLeaf_Mask.dds
+M_Inst_TreeTrunks.001	SM_TreeTrunk_D.dds	Default_Specular.jpg	SM_TreeTrunk_N.dds
+M_Inst_TreeLeafs.001	SM_TreeLeaf_D.dds	Default_Specular.jpg	SM_TreeLeaf_N.dds	SM_TreeLeaf_Mask.dds

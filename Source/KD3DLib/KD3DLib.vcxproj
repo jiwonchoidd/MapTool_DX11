@@ -41,6 +41,7 @@
     <ClCompile Include="KManager.cpp" />
     <ClCompile Include="KMap.cpp" />
     <ClCompile Include="KMapSpace.cpp" />
+    <ClCompile Include="KMapSprite.cpp" />
     <ClCompile Include="KMath.cpp" />
     <ClCompile Include="KNode.cpp" />
     <ClCompile Include="KObject.cpp" />
@@ -89,6 +90,7 @@
     <ClInclude Include="KManager.h" />
     <ClInclude Include="KMap.h" />
     <ClInclude Include="KMapSpace.h" />
+    <ClInclude Include="KMapSprite.h" />
     <ClInclude Include="KMath.h" />
     <ClInclude Include="KNode.h" />
     <ClInclude Include="KObject.h" />

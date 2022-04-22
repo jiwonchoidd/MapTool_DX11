@@ -1,5 +1,5 @@
 #include "KFBXObj.h"
-
+#include "KState.h"
 bool KFBXObj::PreRender(ID3D11DeviceContext* pContext)
 {
 	//if (m_VertexList.size() <= 0) return true;
@@ -54,14 +54,25 @@ bool KFBXObj::PostRender(ID3D11DeviceContext* pContext, UINT iNumIndex)
 	for (int index = 0; index < m_pSubVertexList.size(); index++)
 	{
 		//텍스쳐 리소스를 0번 슬롯 - 디퓨즈 //1번 슬롯 - 스페큘러 //2번 슬롯 - 노말
-		if (m_pTexture_Diffuse != nullptr)
-			pContext->PSSetShaderResources(0, 1, m_pTexture_Diffuse->m_pSRVTexture.GetAddressOf());
+		if (m_pTextureList[index].texAlbedo!= nullptr)
+		pContext->PSSetShaderResources(0, 1, m_pTextureList[index].texAlbedo->m_pSRVTexture.GetAddressOf());
 
-		if (m_pTexture_Specular != nullptr)
-			pContext->PSSetShaderResources(1, 1, m_pTexture_Specular->m_pSRVTexture.GetAddressOf());
+		if (m_pTextureList[index].texSpecular != nullptr)
+			pContext->PSSetShaderResources(1, 1, m_pTextureList[index].texSpecular->m_pSRVTexture.GetAddressOf());
 
-		if (m_pTexture_Normal != nullptr)
-			pContext->PSSetShaderResources(2, 1, m_pTexture_Normal->m_pSRVTexture.GetAddressOf());
+		if (m_pTextureList[index].texNormal != nullptr)
+			pContext->PSSetShaderResources(2, 1, m_pTextureList[index].texNormal->m_pSRVTexture.GetAddressOf());
+
+		if (m_pTextureList[index].texAlpha != nullptr)
+		{
+			pContext->PSSetShaderResources(4, 1, m_pTextureList[index].texAlpha->m_pSRVTexture.GetAddressOf());
+			ApplyRS(pContext, KState::g_pRSAllface);
+		}
+		else
+		{
+			ID3D11ShaderResourceView* nullSRV[1] = { nullptr };//알파맵 없으면 리소스 바인딩 해제
+			pContext->PSSetShaderResources(4, 1, nullSRV);
+		}
 
 		ID3D11Buffer* buffer[3] = { m_pVBList[index], m_pVBBTList[index], m_pVBWeightList[index] };
 
@@ -72,6 +83,7 @@ bool KFBXObj::PostRender(ID3D11DeviceContext* pContext, UINT iNumIndex)
 		else
 			pContext->DrawIndexed(m_IndexList.size(), 0, 0);
 	}
+	ApplyRS(pContext, KState::g_pCurrentRS);
 	return true;
 }
 

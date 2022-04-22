@@ -241,22 +241,27 @@ void KFbxLoader::ParseMesh(KFBXObj* pObject)
 			{
 				//메터리얼의 텍스쳐 이름을 가져와서 리스트 추가 및 SRV 생성
 				std::wstring strFbxPath = L"../../data/model/Texture/";
-				//std::wstring strFBXTexName = to_mw(ParseMaterial(pSurface));
+				std::wstring strMaterial  = to_mw(pSurface->GetName());
+				///std::wstring strFBXTexName = to_mw(ParseMaterial(pSurface));
 				//strFbxPath += strFBXTexName;
 				std::wstring strTexDefault1 = L"Default_Diffuse.jpg";
 				std::wstring strTexDefault2 = L"Default_Specular.jpg";
 				std::wstring strTexDefault3 = L"Default_Normal.jpg";
+				std::wstring strTexAlpha = L"";
 				
-				g_FBXManager.GetFBXTexList(pObject->m_ObjName + L".FBX", strTexDefault1, strTexDefault2, strTexDefault3);
+				g_FBXManager.GetFBXTexList(strMaterial, strTexDefault1, strTexDefault2, strTexDefault3, strTexAlpha);
 				//자동으로 텍스쳐를 만드는데, 실패할 경우
 				KTexture* pTex1 = g_TextureMananger.Load(strFbxPath + strTexDefault1);
 				KTexture* pTex2 = g_TextureMananger.Load(strFbxPath + strTexDefault2);
 				KTexture* pTex3 = g_TextureMananger.Load(strFbxPath + strTexDefault3);
-
-				pObject->m_pTexture_Diffuse = pTex1;
-				pObject->m_pTexture_Specular = pTex2;
-				pObject->m_pTexture_Normal = pTex3;
-
+				KTexture* pTexAlpha = nullptr;
+				//
+				if (strTexAlpha != L"")
+				{
+					pTexAlpha = g_TextureMananger.Load(strFbxPath + strTexAlpha);
+				}
+				KTexturePack pack = { pTex1 ,pTex2, pTex3, pTexAlpha};
+				pObject->m_pTextureList.push_back(pack);
 			}
 		}
 		//개수가 1보다 많다면 매터리얼 수만큼 배열 할당해주고 

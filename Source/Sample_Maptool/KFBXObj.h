@@ -58,6 +58,13 @@ struct KScene_Animation
 	UINT   iEnd;
 	UINT   iFrameSpeed;
 };
+struct KTexturePack
+{
+	KTexture* texAlbedo;
+	KTexture* texSpecular;
+	KTexture* texNormal;
+	KTexture* texAlpha = nullptr;
+};
 class KFBXObj : public K3DAsset
 {
 public:
@@ -74,7 +81,8 @@ public:
 	std::vector<ID3D11Buffer*>   m_pVBList;
 	std::vector<ID3D11Buffer*>   m_pVBWeightList;
 	std::vector<ID3D11Buffer*>   m_pVBBTList;
-	//std::vector<KTexture*>		 m_pTextureList;
+	KTexture*					 m_pTexturePack[3];
+	std::vector<KTexturePack>	 m_pTextureList;
 	//std::vector<std::wstring>		 m_strTexList;
 	std::map<std::wstring, KMatrix>		 m_MatrixBindPoseMap; // 인덱스로 구성된 바인드포즈 맵 
 public:

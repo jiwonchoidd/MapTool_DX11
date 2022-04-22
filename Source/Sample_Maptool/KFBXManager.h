@@ -8,7 +8,7 @@ public:
 	std::map<std::wstring, std::vector<std::wstring>> m_TexDataList;
 public:
 	bool	LoadTextureData(std::wstring filename);
-	bool	GetFBXTexList(std::wstring fbxName, std::wstring &diffuse, std::wstring& specular, std::wstring& normal);
+	bool	GetFBXTexList(std::wstring fbxName, std::wstring &diffuse, std::wstring& specular, std::wstring& normal, std::wstring& alpha);
 private:
 	KFBXManager();
 public:
