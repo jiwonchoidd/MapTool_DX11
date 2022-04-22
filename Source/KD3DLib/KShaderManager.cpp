@@ -69,8 +69,10 @@ bool	KShader::Release()
 {
 	if (m_pVertexShader) m_pVertexShader.Reset();
 	if (m_pPixelShader) m_pPixelShader.Reset();
+	if (m_pComputeShader) m_pComputeShader.Reset();
 	m_pVertexShader = nullptr;
 	m_pPixelShader = nullptr;
+	m_pComputeShader = nullptr;
 	return true;
 }
 bool KShader::CreateVertexShader(std::wstring filename, std::string entry)
@@ -111,8 +113,8 @@ bool KShader::CreatePixelShader(std::wstring filename, std::string entry)
 }
 bool KShader::CreateComputeShader(std::wstring filename, std::string entry)
 {
-	m_pPSCodeResult = LoadShaderBlob(filename, entry, "cs_5_0");
-	if (m_pPSCodeResult.Get() == nullptr)
+	m_pCSCodeResult = LoadShaderBlob(filename, entry, "cs_5_0");
+	if (m_pCSCodeResult.Get() == nullptr)
 	{
 		return false;
 	}
@@ -136,7 +138,9 @@ KShader::~KShader()
 {
 	if (m_pVertexShader) m_pVertexShader.Reset();
 	if (m_pPixelShader) m_pPixelShader.Reset();
+	if (m_pComputeShader) m_pComputeShader.Reset();
 	m_pVertexShader = nullptr;
+	m_pComputeShader = nullptr;
 	m_pPixelShader = nullptr;
 }
 

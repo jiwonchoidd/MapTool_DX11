@@ -34,9 +34,9 @@ class KShaderManager : public KManager<KShader, KShaderManager>
 {
 	friend class Singleton<KShaderManager>;
 public:
-	KShader* CreateVertexShader(std::wstring filename, std::string entry);
-	KShader* CreatePixelShader(std::wstring filename, std::string entry);
-	KShader* CreateComputeShader(std::wstring filename, std::string entry);
+	KShader* CreateVertexShader(std::wstring filename, std::string entry = "VS");
+	KShader* CreatePixelShader(std::wstring filename, std::string entry = "PS");
+	KShader* CreateComputeShader(std::wstring filename, std::string entry = "CS");
 private:
 	KShaderManager();
 public:

@@ -14,13 +14,14 @@ bool KMap::Init(ID3D11DeviceContext* context, std::wstring heightmap)
 bool KMap::CreateMap(UINT width, UINT height, float distance)
 {
 	m_cell_distance = distance;
-	m_num_row = height;
 	m_num_col = width;
+	m_num_row = height;
 	m_num_vertex = m_num_col * m_num_row;
 	m_num_cell_col = m_num_col - 1;
 	m_num_cell_row = m_num_row - 1;
 	m_num_face = m_num_cell_col * m_num_cell_row * 2;
 
+	//todo: 텍스쳐 크기 박스 크기로 해야할지 
 	m_BoxCollision.max.x = (m_num_col / 2 * m_cell_distance);
 	m_BoxCollision.min.x = -m_BoxCollision.max.x;
 	m_BoxCollision.max.z = (m_num_row / 2 * m_cell_distance);
@@ -175,6 +176,61 @@ bool KMap::CreateIndexData()
 	return true;
 }
 
+bool KMap::PreRender(ID3D11DeviceContext* context)
+{
+	if (!m_bVisibility)return false;
+
+	if (m_VertexList.size() <= 0) return true;
+	//리소스 업데이트 데이터와 리소스 버퍼의 저장
+	context->UpdateSubresource(
+		m_pConstantBuffer.Get(), 0, NULL, &m_cbData, 0, 0);
+
+	context->UpdateSubresource(
+		m_pConstantBuffer_EX.Get(), 0, NULL, &m_cbDataEX, 0, 0);
+
+	context->VSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
+	context->PSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
+
+	context->VSSetConstantBuffers(3, 1, m_pConstantBuffer_EX.GetAddressOf());
+	context->PSSetConstantBuffers(3, 1, m_pConstantBuffer_EX.GetAddressOf());
+
+	//텍스쳐 리소스를 0번 슬롯 - sprite결과 SRV //1번 슬롯 - 스페큘러 //2번 슬롯 - 노말
+	if (m_pMapTexResultSRV != nullptr)
+		context->PSSetShaderResources(0, 1, &m_pMapTexResultSRV);
+
+	if (m_pTexture_Specular != nullptr)
+		context->PSSetShaderResources(1, 1, m_pTexture_Specular->m_pSRVTexture.GetAddressOf());
+
+	if (m_pTexture_Normal != nullptr)
+		context->PSSetShaderResources(2, 1, m_pTexture_Normal->m_pSRVTexture.GetAddressOf());
+
+	//쉐이더
+	context->VSSetShader(m_pVS->m_pVertexShader.Get(), NULL, 0);
+
+	if (m_pPS_Swaped != nullptr)
+	{
+		context->PSSetShader(m_pPS_Swaped->m_pPixelShader.Get(), NULL, 0);
+		m_pPS_Swaped = nullptr;
+	}
+	else
+	{
+		context->PSSetShader(m_pPS->m_pPixelShader.Get(), NULL, 0);
+	}
+
+	context->IASetInputLayout(m_pVertexLayout.Get());
+	UINT pStrides[2] = { sizeof(PNCT_VERTEX), sizeof(BT_VERTEX) };
+	UINT pOffsets[2] = { 0, };
+
+	//정점버퍼 바인딩 인덱스버퍼 바인딩 0번슬롯
+	//배열로 0~1 번슬롯 할당
+	ID3D11Buffer* buffer[2] = { m_pVertexBuffer.Get(), m_pVertexBTBuffer.Get() };
+	context->IASetVertexBuffers(0, 2, buffer,
+		pStrides, pOffsets);
+
+	context->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	return true;
+}
+
 KMap::KMap()
 {
 	m_num_col = 0;
@@ -261,6 +317,7 @@ float KMap::GetHeightMap(int row, int col)
 
 KMap::~KMap()
 {
+	
 }
 
 

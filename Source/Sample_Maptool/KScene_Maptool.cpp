@@ -23,7 +23,6 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 	m_MiniMap_DebugCamera.SwapVisibility();
 	
 	//Fbx 파일 로드-------------------------------------------------------------
-
 	g_FBXManager.LoadTextureData(L"../../data/model/FBXData.txt"); //전체 텍스쳐 정보를 가진 파일 파싱
 	std::vector<std::wstring> fbx_name_list;
 	KDirParser::LoadAllPath(L"../../data/model/Mesh", fbx_name_list); // 해당 경로 FBX 파일 이름 파싱
@@ -41,7 +40,6 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 		m_FBXList[iObj]= pFbx;
 	}
 
-
 	//지형 텍스쳐 로드----------------------------------------------------------------
 	std::vector<std::wstring> tex_name_list;
 	KDirParser::LoadAllPath(L"../../data/map/texture", tex_name_list);
@@ -55,9 +53,12 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 	m_Terrian.Init(m_pContext, L"../../data/map/129_heightmap.jpg");
 	m_Terrian.CreateObject(L"../../data/shader/VSPS_Terrain.hlsl", L"../../data/shader/VSPS_Terrain.hlsl", L"../../data/map/texture/base.jpg",
 		L"../../data/map/texture/base_s.jpg", L"../../data/map/texture/base_n.jpg");
+	
+	m_Terrian_Spirte.Init(m_pContext, &m_Terrian); // 지형 스프라이팅 GPU 컴퓨터 쉐이딩을 사용한다.
 
-	m_Terrian_Space.Build(&m_Terrian, g_SceneManager.m_pCamera);
+	m_Terrian_Space.Build(&m_Terrian, g_SceneManager.m_pCamera); // 공간분할
 	m_Terrian_Space.DrawDebugInit(m_pContext);
+
 
 	KBoxObj* tempBox = new KBoxObj();
 	tempBox->m_ObjName = L"textbox";
@@ -268,6 +269,7 @@ bool KScene_Maptool::Frame()
 #pragma endregion
 
 	m_Terrian_Space.Frame();
+	m_Terrian_Spirte.Frame();
 	KScene::Frame();
 	return true;
 }
@@ -293,12 +295,12 @@ bool KScene_Maptool::Render()
 				obj->obj_pObject->m_iNumIndex);
 		}
 		//FBX OBJ Render------------------------------------------
-		for (int iObj = 0; iObj < m_FBXList.size(); iObj++)
+		/*for (int iObj = 0; iObj < m_FBXList.size(); iObj++)
 		{
 			m_FBXList[iObj]->SetMatrix(&m_FBXList[iObj]->m_matWorld, &m_Light.m_matView, &m_Light.m_matProj);
 			m_FBXList[iObj]->SwapPSShader(m_Shadow.m_pPSShadow);
 			m_FBXList[iObj]->Render(m_pContext);
-		}
+		}*/
 		//복원 작업
 		m_Shadow.m_ShadowRT.End(m_pContext);
 	}
@@ -331,17 +333,17 @@ bool KScene_Maptool::Render()
 	m_Terrian_Space.Render_MapObject(m_pContext);
 
 	//FBX OBJ Render------------------------------------------
-	for (int iObj = 0; iObj < m_FBXList.size(); iObj++)
-	{
-		m_FBXList[iObj]->SetMatrix(&m_FBXList[iObj]->m_matWorld, &g_SceneManager.m_pCamera->m_matView, &g_SceneManager.m_pCamera->m_matProj);
-		m_FBXList[iObj]-> m_cbDataEX.vLightColor = { m_Light.m_vLightColor.x,m_Light.m_vLightColor.y,m_Light.m_vLightColor.z,1.0f };
-		m_FBXList[iObj]-> m_cbDataEX.vLightPos = { m_Light.m_vPos.x,m_Light.m_vPos.y,m_Light.m_vPos.z,1.0f };
-		m_FBXList[iObj]-> m_cbDataEX.vLightDir = { m_Light.m_vDir.x,m_Light.m_vDir.y,m_Light.m_vDir.z,1.0f };
-		m_FBXList[iObj]-> m_cbDataEX.vCamPos = { g_SceneManager.m_pCamera->GetCameraPos()->x, g_SceneManager.m_pCamera->GetCameraPos()->y, g_SceneManager.m_pCamera->GetCameraPos()->z, 1.0f };
-		m_pContext->PSSetShaderResources(3, 1, m_Shadow.m_ShadowRT.m_pTextureSRV.GetAddressOf());
-		m_FBXList[iObj]->SwapPSShader();
-		m_FBXList[iObj]->Render(m_pContext);
-	}
+	//for (int iObj = 0; iObj < m_FBXList.size(); iObj++)
+	//{
+	//	m_FBXList[iObj]->SetMatrix(&m_FBXList[iObj]->m_matWorld, &g_SceneManager.m_pCamera->m_matView, &g_SceneManager.m_pCamera->m_matProj);
+	//	m_FBXList[iObj]-> m_cbDataEX.vLightColor = { m_Light.m_vLightColor.x,m_Light.m_vLightColor.y,m_Light.m_vLightColor.z,1.0f };
+	//	m_FBXList[iObj]-> m_cbDataEX.vLightPos = { m_Light.m_vPos.x,m_Light.m_vPos.y,m_Light.m_vPos.z,1.0f };
+	//	m_FBXList[iObj]-> m_cbDataEX.vLightDir = { m_Light.m_vDir.x,m_Light.m_vDir.y,m_Light.m_vDir.z,1.0f };
+	//	m_FBXList[iObj]-> m_cbDataEX.vCamPos = { g_SceneManager.m_pCamera->GetCameraPos()->x, g_SceneManager.m_pCamera->GetCameraPos()->y, g_SceneManager.m_pCamera->GetCameraPos()->z, 1.0f };
+	//	m_pContext->PSSetShaderResources(3, 1, m_Shadow.m_ShadowRT.m_pTextureSRV.GetAddressOf());
+	//	m_FBXList[iObj]->SwapPSShader();
+	//	m_FBXList[iObj]->Render(m_pContext);
+	//}
 
 	////미니맵------------------------------------------------
 	if (g_InputData.bDebugRender)
@@ -381,8 +383,9 @@ bool KScene_Maptool::Render()
 bool KScene_Maptool::Release()
 {
 	m_FbxLoader.Release();
-	m_Terrian_Space.Release();
 	m_Terrian.Release();
+	m_Terrian_Space.Release();
+	m_Terrian_Spirte.Release();
 	m_TopView.Release();
 	m_MiniMap_DebugCamera.Release();
 	m_MiniMap_DebugShadow.Release();

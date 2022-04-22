@@ -8,6 +8,7 @@
 #include "KMousePicker.h"
 #include "KDepthShadow.h"
 #include "KFBXAsset.h"
+#include "KMapSprite.h"
 class KScene_Maptool : public KScene
 {
 public:
@@ -20,7 +21,7 @@ public:
 public:
     KMap           m_Terrian;
     KMapSpace      m_Terrian_Space;
-    
+    KMapSprite     m_Terrian_Spirte;
 public:
     KCamera        m_TopView;
     KMiniMap       m_MiniMap_DebugCamera;

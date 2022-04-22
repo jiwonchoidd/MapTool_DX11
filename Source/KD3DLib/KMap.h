@@ -4,6 +4,9 @@
 class KMap : public K3DAsset
 {
 public:
+	//mapsprite에서 받아올 포인터 변수
+	ID3D11ShaderResourceView*	m_pMapTexResultSRV;
+public:
 	float		m_cell_distance;
 public:
 	UINT		m_num_col;
@@ -20,6 +23,7 @@ public:
 	virtual	bool Init(ID3D11DeviceContext* context, std::wstring heightmap);
 	virtual bool CreateVertexData()override;
 	virtual bool CreateIndexData()override;
+	virtual bool PreRender(ID3D11DeviceContext* context)override;
 	virtual bool Render(ID3D11DeviceContext* context);
 public:
 	virtual float GetHeight(float xpos, float ypos);
