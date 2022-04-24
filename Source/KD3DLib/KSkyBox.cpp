@@ -38,7 +38,6 @@ bool KSkyBox::Frame()
 
 bool KSkyBox::Render(ID3D11DeviceContext* pContext)
 {
-
     if (KState::g_pCurrentRS != KState::g_pRSWireFrame)
         ApplyRS(pContext, KState::g_pRSBackface);
     //모든 쉐이더 5번에 스카이 텍스쳐를 넘긴다.

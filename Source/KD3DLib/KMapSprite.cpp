@@ -129,7 +129,7 @@ bool KMapSprite::Init(ID3D11DeviceContext* pContext, KMap* pMap)
 	//브러쉬 버퍼
 	m_pMap = pMap;
 	m_pContext = pContext;
-	m_Pickbuffer.fRadius = 50.0f;
+	m_Pickbuffer.fRadius = 20.0f;
 	m_Pickbuffer.iIndex = 2.0f;
 	m_Pickbuffer.vPickPos = KVector3(0, 0, 0);
 	m_Pickbuffer.vRect[0] = KVector3(-100, 100, 0);
@@ -147,7 +147,7 @@ bool KMapSprite::Init(ID3D11DeviceContext* pContext, KMap* pMap)
 	m_pCS = pCS->m_pComputeShader;
 
 	//기존텍스쳐가 아닌 맵의 텍스쳐를 복사되어지는 텍스쳐로 바꾼다.
-	pMap->m_pMapTexResultSRV =m_pTextureCopySRV.Get();
+	pMap->m_pMapTexResultSRV = m_pTextureCopySRV.Get();
 	return true;
 }
 
@@ -155,9 +155,9 @@ bool KMapSprite::Frame()
 {
 	if (g_InputData.bDownKey)
 	{
-		m_Pickbuffer.fRadius = 200.0f;
+		m_Pickbuffer.fRadius = 160.0f;
 		m_Pickbuffer.iIndex = 2;
-		m_Pickbuffer.vPickPos = KVector3(20, 0, 0);
+		m_Pickbuffer.vPickPos = KVector3(0, 0, 0);
 		m_Pickbuffer.vRect[0] = KVector3(-100, 100, 0);
 		m_Pickbuffer.vRect[1] = KVector3(100, 100, 0);
 		m_Pickbuffer.vRect[2] = KVector3(100, -100, 0);
@@ -168,7 +168,7 @@ bool KMapSprite::Frame()
 	ID3D11ShaderResourceView* aRViews[3] = { m_pMap->m_pTexture_Diffuse->m_pSRVTexture.Get(), m_pTextureCopySRV.Get(), m_pPickBufferSRV.Get()};
 	RunComputeShader(m_pContext, m_pCS.Get(), 3, aRViews, NULL, NULL, 0,
 		m_pResultUAV.GetAddressOf(),
-		m_pMap->m_num_col / 32, m_pMap->m_num_row / 24, 1);
+		m_pMap->m_BoxCollision.size.x, m_pMap->m_BoxCollision.size.y, 1);
 
 	m_pContext->CopyResource(m_pTextureCopy.Get(), m_pTexture.Get());
 	

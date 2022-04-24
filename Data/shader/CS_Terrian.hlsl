@@ -12,21 +12,21 @@ struct CBuf_Brush
 StructuredBuffer<CBuf_Brush> Buffer0 : register(t2);
 // Group size
 #define size_x 32
-#define size_y 24
+#define size_y 32
 [numthreads(size_x, size_y, 1)]
 void CS(uint3 GroupID : SV_GroupID, uint3 DispatchThreadID : SV_DispatchThreadID, uint3 GroupThreadID : SV_GroupThreadID, uint GroupIndex : SV_GroupIndex)
 {
 	int3 texturelocation = int3(0, 0, 0);
 	// 0 ~ 1024, 768
-	texturelocation.x = GroupID.x * size_x + GroupThreadID.x; // u
-	texturelocation.y = GroupID.y * size_y + GroupThreadID.y; // v
-	//texturelocation.x = DispatchThreadID.x; //À§¶û °°À½
-	//texturelocation.y = DispatchThreadID.y;
+	//texturelocation.x = GroupID.x * size_x + GroupThreadID.x; // u
+	//texturelocation.y = GroupID.y * size_y + GroupThreadID.y; // v
+	texturelocation.x = DispatchThreadID.x; //À§¶û °°À½
+	texturelocation.y = DispatchThreadID.y;
 
 	float4 Color = InputMap.Load(texturelocation);
 	// 0 ~1 
 	float2 uv = float2(texturelocation.x / 1024.0f,
-		texturelocation.y / 768.0f);
+		texturelocation.y / 1024.0f);
 	// vRect[0]   ~   vRect[1]  
 	float1 width = (Buffer0[0].vRect[1].x - Buffer0[0].vRect[0].x) / 2.0f;
 	//
@@ -50,5 +50,9 @@ void CS(uint3 GroupID : SV_GroupID, uint3 DispatchThreadID : SV_DispatchThreadID
 	case 2: fAlpha.z = max(fAlpha.z, fDot); break;
 	case 3: fAlpha.w = max(fAlpha.w, fDot); break;
 	}
+	//fAlpha.x = max(fAlpha.x, fDot); 
+	//fAlpha.y = max(fAlpha.y, fDot); 
+	//fAlpha.z = max(fAlpha.z, fDot); 
+	//fAlpha.w = max(fAlpha.w, fDot); 
 	OutputMap[texturelocation.xy] = float4(fAlpha.xyz, 1);
 }
