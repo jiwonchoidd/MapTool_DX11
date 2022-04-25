@@ -2,6 +2,9 @@
 #include "KManager.h"
 #include "DDSTextureLoader.h"
 #include "WICTextureLoader.h"
+#include "ScreenGrab.h"
+#include <wincodec.h>
+#include <wincodecsdk.h>
 #pragma comment	(lib, "d3dcompiler.lib")
 class KTexture
 {
@@ -29,6 +32,8 @@ class KTextureManager : public KManager<KTexture, KTextureManager>
 	friend class Singleton<KTextureManager>;
 private:
 	KTextureManager() {};
+public:
+	void SaveFile(ID3D11DeviceContext* pContext, std::wstring name, ID3D11Texture2D* pRes);
 public:
 	~KTextureManager() {};
 };

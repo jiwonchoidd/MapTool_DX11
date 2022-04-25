@@ -54,12 +54,15 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 	m_Terrian.CreateObject(L"../../data/shader/VSPS_Terrain.hlsl", L"../../data/shader/VSPS_Terrain.hlsl", L"../../data/map/texture/base.jpg",
 		L"../../data/map/texture/base_s.jpg", L"../../data/map/texture/base_n.jpg");
 	
-	m_Terrian_Spirte.Init(m_pContext, &m_Terrian); // 지형 스프라이팅 GPU 컴퓨터 쉐이딩을 사용한다.
+	m_Terrian_Sprite.Init(m_pContext, &m_Terrian); // 지형 스프라이팅 GPU 컴퓨터 쉐이딩을 사용한다.
+	m_Terrian.m_pSubTextureList.push_back(m_TextureList[0]);
+	m_Terrian.m_pSubTextureList.push_back(m_TextureList[1]);
+	m_Terrian.m_pSubTextureList.push_back(m_TextureList[2]);
+	m_Terrian.m_pSubTextureList.push_back(m_TextureList[3]);
 
 	m_Terrian_Space.Build(&m_Terrian, g_SceneManager.m_pCamera); // 공간분할
 	m_Terrian_Space.DrawDebugInit(m_pContext);
-
-
+	
 	KBoxObj* tempBox = new KBoxObj();
 	tempBox->m_ObjName = L"textbox";
 	tempBox->Init(L"../../data/shader/VSPS_Default.hlsl", L"../../data/shader/VSPS_Default.hlsl", 
@@ -86,6 +89,7 @@ bool KScene_Maptool::Frame()
 	m_MousePicker.Frame();
 	m_Light.Frame();
 	m_Shadow.Frame(); // 쉐도우 행렬 계산, 프로젝션 행렬 ,텍스쳐 행렬 곱한것
+	m_Terrian_Space.Frame();
 
 	#pragma region IMGUI UI <- HERE
 	//IMGUI IU 
@@ -193,17 +197,29 @@ bool KScene_Maptool::Frame()
 					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"텍스쳐");
 
 					//마우스 선택, 리스트 선택 오브젝트---------------------------------------------------------
-					if (m_MousePicker.m_pSeletedTex != nullptr)
-					{
 						ImGui::PushItemWidth(50);
 						ImGui::TextColored(ImVec4(1, 1, 0, 1), u8"선택된 텍스쳐 : "); ImGui::SameLine();
-						ImGui::TextColored(ImVec4(1, 1, 0, 1), to_wm(m_MousePicker.m_pSeletedTex->m_Name).c_str());
+						ImGui::TextColored(ImVec4(1, 1, 0, 1), to_wm(m_Terrian.m_pSubTextureList[m_Terrian_Sprite.m_Pickbuffer.iIndex]->m_Name).c_str());
 						ImGui::PopItemWidth();
-					}
-					else
-					{
-						ImGui::TextColored(ImVec4(1, 0, 1, 1), u8"[ 현재 선택된 텍스쳐가 없습니다.]");
-					}
+					//텍스쳐 4개 중 선택
+						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"텍스쳐 선택");
+						if (ImGui::RadioButton("0", m_Terrian_Sprite.m_Pickbuffer.iIndex == 0))
+						{
+							m_Terrian_Sprite.m_Pickbuffer.iIndex = 0;
+						}ImGui::SameLine();
+						if (ImGui::RadioButton("1", m_Terrian_Sprite.m_Pickbuffer.iIndex == 1))
+						{
+							m_Terrian_Sprite.m_Pickbuffer.iIndex = 1;
+
+						}ImGui::SameLine();
+						if (ImGui::RadioButton("2", m_Terrian_Sprite.m_Pickbuffer.iIndex == 2))
+						{
+							m_Terrian_Sprite.m_Pickbuffer.iIndex = 2;
+						}ImGui::SameLine();
+						if (ImGui::RadioButton("3", m_Terrian_Sprite.m_Pickbuffer.iIndex == 3))
+						{
+							m_Terrian_Sprite.m_Pickbuffer.iIndex = 3;
+						}
 					ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
 					if (ImGui::ListBoxHeader("##TEXTURELIST"))
@@ -212,7 +228,7 @@ bool KScene_Maptool::Frame()
 						{
 							if (ImGui::Selectable(to_wm(it->m_Name).c_str()))
 							{
-								m_MousePicker.m_pSeletedTex = it;
+								m_Terrian.m_pSubTextureList[m_Terrian_Sprite.m_Pickbuffer.iIndex]= it;
 							}
 						}
 						ImGui::ListBoxFooter();
@@ -268,8 +284,17 @@ bool KScene_Maptool::Frame()
 	ImGui::End();
 #pragma endregion
 
-	m_Terrian_Space.Frame();
-	m_Terrian_Spirte.Frame();
+	
+	if (m_MousePicker.m_iControlState == m_MousePicker.C_Texture && !m_MousePicker.m_bImgui)
+	{
+		m_Terrian_Sprite.UpdatePickPos(m_MousePicker.m_vIntersect, m_MousePicker.m_Sel_Brush_Size);
+		m_Terrian_Sprite.Frame();
+	}
+
+	if (g_InputData.bDownKey)
+	{
+		m_Terrian_Sprite.SaveFile(m_pContext);
+	}
 	KScene::Frame();
 	return true;
 }
@@ -385,7 +410,7 @@ bool KScene_Maptool::Release()
 	m_FbxLoader.Release();
 	m_Terrian.Release();
 	m_Terrian_Space.Release();
-	m_Terrian_Spirte.Release();
+	m_Terrian_Sprite.Release();
 	m_TopView.Release();
 	m_MiniMap_DebugCamera.Release();
 	m_MiniMap_DebugShadow.Release();

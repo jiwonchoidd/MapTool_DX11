@@ -21,7 +21,7 @@ public:
 public:
     KMap           m_Terrian;
     KMapSpace      m_Terrian_Space;
-    KMapSprite     m_Terrian_Spirte;
+    KMapSprite     m_Terrian_Sprite;
 public:
     KCamera        m_TopView;
     KMiniMap       m_MiniMap_DebugCamera;

@@ -22,8 +22,7 @@ public:
 	int					 m_iControlState = C_None;
 	int					 m_iBrushState = B_UpBrush;
 public:					
-	KTexture*			 m_pSeletedTex= nullptr;//IMGUI 인터페이스에서 선택당한 포인터 변수
-	KMapObject*			 m_pSeletedObj= nullptr;
+	KMapObject*				m_pSeletedObj= nullptr;
 public:
 	bool					m_bImgui; // UI 조작에는 레이, 조작이 되어서는 안됨
 public:

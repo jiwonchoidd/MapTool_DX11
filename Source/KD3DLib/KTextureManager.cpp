@@ -43,6 +43,28 @@ bool KTexture::Load(std::wstring filename)
     return true;
 }
 
+void KTextureManager::SaveFile(ID3D11DeviceContext* pContext, std::wstring name, ID3D11Texture2D* pRes)
+{
+	HRESULT hr = S_OK;
+	wrl::ComPtr<ID3D11Texture2D> tex;
+	if (pRes == nullptr)
+	{
+		return;
+	}
+	else
+	{
+		tex = pRes;
+	}
+	if (SUCCEEDED(hr))
+	{
+		hr = DirectX::SaveWICTextureToFile(pContext, tex.Get(), GUID_ContainerFormatJpeg, (name + L".jpg").c_str());
+	}
+	if (pRes == nullptr)
+	{
+		tex->Release();
+	}
+}
+
 KTexture::KTexture()
 {
     m_pResourceTexture.Reset();
@@ -58,3 +80,4 @@ KTexture::~KTexture()
     m_pResourceTexture = nullptr;
     m_pSRVTexture = nullptr;
 }
+

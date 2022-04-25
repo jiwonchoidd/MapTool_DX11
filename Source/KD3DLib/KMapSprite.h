@@ -6,7 +6,7 @@ struct PICKBUFFER
 	KVector3 vPickPos;
 	KVector3 vRect[4];
 	float  fRadius;
-	int    iIndex;
+	int    iIndex; //4개 텍스쳐 알파값 인덱스 
 };
 class KMapSprite
 {
@@ -37,6 +37,11 @@ public:
 	HRESULT CreateBufferSRV(ID3D11Device* pDevice, ID3D11Buffer* pBuffer, ID3D11ShaderResourceView** ppSRVOut);
 	HRESULT CreateBufferUAV(ID3D11Device* pDevice,
 		int iWidth, int iHeight, ID3D11UnorderedAccessView** ppUAVOut);
+public:
+	void UpdatePickPos(KVector3 vIntersect, float fRadius);
+	bool SetSelectTexture(KTexture* pTex);
+public:
+	void SaveFile(ID3D11DeviceContext* pContext);
 public:
 	bool Init(ID3D11DeviceContext* pContext, KMap* pMap);
 	bool Frame();

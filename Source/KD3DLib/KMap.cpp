@@ -4,7 +4,7 @@
 bool KMap::Init(ID3D11DeviceContext* context, std::wstring heightmap)
 {
 	m_pContext = context;
-	m_tex_offset = 5.0f;
+	m_tex_offset = 1.0f;
 	//높이맵 읽어옴
 	CreateHeightMap(heightmap);
 	//높이맵으로 부터 크기 형성
@@ -26,6 +26,9 @@ bool KMap::CreateMap(UINT width, UINT height, float distance)
 	m_BoxCollision.min.x = -m_BoxCollision.max.x;
 	m_BoxCollision.max.z = (m_num_row / 2 * m_cell_distance);
 	m_BoxCollision.min.z = -m_BoxCollision.max.z;
+
+	m_BoxCollision.size.x = (m_BoxCollision.max.x - m_BoxCollision.min.x);
+	m_BoxCollision.size.z = (m_BoxCollision.max.z - m_BoxCollision.min.z);
 	return true;
 }
 //context가 로드되어야 실행됨
@@ -195,14 +198,22 @@ bool KMap::PreRender(ID3D11DeviceContext* context)
 	context->PSSetConstantBuffers(3, 1, m_pConstantBuffer_EX.GetAddressOf());
 
 	//텍스쳐 리소스를 0번 슬롯 - sprite결과 SRV //1번 슬롯 - 스페큘러 //2번 슬롯 - 노말
-	if (m_pMapTexResultSRV != nullptr)
-		context->PSSetShaderResources(0, 1, &m_pMapTexResultSRV);
+	if(m_pTexture_Diffuse != nullptr)
+		context->PSSetShaderResources(0, 1, m_pTexture_Diffuse->m_pSRVTexture.GetAddressOf());//기본 텍스쳐
 
 	if (m_pTexture_Specular != nullptr)
 		context->PSSetShaderResources(1, 1, m_pTexture_Specular->m_pSRVTexture.GetAddressOf());
 
 	if (m_pTexture_Normal != nullptr)
 		context->PSSetShaderResources(2, 1, m_pTexture_Normal->m_pSRVTexture.GetAddressOf());
+
+	for (int subtex = 0; subtex < m_pSubTextureList.size(); subtex++)
+	{
+		if (m_pSubTextureList[subtex] != nullptr)
+			context->PSSetShaderResources(subtex+7, 1, m_pSubTextureList[subtex]->m_pSRVTexture.GetAddressOf());//기본 텍스쳐
+	}
+	if (m_pMapAlphaResultSRV != nullptr)
+		context->PSSetShaderResources(11, 1, &m_pMapAlphaResultSRV);
 
 	//쉐이더
 	context->VSSetShader(m_pVS->m_pVertexShader.Get(), NULL, 0);

@@ -93,6 +93,12 @@ Texture2D		g_txNormal : register(t2); //노말매핑
 Texture2D		g_txShadow  : register(t3); //뎁스맵
 TextureCube	    g_txCubeMap : register(t6); //환경매핑
 
+Texture2D		g_txSubTex1 : register(t7); //텍스쳐 스프라이팅 텍스쳐
+Texture2D		g_txSubTex2 : register(t8); //텍스쳐 스프라이팅 텍스쳐
+Texture2D		g_txSubTex3 : register(t9); //텍스쳐 스프라이팅 텍스쳐
+Texture2D		g_txSubTex4 : register(t10); //텍스쳐 스프라이팅 텍스쳐
+Texture2D		g_txMapMask : register(t11); //텍스쳐 스프라이팅 텍스쳐
+
 SamplerState	g_Sample : register(s0);
 SamplerState	 g_SamplerClamp : register(s1);;
 float4 PS(VS_OUTPUT Input) : SV_TARGET
@@ -106,6 +112,18 @@ float4 PS(VS_OUTPUT Input) : SV_TARGET
    float3 worldNormal = mul(TBN, tangentNormal);
    //----------------------------------------------------------------------
    float4 albedo = g_txDiffuse.Sample(g_Sample, Input.t); //알베도 기본 색상 텍스쳐
+   float4 subTexture1 = g_txSubTex1.Sample(g_Sample, Input.t); // 맵 서브 텍스쳐
+   float4 subTexture2 = g_txSubTex2.Sample(g_Sample, Input.t); // 맵 서브 텍스쳐
+   float4 subTexture3 = g_txSubTex3.Sample(g_Sample, Input.t); // 맵 서브 텍스쳐
+   float4 subTexture4 = g_txSubTex4.Sample(g_Sample, Input.t); // 맵 서브 텍스쳐
+   float4 mapMask = g_txMapMask.Sample(g_Sample, Input.t); // 맵 마스크 작업
+  
+   subTexture1 = subTexture1 - mapMask.r;
+   subTexture2 = subTexture2 - mapMask.g;
+   subTexture3 = subTexture3 - mapMask.b;
+   subTexture4 = subTexture4 - mapMask.a;
+
+   albedo = albedo + subTexture1 + subTexture2 + subTexture3 + subTexture4;
    //쉐도우 
    float3 vShadowProj;
    vShadowProj.xy = Input.mShadow.xy / Input.mShadow.w;
@@ -135,7 +153,6 @@ float4 PS(VS_OUTPUT Input) : SV_TARGET
    }
    float3 ambient = float3(0.1f, 0.1f, 0.1f) * albedo;
    float4 final = float4(ambient + diffuse + specular , albedo.w);
-
    //알파 테스팅 작업 (완전 투명과 완전 불투명일때 사용)
    //순서를 구분하기 어려울때 애매한 알파값을 버림, 정렬된 효과를 얻음
    if (final.a < 0.5f)

@@ -1,4 +1,5 @@
 #include "KMapSprite.h"
+#include "ImGuiManager.h"
 //맵을 뿌릴때, 복사해온 디퓨즈 맵을 SRV로 뿌리고
 //CS의 CSSetUnorderedAccessView와 연결을 해제함
 void KMapSprite::RunComputeShader(ID3D11DeviceContext* pContext, ID3D11ComputeShader* pComputeShader, UINT nNumViews, ID3D11ShaderResourceView** pShaderResourceViews, ID3D11Buffer* pCBCS, void* pCSData, DWORD dwNumDataBytes, ID3D11UnorderedAccessView** pUnorderedAccessView, UINT X, UINT Y, UINT Z)
@@ -69,6 +70,13 @@ HRESULT KMapSprite::CreateBufferUAV(ID3D11Device* pDevice, int iWidth, int iHeig
 	return hr;
 }
 
+
+
+void KMapSprite::SaveFile(ID3D11DeviceContext* pContext)
+{
+	g_TextureMananger.SaveFile(pContext, L"MapTexture", m_pTextureCopy.Get());
+}
+
 HRESULT KMapSprite::CreateStructuredBuffer(ID3D11Device* pDevice, UINT uElementSize, UINT uCount, VOID* pInitData, ID3D11Buffer** ppBufOut)
 {
 	*ppBufOut = NULL;
@@ -130,47 +138,57 @@ bool KMapSprite::Init(ID3D11DeviceContext* pContext, KMap* pMap)
 	m_pMap = pMap;
 	m_pContext = pContext;
 	m_Pickbuffer.fRadius = 20.0f;
-	m_Pickbuffer.iIndex = 2.0f;
+	m_Pickbuffer.iIndex = 0;
 	m_Pickbuffer.vPickPos = KVector3(0, 0, 0);
-	m_Pickbuffer.vRect[0] = KVector3(-100, 100, 0);
-	m_Pickbuffer.vRect[1] = KVector3(100, 100, 0);
-	m_Pickbuffer.vRect[2] = KVector3(100, -100, 0);
-	m_Pickbuffer.vRect[3] = KVector3(-100, 100, 0);
+	m_Pickbuffer.vRect[0] = KVector3(-0, 0, 0);
+	m_Pickbuffer.vRect[1] = KVector3(0, 0, 0);
+	m_Pickbuffer.vRect[2] = KVector3(0, -0, 0);
+	m_Pickbuffer.vRect[3] = KVector3(-0, 0, 0);
 	//
 	//Structed Buffer, SRV 생성 : cs에 보내는 버퍼
 	CreateStructuredBuffer(g_pd3dDevice, sizeof(PICKBUFFER), 1, &m_Pickbuffer, m_pPickBuffer.GetAddressOf());
 	CreateBufferSRV(g_pd3dDevice, m_pPickBuffer.Get(), m_pPickBufferSRV.GetAddressOf());
 	//unorder access view 생성 : SRV 순서와 상관없이 다른 리소스에 대한 읽기 및 쓰기 허용
-	CreateBufferUAV(g_pd3dDevice, pMap->m_BoxCollision.size.x, pMap->m_BoxCollision.size.y, m_pResultUAV.GetAddressOf());
+	CreateBufferUAV(g_pd3dDevice, m_pMap->m_BoxCollision.size.x, m_pMap->m_BoxCollision.size.z, m_pResultUAV.GetAddressOf());
 	//CS 쉐이더 생성
+
 	KShader* pCS = g_ShaderManager.CreateComputeShader(L"../../data/shader/CS_Terrian.hlsl");
 	m_pCS = pCS->m_pComputeShader;
 
 	//기존텍스쳐가 아닌 맵의 텍스쳐를 복사되어지는 텍스쳐로 바꾼다.
-	pMap->m_pMapTexResultSRV = m_pTextureCopySRV.Get();
+	pMap->m_pMapAlphaResultSRV = m_pTextureCopySRV.Get();
 	return true;
 }
 
+//매 프레임 마다 위치 변경
+void KMapSprite::UpdatePickPos(KVector3 vIntersect, float fRadius)
+{
+	if(ImGui::Begin("test"))
+	{
+		ImGui::Text("vpos %f %f", m_Pickbuffer.vPickPos.x, m_Pickbuffer.vPickPos.y);
+		ImGui::Text("vpos %f %f", vIntersect.x, vIntersect.z);
+	}
+	ImGui::End();
+	m_Pickbuffer.fRadius = fRadius;
+	m_Pickbuffer.vPickPos = KVector3(vIntersect.x, vIntersect.z, 0); // 화면 좌표계임
+	m_Pickbuffer.vRect[0] = KVector3(-640, 640, 0);
+	m_Pickbuffer.vRect[1] = KVector3(640, 640, 0);
+	m_Pickbuffer.vRect[2] = KVector3(640, -640, 0);
+	m_Pickbuffer.vRect[3] = KVector3(-640, -640, 0);
+}
 bool KMapSprite::Frame()
 {
-	if (g_InputData.bDownKey)
+	if (g_InputData.bMouseState[0])
 	{
-		m_Pickbuffer.fRadius = 160.0f;
-		m_Pickbuffer.iIndex = 2;
-		m_Pickbuffer.vPickPos = KVector3(0, 0, 0);
-		m_Pickbuffer.vRect[0] = KVector3(-100, 100, 0);
-		m_Pickbuffer.vRect[1] = KVector3(100, 100, 0);
-		m_Pickbuffer.vRect[2] = KVector3(100, -100, 0);
-		m_Pickbuffer.vRect[3] = KVector3(-100, -100, 0);
 		m_pContext->UpdateSubresource(m_pPickBuffer.Get(), 0, NULL, &m_Pickbuffer, 0, 0);
-	}
-	//맵의 텍스쳐를 복사해온다.
-	ID3D11ShaderResourceView* aRViews[3] = { m_pMap->m_pTexture_Diffuse->m_pSRVTexture.Get(), m_pTextureCopySRV.Get(), m_pPickBufferSRV.Get()};
-	RunComputeShader(m_pContext, m_pCS.Get(), 3, aRViews, NULL, NULL, 0,
-		m_pResultUAV.GetAddressOf(),
-		m_pMap->m_BoxCollision.size.x, m_pMap->m_BoxCollision.size.y, 1);
+		//맵의 텍스쳐를 복사해온다.
+		ID3D11ShaderResourceView* aRViews[3] = { m_pMap->m_pTexture_Diffuse->m_pSRVTexture.Get(), m_pTextureCopySRV.Get(), m_pPickBufferSRV.Get()};
+		RunComputeShader(m_pContext, m_pCS.Get(), 3, aRViews, NULL, NULL, 0,
+			m_pResultUAV.GetAddressOf(),
+			m_pMap->m_BoxCollision.size.x/32, m_pMap->m_BoxCollision.size.z / 32, 1);
 
-	m_pContext->CopyResource(m_pTextureCopy.Get(), m_pTexture.Get());
+		m_pContext->CopyResource(m_pTextureCopy.Get(), m_pTexture.Get());
+	}
 	
 	return true;
 }
@@ -178,8 +196,6 @@ bool KMapSprite::Frame()
 bool KMapSprite::Release()
 {
 	m_pCS.Reset();
-	m_pTexture.Reset();
-	m_pTextureSRV.Reset();
 	m_pTextureCopy.Reset();
 	m_pTextureCopySRV.Reset();
 	m_pPickBuffer.Reset();

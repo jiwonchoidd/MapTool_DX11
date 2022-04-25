@@ -5,7 +5,8 @@ class KMap : public K3DAsset
 {
 public:
 	//mapsprite에서 받아올 포인터 변수
-	ID3D11ShaderResourceView*	m_pMapTexResultSRV;
+	ID3D11ShaderResourceView*	m_pMapAlphaResultSRV;
+	std::vector<KTexture*>		m_pSubTextureList;
 public:
 	float		m_cell_distance;
 public:
