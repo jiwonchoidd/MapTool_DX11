@@ -198,11 +198,11 @@ bool KScene_Maptool::Frame()
 
 					//마우스 선택, 리스트 선택 오브젝트---------------------------------------------------------
 						ImGui::PushItemWidth(50);
-						ImGui::TextColored(ImVec4(1, 1, 0, 1), u8"선택된 텍스쳐 : "); ImGui::SameLine();
+						ImGui::TextColored(ImVec4(1, 1, 0, 1), u8"해당 레이어 텍스쳐 : "); ImGui::SameLine();
 						ImGui::TextColored(ImVec4(1, 1, 0, 1), to_wm(m_Terrian.m_pSubTextureList[m_Terrian_Sprite.m_Pickbuffer.iIndex]->m_Name).c_str());
 						ImGui::PopItemWidth();
 					//텍스쳐 4개 중 선택
-						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"텍스쳐 선택");
+						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"레이어 선택");
 						if (ImGui::RadioButton("0", m_Terrian_Sprite.m_Pickbuffer.iIndex == 0))
 						{
 							m_Terrian_Sprite.m_Pickbuffer.iIndex = 0;
@@ -222,6 +222,7 @@ bool KScene_Maptool::Frame()
 						}
 					ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"텍스쳐 선택");
 					if (ImGui::ListBoxHeader("##TEXTURELIST"))
 					{
 						for (auto it : m_TextureList)

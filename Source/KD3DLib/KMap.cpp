@@ -4,7 +4,7 @@
 bool KMap::Init(ID3D11DeviceContext* context, std::wstring heightmap)
 {
 	m_pContext = context;
-	m_tex_offset = 1.0f;
+	m_tex_offset = 4.0f;
 	//높이맵 읽어옴
 	CreateHeightMap(heightmap);
 	//높이맵으로 부터 크기 형성

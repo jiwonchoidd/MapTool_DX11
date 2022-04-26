@@ -43,7 +43,7 @@ struct VS_OUTPUT
 VS_OUTPUT VS(VS_INPUT Input)
 {
 	//난반사광의 계산 동일한 계산을 PS VS 둘다 할 수 있음. 
-   //하지만 픽셀단위 계산보다 정점단위 계산이 더 연산량이 적음
+    //하지만 픽셀단위 계산보다 정점단위 계산이 더 연산량이 적음
 	VS_OUTPUT Output = (VS_OUTPUT)0;
 	float4 vLocal = float4(Input.p, 1.0f);
 	float4 vWorld = mul(vLocal, g_matWorld);
@@ -104,7 +104,7 @@ SamplerState	 g_SamplerClamp : register(s1);;
 float4 PS(VS_OUTPUT Input) : SV_TARGET
 {
 	//텍스쳐에서 노말, 법선 좌표 구해옴
-   float3 tangentNormal = g_txNormal.Sample(g_Sample, Input.t).xyz;
+   float3 tangentNormal = g_txNormal.Sample(g_Sample, Input.t * 4).xyz;
    tangentNormal = normalize(tangentNormal * 2 - 1);
 
    float3x3 TBN = float3x3(normalize(Input.mT), normalize(Input.mB),normalize(Input.mN));
@@ -112,18 +112,18 @@ float4 PS(VS_OUTPUT Input) : SV_TARGET
    float3 worldNormal = mul(TBN, tangentNormal);
    //----------------------------------------------------------------------
    float4 albedo = g_txDiffuse.Sample(g_Sample, Input.t); //알베도 기본 색상 텍스쳐
+   float4 mapMask = g_txMapMask.Sample(g_Sample, Input.t /4); // 맵 마스크 작업
+
    float4 subTexture1 = g_txSubTex1.Sample(g_Sample, Input.t); // 맵 서브 텍스쳐
    float4 subTexture2 = g_txSubTex2.Sample(g_Sample, Input.t); // 맵 서브 텍스쳐
    float4 subTexture3 = g_txSubTex3.Sample(g_Sample, Input.t); // 맵 서브 텍스쳐
    float4 subTexture4 = g_txSubTex4.Sample(g_Sample, Input.t); // 맵 서브 텍스쳐
-   float4 mapMask = g_txMapMask.Sample(g_Sample, Input.t); // 맵 마스크 작업
-  
-   subTexture1 = subTexture1 - mapMask.r;
-   subTexture2 = subTexture2 - mapMask.g;
-   subTexture3 = subTexture3 - mapMask.b;
-   subTexture4 = subTexture4 - mapMask.a;
+   
+   albedo = lerp(albedo, subTexture1, mapMask.r); // 첫번째 레이어 작업
+   albedo = lerp(albedo, subTexture2, mapMask.g); // 두번째 레이어 작업
+   albedo = lerp(albedo, subTexture3, mapMask.b); // 세번째 레이어 작업
+   albedo = lerp(albedo, subTexture4, mapMask.a); // 네번째 레이어 작업
 
-   albedo = albedo + subTexture1 + subTexture2 + subTexture3 + subTexture4;
    //쉐도우 
    float3 vShadowProj;
    vShadowProj.xy = Input.mShadow.xy / Input.mShadow.w;
@@ -152,13 +152,8 @@ float4 PS(VS_OUTPUT Input) : SV_TARGET
 	  specular *= specularInten.rgb * g_lightColor;
    }
    float3 ambient = float3(0.1f, 0.1f, 0.1f) * albedo;
-   float4 final = float4(ambient + diffuse + specular , albedo.w);
-   //알파 테스팅 작업 (완전 투명과 완전 불투명일때 사용)
-   //순서를 구분하기 어려울때 애매한 알파값을 버림, 정렬된 효과를 얻음
-   if (final.a < 0.5f)
-   {
-	   discard;
-   }
+   float4 final = float4(ambient + diffuse + specular , albedo.a);
+
    return final;
 }
 float4 PSDepth(VS_OUTPUT Input) : SV_TARGET

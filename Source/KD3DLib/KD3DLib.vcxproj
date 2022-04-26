@@ -123,7 +123,7 @@
     <Image Include="C:\Users\kgca4021\OneDrive - nsu.ac.kr\DD_ICON.ico" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\..\Data\shader\CS_Terrian.hlsl">
+    <FxCompile Include="..\..\Data\shader\CS_Terrain.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CS</EntryPointName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>

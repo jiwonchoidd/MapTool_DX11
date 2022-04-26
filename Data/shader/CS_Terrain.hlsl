@@ -49,5 +49,5 @@ void CS(uint3 GroupID : SV_GroupID, uint3 DispatchThreadID : SV_DispatchThreadID
 		case 2: fAlpha.z = max(fAlpha.z, fDot); break;
 		case 3: fAlpha.w = max(fAlpha.w, fDot); break;
 	}
-	OutputMap[texturelocation.xy] = float4(fAlpha.xyz, 1);
+	OutputMap[texturelocation.xy] = float4(fAlpha.xyzw);
 }

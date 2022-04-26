@@ -377,7 +377,7 @@
     <FxCompile Include="..\..\Data\shader\VSPS_DepthShadow.hlsl">
       <Filter>Shader\Prev</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\Data\shader\CS_Terrian.hlsl">
+    <FxCompile Include="..\..\Data\shader\CS_Terrain.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

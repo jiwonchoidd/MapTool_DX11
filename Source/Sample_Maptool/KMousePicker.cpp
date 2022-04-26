@@ -54,6 +54,7 @@ bool KMousePicker::IntersectTriangle(const KVector3& orig, const KVector3& dir, 
 
 // 기존 삼각형에서 교점찾는거 프레임 하락이 너무 커서
 // 레이와 박스로 교점 찾는 함수로 변경
+// 단 AABB 바운딩 박스만
 bool KMousePicker::GetIntersectionBox(TRay ray, KBox box)
 {
 	KVector3 tmin;

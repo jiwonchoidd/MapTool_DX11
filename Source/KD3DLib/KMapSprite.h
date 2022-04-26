@@ -39,7 +39,6 @@ public:
 		int iWidth, int iHeight, ID3D11UnorderedAccessView** ppUAVOut);
 public:
 	void UpdatePickPos(KVector3 vIntersect, float fRadius);
-	bool SetSelectTexture(KTexture* pTex);
 public:
 	void SaveFile(ID3D11DeviceContext* pContext);
 public:

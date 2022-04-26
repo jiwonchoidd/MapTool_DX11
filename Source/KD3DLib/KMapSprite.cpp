@@ -1,5 +1,4 @@
 #include "KMapSprite.h"
-#include "ImGuiManager.h"
 //맵을 뿌릴때, 복사해온 디퓨즈 맵을 SRV로 뿌리고
 //CS의 CSSetUnorderedAccessView와 연결을 해제함
 void KMapSprite::RunComputeShader(ID3D11DeviceContext* pContext, ID3D11ComputeShader* pComputeShader, UINT nNumViews, ID3D11ShaderResourceView** pShaderResourceViews, ID3D11Buffer* pCBCS, void* pCSData, DWORD dwNumDataBytes, ID3D11UnorderedAccessView** pUnorderedAccessView, UINT X, UINT Y, UINT Z)
@@ -56,7 +55,6 @@ HRESULT KMapSprite::CreateBufferUAV(ID3D11Device* pDevice, int iWidth, int iHeig
 	viewDescUAV.Texture2D.MipSlice = 0;
 	hr = pDevice->CreateUnorderedAccessView(m_pTexture.Get(), &viewDescUAV, ppUAVOut);
 
-	//the getSRV function after dispatch.
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	ZeroMemory(&srvDesc, sizeof(srvDesc));
 	srvDesc.Format = textureDesc.Format;
@@ -69,8 +67,6 @@ HRESULT KMapSprite::CreateBufferUAV(ID3D11Device* pDevice, int iWidth, int iHeig
 	hr = pDevice->CreateShaderResourceView(m_pTextureCopy.Get(), &srvDesc, m_pTextureCopySRV.GetAddressOf());
 	return hr;
 }
-
-
 
 void KMapSprite::SaveFile(ID3D11DeviceContext* pContext)
 {
@@ -152,7 +148,7 @@ bool KMapSprite::Init(ID3D11DeviceContext* pContext, KMap* pMap)
 	CreateBufferUAV(g_pd3dDevice, m_pMap->m_BoxCollision.size.x, m_pMap->m_BoxCollision.size.z, m_pResultUAV.GetAddressOf());
 	//CS 쉐이더 생성
 
-	KShader* pCS = g_ShaderManager.CreateComputeShader(L"../../data/shader/CS_Terrian.hlsl");
+	KShader* pCS = g_ShaderManager.CreateComputeShader(L"../../data/shader/CS_Terrain.hlsl");
 	m_pCS = pCS->m_pComputeShader;
 
 	//기존텍스쳐가 아닌 맵의 텍스쳐를 복사되어지는 텍스쳐로 바꾼다.
@@ -163,12 +159,6 @@ bool KMapSprite::Init(ID3D11DeviceContext* pContext, KMap* pMap)
 //매 프레임 마다 위치 변경
 void KMapSprite::UpdatePickPos(KVector3 vIntersect, float fRadius)
 {
-	if(ImGui::Begin("test"))
-	{
-		ImGui::Text("vpos %f %f", m_Pickbuffer.vPickPos.x, m_Pickbuffer.vPickPos.y);
-		ImGui::Text("vpos %f %f", vIntersect.x, vIntersect.z);
-	}
-	ImGui::End();
 	m_Pickbuffer.fRadius = fRadius;
 	m_Pickbuffer.vPickPos = KVector3(vIntersect.x, vIntersect.z, 0); // 화면 좌표계임
 	m_Pickbuffer.vRect[0] = KVector3(-640, 640, 0);
@@ -189,7 +179,6 @@ bool KMapSprite::Frame()
 
 		m_pContext->CopyResource(m_pTextureCopy.Get(), m_pTexture.Get());
 	}
-	
 	return true;
 }
 
