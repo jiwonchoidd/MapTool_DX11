@@ -550,6 +550,44 @@ bool KMapSpace::RandomSetupObject(K3DAsset* obj, int amount)
 	m_ObjectItemList.push_back(obj); // 포인터 delete
 	return true;
 }
+//원점으로 오브젝트 배치
+bool KMapSpace::SetupObject(K3DAsset* obj)
+{
+	KMatrix matScale;
+	KMatrix matRotateObj;
+	for (int iObj = 0; iObj < amount; iObj++)
+	{
+		KMapObject* pObj = new KMapObject();
+		for (int iv = 0; iv < 8; iv++)
+		{
+			pObj->obj_box.List[iv] = obj->m_BoxCollision.List[iv];
+		}
+		pObj->obj_pos = KVector3(
+			randstep(m_pMap->m_BoxCollision.min.x, m_pMap->m_BoxCollision.max.x),
+			0.0f,
+			randstep(m_pMap->m_BoxCollision.min.z, m_pMap->m_BoxCollision.max.z));
+
+		D3DKMatrixScaling(&matScale, randstep(1.0f, 4.0f),
+			randstep(1.0f, 50.0f),
+			randstep(1.0f, 50.0f));
+		D3DKMatrixRotationYawPitchRoll(&matRotateObj,
+			cosf(randstep(0.0f, 360.0f)) * XM_PI,
+			sinf(randstep(0.0f, 360.0f)) * XM_PI,
+			1.0f);
+		pObj->obj_matWorld = matScale * matRotateObj;
+		pObj->obj_pos.y = m_pMap->GetHeight(pObj->obj_pos.x, pObj->obj_pos.z);
+		pObj->obj_matWorld._41 = pObj->obj_pos.x;
+		pObj->obj_matWorld._42 = pObj->obj_pos.y;
+		pObj->obj_matWorld._43 = pObj->obj_pos.z;
+		pObj->obj_name = obj->m_ObjName;
+		pObj->UpdateData();
+		pObj->UpdateCollision();
+		pObj->obj_pObject = obj;
+		AddObject(pObj);
+	}
+	m_ObjectItemList.push_back(obj); // 포인터 delete
+	return true;
+}
 bool KMapSpace::AddObject(KMapObject* obj)
 {
 	//노드 위치를 찾고 오브젝트를 추가한다.

@@ -409,8 +409,8 @@ bool KMousePicker::Frame()
 	ray.position.z = matInverse._43;
 	//Á¤±ÔÈ­
 	D3DXVec3Normalize(&ray.direction, &ray.direction);
-	KVector3  vStart = ray.position;
-	KVector3  vEnd = ray.position + ray.direction * m_pCamera->m_fFar;
+	//KVector3  vStart = ray.position;
+	//KVector3  vEnd = ray.position + ray.direction * m_pCamera->m_fFar;
 
 
 	if (g_InputData.bMouseState[0] && !m_bImgui)
