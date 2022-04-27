@@ -79,6 +79,8 @@ bool KMousePicker::GetIntersectionBox(TRay ray, KBox box)
 	float minmax = min(min(real_max.x, real_max.y), real_max.z);
 	float maxmin = max(max(real_min.x, real_min.y), real_min.z);
 
+	//vMax의 xyz값중 가장 최소 거리값,
+	//vMin의 xyz값중 가장 최대 거리값을 찾아 vMax의 최소 거리값이 크면 충돌이다.
 	if (minmax >= maxmin)
 	{
 		m_vIntersect = ray.position + ray.direction * maxmin;

@@ -59,6 +59,7 @@ public:
 public:
 	//맵 오브젝트 추가 관련 함수
 	bool   RandomSetupObject(K3DAsset* obj, int amount); // 오브젝트를 Kmapobject 구조체로 변환
+	bool   SetupObject(K3DAsset* obj); // 오브젝트를 Kmapobject 구조체로 변환
 	bool   AddObject(KMapObject* obj); // 실제 오브젝트를 추가하는 함수
 	bool   UpdateObject(); // 실제 오브젝트를 추가하는 함수
 	bool   AddDynamicObject(KMapObject* obj);
