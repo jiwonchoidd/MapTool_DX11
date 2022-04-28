@@ -142,10 +142,10 @@ bool KScene_Maptool::Frame()
 						iChange += ImGui::InputFloat("X ##position", &m_MousePicker.m_pSeletedObj->obj_pos.x); ImGui::SameLine();
 						iChange += ImGui::InputFloat("Y ##position", &m_MousePicker.m_pSeletedObj->obj_pos.y); ImGui::SameLine();
 						iChange += ImGui::InputFloat("Z ##position", &m_MousePicker.m_pSeletedObj->obj_pos.z);
-						/*ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Rotation"); ImGui::SameLine();
-						iChange += ImGui::InputFloat("X ##rotation", &m_MousePicker.m_pSeletedObj->obj_rot.x); ImGui::SameLine();
-						iChange += ImGui::InputFloat("Y ##rotation", &m_MousePicker.m_pSeletedObj->obj_rot.y); ImGui::SameLine();
-						iChange += ImGui::InputFloat("Z ##rotation", &m_MousePicker.m_pSeletedObj->obj_rot.z);*/
+						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Rotation"); ImGui::SameLine();
+						iChange += ImGui::InputFloat("X ##rotation", &m_MousePicker.m_pSeletedObj->obj_RollPitchYaw.x); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Y ##rotation", &m_MousePicker.m_pSeletedObj->obj_RollPitchYaw.y); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Z ##rotation", &m_MousePicker.m_pSeletedObj->obj_RollPitchYaw.z);
 						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Scale"); ImGui::SameLine();
 						iChange += ImGui::InputFloat("X ##scale", &m_MousePicker.m_pSeletedObj->obj_scale.x); ImGui::SameLine();
 						iChange += ImGui::InputFloat("Y ##scale", &m_MousePicker.m_pSeletedObj->obj_scale.y); ImGui::SameLine();

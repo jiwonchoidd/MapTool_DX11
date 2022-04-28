@@ -13,7 +13,7 @@ public:
 	std::wstring	obj_name;
 	KMatrix			obj_matWorld;//오브젝트마다 위치만 다름
 	KVector3		obj_scale;
-	KVector3		obj_rot;
+	KVector3		obj_RollPitchYaw;
 	KVector3		obj_pos;
 	KBox			obj_box; // 오브젝트 위치 OBB AABB 포함
 	K3DAsset*		obj_pObject;
@@ -24,11 +24,22 @@ public:
 	void		UpdateData()
 	{
 		//s
-		obj_matWorld._11 = obj_scale.x;
-		obj_matWorld._22 = obj_scale.y;
-		obj_matWorld._33 = obj_scale.z;
+		KMatrix matScale;
+		matScale._11 = obj_scale.x;
+		matScale._22 = obj_scale.y;
+		matScale._33 = obj_scale.z;
 		//r
+		KMatrix matRotation;
+		D3DKMatrixRotationYawPitchRoll(&matRotation, obj_RollPitchYaw.y, obj_RollPitchYaw.x, obj_RollPitchYaw.z);
 		//t
+		KMatrix matTranslate;
+		matTranslate._41 = obj_pos.x;
+		matTranslate._42 = obj_pos.y;
+		matTranslate._43 = obj_pos.z;
+
+		//행렬 최종 계산.
+		obj_matWorld = matScale * matRotation * matTranslate;
+
 		m_vRight.x = obj_matWorld._11;
 		m_vRight.y = obj_matWorld._12;
 		m_vRight.z = obj_matWorld._13;

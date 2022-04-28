@@ -503,17 +503,13 @@ bool KMapSpace::RandomSetupObject(K3DAsset* obj, int amount)
 		{
 			pObj->obj_box.List[iv] = obj->m_BoxCollision.List[iv];
 		}
+		pObj->obj_scale = KVector3(0.1f, 0.1f, 0.1f);
+		pObj->obj_RollPitchYaw = KVector3(0.0f, randstep(0.0f, 360.0f), 0.0f);
 		pObj->obj_pos = KVector3(
 			randstep(m_pMap->m_BoxCollision.min.x, m_pMap->m_BoxCollision.max.x),
 			0.0f,
 			randstep(m_pMap->m_BoxCollision.min.z, m_pMap->m_BoxCollision.max.z));
-		pObj->obj_scale = KVector3(0.1f, 0.1f, 0.1f);
-		pObj->obj_rot = KVector3(cosf(randstep(0.0f, 360.0f)), 0.0f, 0.0f);
-		pObj->obj_matWorld = pObj->obj_matWorld * matRotateObj;
 		pObj->obj_pos.y = m_pMap->GetHeight(pObj->obj_pos.x, pObj->obj_pos.z);
-		pObj->obj_matWorld._41 = pObj->obj_pos.x;
-		pObj->obj_matWorld._42 = pObj->obj_pos.y;
-		pObj->obj_matWorld._43 = pObj->obj_pos.z;
 		pObj->obj_name = obj->m_ObjName;
 		pObj->UpdateData();
 		pObj->UpdateCollision();
@@ -532,11 +528,8 @@ bool KMapSpace::SetupObject(KFBXAsset* pFBXAsset)
 	}
 	pObj->obj_pos = KVector3(0.0f, 0.0f, 0.0f);
 	pObj->obj_scale = KVector3(0.1f, 0.1f, 0.1f);
-	pObj->obj_rot = KVector3(0.0f, 0.0f, 0.0f);
+	pObj->obj_RollPitchYaw = KVector3(0.0f, 0.0f, 0.0f);
 	pObj->obj_pos.y = m_pMap->GetHeight(pObj->obj_pos.x, pObj->obj_pos.z);
-	pObj->obj_matWorld._41 = pObj->obj_pos.x;
-	pObj->obj_matWorld._42 = pObj->obj_pos.y;
-	pObj->obj_matWorld._43 = pObj->obj_pos.z;
 	pObj->obj_name = pFBXAsset->m_ObjName;
 	pObj->UpdateData();
 	pObj->UpdateCollision();
@@ -596,10 +589,6 @@ bool KMapSpace::UpdateObject()
 			pObj.second->obj_pos.y != pObj.second->obj_matWorld._42 ||
 			pObj.second->obj_pos.z != pObj.second->obj_matWorld._43)
 		{
-			//위치를 업데이트 한다.
-			pObj.second->obj_matWorld._41 = pObj.second->obj_pos.x;
-			pObj.second->obj_matWorld._42 = pObj.second->obj_pos.y;
-			pObj.second->obj_matWorld._43 = pObj.second->obj_pos.z;
 			//콜라이더도 업데이트한다.
 			pObj.second->UpdateCollision();
 			//노드도 업데이트한다.
