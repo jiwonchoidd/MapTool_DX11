@@ -118,7 +118,6 @@ bool KFbxLoader::Load(std::wstring filename)
 	return false;
 }
 
-
 void KFbxLoader::NodeProcess(KFBXObj* pParentObj, FbxNode* pNode)
 {
 	KFBXObj* fbx = nullptr;

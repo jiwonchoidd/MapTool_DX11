@@ -12,11 +12,14 @@
 class KScene_Maptool : public KScene
 {
 public:
+    bool           m_bImguiAddObject;
+    bool           m_bImguiAddObject_Random;
+public:
     KLight         m_Light;
     KDepthShadow   m_Shadow;
 public:
     KFbxLoader	   m_FbxLoader;
-    std::vector<std::shared_ptr<KFBXAsset>> m_FBXList;
+    std::vector<KFBXAsset*> m_FBXList;
     std::vector<KTexture*>  m_TextureList;
 public:
     KMap           m_Terrian;

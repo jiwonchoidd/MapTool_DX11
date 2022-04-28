@@ -29,17 +29,14 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 	m_FBXList.resize(fbx_name_list.size());
 	for (int iObj = 0; iObj < m_FBXList.size(); iObj++)
 	{
-		std::shared_ptr<KFBXAsset> pFbx = std::make_shared<KFBXAsset>();
+		KFBXAsset* pFbx = new KFBXAsset;
 		pFbx->Init();
-		//float fHeight = m_Terrian.GetHeight(3, 3);
-		pFbx->m_matWorld._11 = 0.1f;
-		pFbx->m_matWorld._22 = 0.1f;
-		pFbx->m_matWorld._33 = 0.1f;
-		pFbx->SetPosition(KVector3(3 * iObj * 20, 3, 3 * iObj));
  		pFbx->m_pLoader = g_FBXManager.Load(fbx_name_list[iObj]);
+		pFbx->m_ObjName = pFbx->m_pLoader->m_Name;
+		pFbx->m_VertexList = pFbx->m_pLoader->m_MeshList[0]->m_pSubVertexList[0];
+		pFbx->GenAABB();
 		m_FBXList[iObj]= pFbx;
 	}
-
 	//지형 텍스쳐 로드----------------------------------------------------------------
 	std::vector<std::wstring> tex_name_list;
 	KDirParser::LoadAllPath(L"../../data/map/texture", tex_name_list);
@@ -63,12 +60,11 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 	m_Terrian_Space.Build(&m_Terrian, g_SceneManager.m_pCamera); // 공간분할
 	m_Terrian_Space.DrawDebugInit(m_pContext);
 	
-	KBoxObj* tempBox = new KBoxObj();
-	tempBox->m_ObjName = L"textbox";
-	tempBox->Init(L"../../data/shader/VSPS_Default.hlsl", L"../../data/shader/VSPS_Default.hlsl", 
-		L"../../data/texture/brick.jpg", L"../../data/texture/brick_specular.jpg", L"../../data/texture/brick_normal.jpg");
-	m_Terrian_Space.RandomSetupObject(tempBox,50);
-	
+	for (auto pfbx : m_FBXList)
+	{
+		m_Terrian_Space.m_FBXAssetList.push_back(pfbx);
+	}
+
 	m_TopView.Init(m_pContext);
 	m_TopView.CreateViewMatrix(KVector3(0, 2000.0f, -1),KVector3(0, 0, 0));
 	m_TopView.CreateProjMatrix(1.0f, 10000.0f, XM_PI * 0.3f,
@@ -108,8 +104,7 @@ bool KScene_Maptool::Frame()
 	ImGui::SetNextWindowPos(ivMin);
 	if (ImGui::Begin("Inspector"))
 	{
-		//----------------------------------------------------------------------------------------
-		// 맵툴 : 오브젝트 배치, 높이, 텍스쳐 
+		// 맵툴 : 오브젝트 배치, 높이, 텍스쳐--------------------------------------------------------
 		if (ImGui::CollapsingHeader("[ MapTool ]"))
 		{
 			if (ImGui::BeginChild("chlid_terrain", ImVec2(0, 300.0f), true))
@@ -139,12 +134,35 @@ bool KScene_Maptool::Frame()
 					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"오브젝트");
 					if (m_MousePicker.m_pSeletedObj != nullptr)
 					{
+						int iChange = 0;
 						ImGui::PushItemWidth(50);
 						ImGui::TextColored(ImVec4(1, 1, 0, 1), u8"선택된 오브젝트 : "); ImGui::SameLine();
 						ImGui::TextColored(ImVec4(1, 1, 0, 1), to_wm(m_MousePicker.m_pSeletedObj->obj_name).c_str());
-						ImGui::InputFloat("X", &m_MousePicker.m_pSeletedObj->obj_pos.x); ImGui::SameLine();
-						ImGui::InputFloat("Y", &m_MousePicker.m_pSeletedObj->obj_pos.y); ImGui::SameLine();
-						ImGui::InputFloat("Z", &m_MousePicker.m_pSeletedObj->obj_pos.z);
+						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Position"); ImGui::SameLine();
+						iChange += ImGui::InputFloat("X ##position", &m_MousePicker.m_pSeletedObj->obj_pos.x); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Y ##position", &m_MousePicker.m_pSeletedObj->obj_pos.y); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Z ##position", &m_MousePicker.m_pSeletedObj->obj_pos.z);
+						/*ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Rotation"); ImGui::SameLine();
+						iChange += ImGui::InputFloat("X ##rotation", &m_MousePicker.m_pSeletedObj->obj_rot.x); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Y ##rotation", &m_MousePicker.m_pSeletedObj->obj_rot.y); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Z ##rotation", &m_MousePicker.m_pSeletedObj->obj_rot.z);*/
+						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Scale"); ImGui::SameLine();
+						iChange += ImGui::InputFloat("X ##scale", &m_MousePicker.m_pSeletedObj->obj_scale.x); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Y ##scale", &m_MousePicker.m_pSeletedObj->obj_scale.y); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Z ##scale", &m_MousePicker.m_pSeletedObj->obj_scale.z);
+						if (iChange > 0)
+						{
+							m_MousePicker.m_pSeletedObj->UpdateData();
+							m_MousePicker.m_pSeletedObj->UpdateCollision();
+							//오브젝트 이동시 새로운 노드에 넣는다.
+							//기존 노드에 오브젝트 nullptr
+							m_Terrian_Space.UpdateObject();
+						}
+						if (ImGui::Button(u8"선택된 오브젝트 삭제"))
+						{
+							m_Terrian_Space.DeleteObject(m_MousePicker.m_pSeletedObj->obj_name);
+							m_MousePicker.m_pSeletedObj = nullptr;
+						}
 						ImGui::PopItemWidth();
 					}
 					else
@@ -152,21 +170,62 @@ bool KScene_Maptool::Frame()
 						ImGui::TextColored(ImVec4(1, 0, 1, 1), u8"[ 현재 선택된 오브젝트가 없습니다.]");
 					}
 					ImGui::Dummy(ImVec2(0.0f, 5.0f));
-
-					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"배치된 오브젝트 리스트");
-					if (ImGui::ListBoxHeader("##OBJECTLIST"))
+					//오브젝트 추가 버튼----------------------------------------------------------------
+					if (ImGui::Button(u8"오브젝트 추가"))
 					{
-						m_MousePicker.m_pSeletedObj->obj_name;
-						for (auto it : m_Terrian_Space.m_ObjectMap)
-						{
-							if (ImGui::Selectable(to_wm(it.first).c_str()))
-							{
-								m_MousePicker.m_pSeletedObj = it.second;
-							}
-						}
-						ImGui::ListBoxFooter();
+						m_MousePicker.m_pSeletedObj = nullptr;
+						m_bImguiAddObject = true;
+						m_bImguiAddObject_Random = false;
 					}
-#pragma endregion
+					ImGui::SameLine();
+					if (ImGui::Button(u8"오브젝트 추가(랜덤)"))
+					{
+						m_MousePicker.m_pSeletedObj = nullptr;
+						m_bImguiAddObject_Random = true;
+						m_bImguiAddObject = false;
+					}
+					if (m_bImguiAddObject || m_bImguiAddObject_Random)
+					{
+						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"추가 할 오브젝트 선택");
+						if(ImGui::ListBoxHeader("##ASSETLIST", ImVec2(150, 0)))
+						{
+							for (auto it : m_Terrian_Space.m_FBXAssetList)
+							{
+								if (ImGui::Selectable(to_wm(it->m_ObjName).c_str()))
+								{
+									if (m_bImguiAddObject)
+									{
+										m_Terrian_Space.SetupObject(it);
+										m_bImguiAddObject_Random = false;
+										m_bImguiAddObject = false;
+									}
+									if (m_bImguiAddObject_Random)
+									{
+										m_Terrian_Space.RandomSetupObject(static_cast<K3DAsset*>(it), 10);
+										m_bImguiAddObject_Random = false;
+										m_bImguiAddObject = false;
+									}
+								}
+							}
+						ImGui::ListBoxFooter();
+						}
+					}
+					else 
+					{
+						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"맵에 배치된 오브젝트 리스트");
+						if(ImGui::ListBoxHeader("##OBJECTLIST", ImVec2(150, 0)))
+						{
+							for (auto it : m_Terrian_Space.m_ObjectMap)
+							{
+								if (ImGui::Selectable(to_wm(it.first).c_str()))
+								{
+									m_MousePicker.m_pSeletedObj = it.second;
+								}
+							}
+						ImGui::ListBoxFooter();
+						}
+					}
+					#pragma endregion
 				}
 				//맵 지형
 				else if (m_MousePicker.m_iControlState == 1)
@@ -234,7 +293,7 @@ bool KScene_Maptool::Frame()
 						}
 						ImGui::ListBoxFooter();
 					}
-#pragma endregion
+				#pragma endregion
 				}
 				if (m_MousePicker.m_iControlState == 1 || m_MousePicker.m_iControlState == 2)
 				{
@@ -242,7 +301,7 @@ bool KScene_Maptool::Frame()
 					ImGui::SliderFloat("Brush Size", &m_MousePicker.m_Sel_Brush_Size, 50, 150);
 					ImGui::SliderFloat("Brush Strenght", &m_MousePicker.m_Sel_Brush_Strenght, 1, 100);
 				}
-#pragma endregion
+				#pragma endregion
 			}
 			ImGui::EndChild();
 		}
@@ -276,7 +335,7 @@ bool KScene_Maptool::Frame()
 				ImGui::SliderFloat("X", &m_Light.m_vPos.x, -200.0f, 200.0f);
 				ImGui::SliderFloat("Z", &m_Light.m_vPos.z, -200.0f, 200.0f);
 				ImGui::InputFloat3("Color", *lightColor, 2, 0);
-#pragma endregion
+				#pragma endregion
 			}
 			ImGui::EndChild();
 		}
@@ -284,15 +343,14 @@ bool KScene_Maptool::Frame()
 	}
 	ImGui::End();
 #pragma endregion
-
 	
 	if (m_MousePicker.m_iControlState == m_MousePicker.C_Texture && !m_MousePicker.m_bImgui)
 	{
 		m_Terrian_Sprite.UpdatePickPos(m_MousePicker.m_vIntersect, m_MousePicker.m_Sel_Brush_Size);
 		m_Terrian_Sprite.Frame();
 	}
-
-	if (g_InputData.bDownKey)
+	// 텍스쳐 마스킹 이미지 저장
+	if (g_InputData.bQKey)
 	{
 		m_Terrian_Sprite.SaveFile(m_pContext);
 	}
@@ -315,18 +373,9 @@ bool KScene_Maptool::Render()
 		for (auto obj : m_Terrian_Space.m_ObjectList_Static)
 		{
 			obj->obj_pObject->SetMatrix(&obj->obj_matWorld, &m_Light.m_matView, &m_Light.m_matProj);
-			obj->obj_pObject->PreRender(m_pContext);
-			m_pContext->PSSetShader(m_Shadow.m_pPSShadow->m_pPixelShader.Get(), NULL, 0);
-			obj->obj_pObject->PostRender(m_pContext,
-				obj->obj_pObject->m_iNumIndex);
+			obj->obj_pObject->SwapPSShader(m_Shadow.m_pPSShadow);
+			obj->obj_pObject->Render(m_pContext);
 		}
-		//FBX OBJ Render------------------------------------------
-		/*for (int iObj = 0; iObj < m_FBXList.size(); iObj++)
-		{
-			m_FBXList[iObj]->SetMatrix(&m_FBXList[iObj]->m_matWorld, &m_Light.m_matView, &m_Light.m_matProj);
-			m_FBXList[iObj]->SwapPSShader(m_Shadow.m_pPSShadow);
-			m_FBXList[iObj]->Render(m_pContext);
-		}*/
 		//복원 작업
 		m_Shadow.m_ShadowRT.End(m_pContext);
 	}
@@ -354,22 +403,15 @@ bool KScene_Maptool::Render()
 	{
 		D3DKMatrixInverse(&obj->obj_pObject->m_cbData.matNormal, NULL,
 			&obj->obj_matWorld);
+		obj->obj_pObject->SetMatrix(&obj->obj_matWorld, &g_SceneManager.m_pCamera->m_matView, &g_SceneManager.m_pCamera->m_matProj);
+		obj->obj_pObject->m_cbDataEX.vLightColor = { m_Light.m_vLightColor.x,m_Light.m_vLightColor.y,m_Light.m_vLightColor.z,1.0f };
+		obj->obj_pObject->m_cbDataEX.vLightPos = { m_Light.m_vPos.x,m_Light.m_vPos.y,m_Light.m_vPos.z,1.0f };
+		obj->obj_pObject->m_cbDataEX.vLightDir = { m_Light.m_vDir.x,m_Light.m_vDir.y,m_Light.m_vDir.z,1.0f };
+		obj->obj_pObject->m_cbDataEX.vCamPos = { g_SceneManager.m_pCamera->GetCameraPos()->x, g_SceneManager.m_pCamera->GetCameraPos()->y, g_SceneManager.m_pCamera->GetCameraPos()->z, 1.0f };
+		m_pContext->PSSetShaderResources(3, 1, m_Shadow.m_ShadowRT.m_pTextureSRV.GetAddressOf());
+		obj->obj_pObject->SwapPSShader();
+		obj->obj_pObject->Render(m_pContext);
 	}
-	m_pContext->PSSetShaderResources(3, 1, m_Shadow.m_ShadowRT.m_pTextureSRV.GetAddressOf());
-	m_Terrian_Space.Render_MapObject(m_pContext);
-
-	//FBX OBJ Render------------------------------------------
-	//for (int iObj = 0; iObj < m_FBXList.size(); iObj++)
-	//{
-	//	m_FBXList[iObj]->SetMatrix(&m_FBXList[iObj]->m_matWorld, &g_SceneManager.m_pCamera->m_matView, &g_SceneManager.m_pCamera->m_matProj);
-	//	m_FBXList[iObj]-> m_cbDataEX.vLightColor = { m_Light.m_vLightColor.x,m_Light.m_vLightColor.y,m_Light.m_vLightColor.z,1.0f };
-	//	m_FBXList[iObj]-> m_cbDataEX.vLightPos = { m_Light.m_vPos.x,m_Light.m_vPos.y,m_Light.m_vPos.z,1.0f };
-	//	m_FBXList[iObj]-> m_cbDataEX.vLightDir = { m_Light.m_vDir.x,m_Light.m_vDir.y,m_Light.m_vDir.z,1.0f };
-	//	m_FBXList[iObj]-> m_cbDataEX.vCamPos = { g_SceneManager.m_pCamera->GetCameraPos()->x, g_SceneManager.m_pCamera->GetCameraPos()->y, g_SceneManager.m_pCamera->GetCameraPos()->z, 1.0f };
-	//	m_pContext->PSSetShaderResources(3, 1, m_Shadow.m_ShadowRT.m_pTextureSRV.GetAddressOf());
-	//	m_FBXList[iObj]->SwapPSShader();
-	//	m_FBXList[iObj]->Render(m_pContext);
-	//}
 
 	////미니맵------------------------------------------------
 	if (g_InputData.bDebugRender)
@@ -388,7 +430,11 @@ bool KScene_Maptool::Render()
 		ApplyBS(m_pContext, KState::g_pAlphaBlendState);
 			m_Terrian.SetMatrix(&m_Terrian.m_matWorld, &m_TopView.m_matView, &m_TopView.m_matProj);
 			m_Terrian_Space.Render(m_pContext); //맵 렌더
-			m_Terrian_Space.Render_MapObject(m_pContext); //맵 오브젝트
+			for (auto obj : m_Terrian_Space.m_ObjectList_Static)
+			{
+				obj->obj_pObject->SetMatrix(&obj->obj_matWorld, &m_TopView.m_matView, &m_TopView.m_matProj);
+				obj->obj_pObject->Render(m_pContext);
+			}
 			g_SceneManager.m_pCamera->SetMatrix(nullptr, &m_TopView.m_matView,
 			&m_TopView.m_matProj);
 			g_SceneManager.m_pCamera->Render(m_pContext); //프러스텀 렌더

@@ -31,9 +31,6 @@
     <Filter Include="Code\Obj\3D">
       <UniqueIdentifier>{12549f7e-8259-4a9d-ae05-ac087cd6cf38}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Obj\3D\Map">
-      <UniqueIdentifier>{823a47e9-ebdc-4aa6-aba5-6a61d36316c0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Code\Obj\3D\Primitive Obj">
       <UniqueIdentifier>{67e57aef-c689-4010-83fa-f12e194b7114}</UniqueIdentifier>
     </Filter>
@@ -126,23 +123,11 @@
     <ClCompile Include="KBoxObj.cpp">
       <Filter>Code\Obj\3D\Primitive Obj</Filter>
     </ClCompile>
-    <ClCompile Include="KMapSpace.cpp">
-      <Filter>Code\Obj\3D\Map</Filter>
-    </ClCompile>
-    <ClCompile Include="KMap.cpp">
-      <Filter>Code\Obj\3D\Map</Filter>
-    </ClCompile>
     <ClCompile Include="KFrustum.cpp">
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="KSkyBox.cpp">
       <Filter>Code\Obj\3D</Filter>
-    </ClCompile>
-    <ClCompile Include="KQuadTree.cpp">
-      <Filter>Code\Obj\3D\Map</Filter>
-    </ClCompile>
-    <ClCompile Include="KNode.cpp">
-      <Filter>Code\Obj\3D\Map</Filter>
     </ClCompile>
     <ClCompile Include="KRenderTarget.cpp">
       <Filter>Code\Core</Filter>
@@ -176,9 +161,6 @@
     </ClCompile>
     <ClCompile Include="ImGui\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="KMapSprite.cpp">
-      <Filter>Code\Obj\3D\Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -269,23 +251,11 @@
     <ClInclude Include="KBoxObj.h">
       <Filter>Code\Obj\3D\Primitive Obj</Filter>
     </ClInclude>
-    <ClInclude Include="KMapSpace.h">
-      <Filter>Code\Obj\3D\Map</Filter>
-    </ClInclude>
-    <ClInclude Include="KMap.h">
-      <Filter>Code\Obj\3D\Map</Filter>
-    </ClInclude>
     <ClInclude Include="KFrustum.h">
       <Filter>Code</Filter>
     </ClInclude>
     <ClInclude Include="KSkyBox.h">
       <Filter>Code\Obj\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="KQuadTree.h">
-      <Filter>Code\Obj\3D\Map</Filter>
-    </ClInclude>
-    <ClInclude Include="KNode.h">
-      <Filter>Code\Obj\3D\Map</Filter>
     </ClInclude>
     <ClInclude Include="KRenderTarget.h">
       <Filter>Code\Core</Filter>
@@ -325,9 +295,6 @@
     </ClInclude>
     <ClInclude Include="ImGui\imstb_truetype.h">
       <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="KMapSprite.h">
-      <Filter>Code\Obj\3D\Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

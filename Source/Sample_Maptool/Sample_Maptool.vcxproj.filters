@@ -13,6 +13,9 @@
     <Filter Include="FBX">
       <UniqueIdentifier>{1fab19c9-e071-4722-8573-500c28dce2d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code\Map">
+      <UniqueIdentifier>{3022b03a-1e20-490a-89fc-de468adcce84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sample.cpp">
@@ -47,6 +50,24 @@
     </ClCompile>
     <ClCompile Include="KLight.cpp">
       <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="KMap.cpp">
+      <Filter>Code\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="KMapSpace.cpp">
+      <Filter>Code\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="KMapSprite.cpp">
+      <Filter>Code\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="KNode.cpp">
+      <Filter>Code\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="KQuadTree.cpp">
+      <Filter>Code\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="KMapUtil.cpp">
+      <Filter>Code\Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +106,24 @@
     </ClInclude>
     <ClInclude Include="KFBXManager.h">
       <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="KMap.h">
+      <Filter>Code\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="KMapSpace.h">
+      <Filter>Code\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="KMapSprite.h">
+      <Filter>Code\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="KNode.h">
+      <Filter>Code\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="KQuadTree.h">
+      <Filter>Code\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="KMapUtil.h">
+      <Filter>Code\Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

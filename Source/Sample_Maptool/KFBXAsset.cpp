@@ -38,6 +38,7 @@ bool KFBXAsset::Render(ID3D11DeviceContext* pContext)
 	for (int iObj = 0; iObj < m_pLoader->m_MeshList.size(); iObj++)
 	{
 		KFBXObj* pFbxObj = m_pLoader->m_MeshList[iObj];
+		pFbxObj->m_matWorld = m_matWorld;
 		if (_tcsstr(pFbxObj->m_ObjName.c_str(), L"LOD") != nullptr)// != L"SK_Mannequin_LOD0")
 		{
 			if (_tcsstr(pFbxObj->m_ObjName.c_str(), L"LOD0") == nullptr)// != L"SK_Mannequin_LOD0")
@@ -91,7 +92,6 @@ bool KFBXAsset::Render(ID3D11DeviceContext* pContext)
 					&m_matBoneArray.matBoneWorld[inode]);
 			}
 		}
-
 		pContext->UpdateSubresource(m_pLoader->m_pBoneCB, 0, NULL, &m_matBoneArray, 0, 0);
 		pContext->VSSetConstantBuffers(1, 1, &m_pLoader->m_pBoneCB);
 		pFbxObj->m_cbDataEX.vLightColor = { m_cbDataEX.vLightColor.x,m_cbDataEX.vLightColor.y,m_cbDataEX.vLightColor.z,1.0f };

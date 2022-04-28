@@ -227,6 +227,7 @@ bool KMousePicker::Map_HeightControl(float HeightScale, float BrushSize)
 	//추가된 노드 리스트로 작업 : 브러쉬 타입에 따라 높이값 다르게, 이웃노드와 찢어짐 방지 함수
 	Map_HeightBrushType(HeightScale);
 	Map_HeightControl_MakeSameHeight();
+	//맵 노말값 재계산
 	return true;
 }
 //노드 단위 렌더링으로 리프 노드 사이 사이 찢어짐이 발생,

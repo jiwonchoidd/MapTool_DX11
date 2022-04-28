@@ -58,7 +58,6 @@ public:
 			{
 				obj_box.min.z = pos.z;
 			}
-
 			if (obj_box.max.x < pos.x)
 			{
 				obj_box.max.x = pos.x;
