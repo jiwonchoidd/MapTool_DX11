@@ -13,7 +13,6 @@
 class KCore : public KWindow
 {
 public:
-	ImGuiManager	m_ImGuiManager;
 	KSkyBox			m_SkyBox;
 public:
 	KPivot			m_Pivot;

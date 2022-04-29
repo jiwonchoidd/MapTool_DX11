@@ -122,6 +122,7 @@
       <AdditionalIncludeDirectories>..\\..\\Graphics\\FBX\\include;..\\..\\Include\\KD3DLib;..\\..\\Include\\d3dtk;..\\..\\Include\\fmod</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalOptions>/Ylsymbol %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -48,11 +48,11 @@ bool	KCore::GameFrame()
     g_Input.Frame();
     m_Camera.Frame();
     //g_ObjManager.Frame();
-    m_ImGuiManager.Frame();
+    g_ImGui.Frame();
     if (g_InputData.bChangeFillMode)
     {
         m_bWireFrameMode = !m_bWireFrameMode;
-        m_ImGuiManager.OnOffImgui(); 
+        g_ImGui.OnOffImgui();
     }
 
     if (ImGui::Begin(u8"성능 디스플레이"))
@@ -86,7 +86,7 @@ bool	KCore::GameRender()
         m_Pivot.Render(m_pImmediateContext.Get());
         //----------------------------------------------------
         Render();
-        m_ImGuiManager.Render();
+        g_ImGui.Render();
 
         //F1 누르면 디버그 모드 :: 와이어 프레임 모드
         if (m_bWireFrameMode)
@@ -148,7 +148,7 @@ bool	KCore::GameRelease()
     m_Timer.Release();
     g_Input.Release();
     m_Write.Release();
-    m_ImGuiManager.Release();
+    g_ImGui.Release();
     CleanupDevice();
     return true;
 }

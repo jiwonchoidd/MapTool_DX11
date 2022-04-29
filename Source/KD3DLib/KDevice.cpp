@@ -1,5 +1,5 @@
 #include "KDevice.h"
-#include "ImGui\imgui_impl_dx11.h"
+#include "ImGuiManager.h"
 ID3D11Device* g_pd3dDevice = nullptr;		// 디바이스 객체
 bool	KDevice::SetDevice()
 {
@@ -25,7 +25,7 @@ bool	KDevice::SetDevice()
 		return false;
 	}
 	// imgui d3d impl 초기화
-	ImGui_ImplDX11_Init(g_pd3dDevice, m_pImmediateContext.Get());
+	g_ImGui.Init_DX(m_pd3dDevice.Get(), m_pImmediateContext.Get());
 	return true;
 }
 HRESULT KDevice::CreateGIFactory()

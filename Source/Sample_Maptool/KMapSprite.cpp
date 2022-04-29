@@ -68,10 +68,6 @@ HRESULT KMapSprite::CreateBufferUAV(ID3D11Device* pDevice, int iWidth, int iHeig
 	return hr;
 }
 
-void KMapSprite::SaveFile(ID3D11DeviceContext* pContext)
-{
-	g_TextureMananger.SaveFile(pContext, L"MapTexture", m_pTextureCopy.Get());
-}
 
 HRESULT KMapSprite::CreateStructuredBuffer(ID3D11Device* pDevice, UINT uElementSize, UINT uCount, VOID* pInitData, ID3D11Buffer** ppBufOut)
 {

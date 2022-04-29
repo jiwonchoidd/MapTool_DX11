@@ -3,6 +3,299 @@
 #include "KState.h"
 #include "KFBXManager.h"
 #include "ImGuiManager.h"
+void KScene_Maptool::ImguiInspector()
+{
+	#pragma region IMGUI UI <- HERE
+	//IMGUI IU 
+	ImVec2 ivMin = { static_cast<float>(g_rtClient.right) - static_cast<float>(g_rtClient.right) / 3.5f, 20 };
+	ImVec2 ivMax = { static_cast<float>(g_rtClient.right), static_cast<float>(g_rtClient.bottom) };
+	if (ImGui::IsMouseHoveringRect(ivMin, ivMax, false))
+	{
+		m_MousePicker.m_bImgui = true;
+	}
+	else
+	{
+		m_MousePicker.m_bImgui = false;
+	}
+
+	ImGui::SetNextWindowSize(ImVec2(ivMax.x - ivMin.x, ivMax.y - ivMin.y));
+	ImGui::SetNextWindowPos(ivMin);
+	if (ImGui::Begin("Inspector"))
+	{
+		// 맵툴 : 오브젝트 배치, 높이, 텍스쳐--------------------------------------------------------
+		if (ImGui::CollapsingHeader("[ MapTool ]"))
+		{
+			if (ImGui::BeginChild("chlid_terrain", ImVec2(0, 300.0f), true))
+			{
+#pragma region 맵툴 IMGUI
+				//--------------------------------------------------------
+				//라디오 버튼
+				if (ImGui::RadioButton("Object", (m_MousePicker.m_iControlState == 0)))
+				{
+					m_MousePicker.m_iControlState = 0;
+				}ImGui::SameLine();
+				if (ImGui::RadioButton("Height", (m_MousePicker.m_iControlState == 1)))
+				{
+					m_MousePicker.m_iControlState = 1;
+
+				}ImGui::SameLine();
+				if (ImGui::RadioButton("Texture", (m_MousePicker.m_iControlState == 2)))
+				{
+					m_MousePicker.m_iControlState = 2;
+				}
+				//------------------------------------------------------
+				//오브젝트
+				if (m_MousePicker.m_iControlState == 0)
+				{
+#pragma region 오브젝트 IMGUI
+					//마우스 선택, 리스트 선택 오브젝트---------------------------------------------------------
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"오브젝트");
+					if (m_MousePicker.m_pSeletedObj != nullptr)
+					{
+						int iChange = 0;
+						ImGui::PushItemWidth(50);
+						ImGui::TextColored(ImVec4(1, 1, 0, 1), u8"선택된 오브젝트 : "); ImGui::SameLine();
+						ImGui::TextColored(ImVec4(1, 1, 0, 1), to_wm(m_MousePicker.m_pSeletedObj->obj_name).c_str());
+						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Position"); ImGui::SameLine();
+						iChange += ImGui::InputFloat("X ##position", &m_MousePicker.m_pSeletedObj->obj_pos.x); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Y ##position", &m_MousePicker.m_pSeletedObj->obj_pos.y); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Z ##position", &m_MousePicker.m_pSeletedObj->obj_pos.z);
+						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Rotation"); ImGui::SameLine();
+						iChange += ImGui::InputFloat("X ##rotation", &m_MousePicker.m_pSeletedObj->obj_RollPitchYaw.x); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Y ##rotation", &m_MousePicker.m_pSeletedObj->obj_RollPitchYaw.y); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Z ##rotation", &m_MousePicker.m_pSeletedObj->obj_RollPitchYaw.z);
+						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Scale"); ImGui::SameLine();
+						iChange += ImGui::InputFloat("X ##scale", &m_MousePicker.m_pSeletedObj->obj_scale.x); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Y ##scale", &m_MousePicker.m_pSeletedObj->obj_scale.y); ImGui::SameLine();
+						iChange += ImGui::InputFloat("Z ##scale", &m_MousePicker.m_pSeletedObj->obj_scale.z);
+						//오브젝트 위치, 회전, 스케일 변경시 적용되는 조건문
+						if (iChange > 0)
+						{
+							m_MousePicker.m_pSeletedObj->UpdateData();
+							m_MousePicker.m_pSeletedObj->UpdateCollision();
+							//오브젝트 이동시 새로운 노드에 넣는다.
+							//기존 노드에 오브젝트 nullptr
+							m_Terrian_Space.UpdateObject();
+						}
+						if (ImGui::Button(u8"선택된 오브젝트 삭제"))
+						{
+							m_Terrian_Space.DeleteObject(m_MousePicker.m_pSeletedObj->obj_name);
+							m_MousePicker.m_pSeletedObj = nullptr;
+						}
+						ImGui::PopItemWidth();
+					}
+					else
+					{
+						ImGui::TextColored(ImVec4(1, 0, 1, 1), u8"[ 현재 선택된 오브젝트가 없습니다.]");
+					}
+					ImGui::Dummy(ImVec2(0.0f, 5.0f));
+					//오브젝트 추가 버튼----------------------------------------------------------------
+					if (ImGui::Button(u8"오브젝트 추가"))
+					{
+						m_MousePicker.m_pSeletedObj = nullptr;
+						m_bImguiAddObject = true;
+						m_bImguiAddObject_Random = false;
+					}
+					ImGui::SameLine();
+					if (ImGui::Button(u8"오브젝트 추가(랜덤)"))
+					{
+						m_MousePicker.m_pSeletedObj = nullptr;
+						m_bImguiAddObject_Random = true;
+						m_bImguiAddObject = false;
+					}
+					if (m_bImguiAddObject || m_bImguiAddObject_Random)
+					{
+						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"추가 할 오브젝트 선택");
+						if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(150, 0)))
+						{
+							for (auto it : m_Terrian_Space.m_FBXAssetList)
+							{
+								if (ImGui::Selectable(to_wm(it->m_ObjName).c_str()))
+								{
+									if (m_bImguiAddObject)
+									{
+										m_Terrian_Space.SetupObject(it);
+										m_bImguiAddObject_Random = false;
+										m_bImguiAddObject = false;
+									}
+									if (m_bImguiAddObject_Random)
+									{
+										m_Terrian_Space.RandomSetupObject(static_cast<K3DAsset*>(it), 10);
+										m_bImguiAddObject_Random = false;
+										m_bImguiAddObject = false;
+									}
+								}
+							}
+							ImGui::ListBoxFooter();
+						}
+					}
+					else
+					{
+						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"맵에 배치된 오브젝트 리스트");
+						if (ImGui::ListBoxHeader("##OBJECTLIST", ImVec2(150, 0)))
+						{
+							for (auto it : m_Terrian_Space.m_ObjectMap)
+							{
+								if (ImGui::Selectable(to_wm(it.first).c_str()))
+								{
+									m_MousePicker.m_pSeletedObj = it.second;
+								}
+							}
+							ImGui::ListBoxFooter();
+						}
+					}
+#pragma endregion
+				}
+				//맵 지형
+				else if (m_MousePicker.m_iControlState == 1)
+				{
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"브러쉬 타입");
+					if (ImGui::RadioButton("UP", (m_MousePicker.m_iBrushState == 0)))
+					{
+						m_MousePicker.m_iBrushState = 0;
+					}ImGui::SameLine();
+					if (ImGui::RadioButton("DOWN", (m_MousePicker.m_iBrushState == 1)))
+					{
+						m_MousePicker.m_iBrushState = 1;
+
+					}ImGui::SameLine();
+					if (ImGui::RadioButton("SMOOTH", (m_MousePicker.m_iBrushState == 2)))
+					{
+						m_MousePicker.m_iBrushState = 2;
+					}ImGui::SameLine();
+					if (ImGui::RadioButton("FLATTEN", (m_MousePicker.m_iBrushState == 3)))
+					{
+						m_MousePicker.m_iBrushState = 3;
+					}
+				}
+				//텍스쳐
+				else if (m_MousePicker.m_iControlState == 2)
+				{
+#pragma region 텍스쳐 IMGUI
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"텍스쳐");
+
+					//마우스 선택, 리스트 선택 오브젝트---------------------------------------------------------
+					ImGui::PushItemWidth(50);
+					ImGui::TextColored(ImVec4(1, 1, 0, 1), u8"해당 레이어 텍스쳐 : "); ImGui::SameLine();
+					ImGui::TextColored(ImVec4(1, 1, 0, 1), to_wm(m_Terrian.m_pSubTextureList[m_Terrian_Sprite.m_Pickbuffer.iIndex]->m_Name).c_str());
+					ImGui::PopItemWidth();
+					//텍스쳐 4개 중 선택
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"레이어 선택");
+					if (ImGui::RadioButton("0", m_Terrian_Sprite.m_Pickbuffer.iIndex == 0))
+					{
+						m_Terrian_Sprite.m_Pickbuffer.iIndex = 0;
+					}ImGui::SameLine();
+					if (ImGui::RadioButton("1", m_Terrian_Sprite.m_Pickbuffer.iIndex == 1))
+					{
+						m_Terrian_Sprite.m_Pickbuffer.iIndex = 1;
+
+					}ImGui::SameLine();
+					if (ImGui::RadioButton("2", m_Terrian_Sprite.m_Pickbuffer.iIndex == 2))
+					{
+						m_Terrian_Sprite.m_Pickbuffer.iIndex = 2;
+					}ImGui::SameLine();
+					if (ImGui::RadioButton("3", m_Terrian_Sprite.m_Pickbuffer.iIndex == 3))
+					{
+						m_Terrian_Sprite.m_Pickbuffer.iIndex = 3;
+					}
+					ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"텍스쳐 선택");
+					if (ImGui::ListBoxHeader("##TEXTURELIST"))
+					{
+						for (auto it : m_TextureList)
+						{
+							if (ImGui::Selectable(to_wm(it->m_Name).c_str()))
+							{
+								m_Terrian.m_pSubTextureList[m_Terrian_Sprite.m_Pickbuffer.iIndex] = it;
+							}
+						}
+						ImGui::ListBoxFooter();
+					}
+#pragma endregion
+				}
+				if (m_MousePicker.m_iControlState == 1 || m_MousePicker.m_iControlState == 2)
+				{
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"브러쉬 조절");
+					ImGui::SliderFloat("Brush Size", &m_MousePicker.m_Sel_Brush_Size, 50, 150);
+					ImGui::SliderFloat("Brush Strenght", &m_MousePicker.m_Sel_Brush_Strenght, 1, 100);
+				}
+#pragma endregion
+			}
+			ImGui::EndChild();
+		}
+		//----------------------------------------------------------------------------------------
+		if (ImGui::CollapsingHeader("[ LOD, Frustum Culling ]"))
+		{
+			if (ImGui::BeginChild("LOD", ImVec2(0, 150), true))
+			{
+#pragma region LOD 프러스텀 컬링 공간분활 IMGUI
+				if (ImGui::Button("Terrian Box Enable"))
+				{
+					m_Terrian_Space.SetDrawDebug();
+				}
+				ImGui::Text("Detected Nodes: %d", m_Terrian_Space.m_pDrawableLeafList.size());
+				ImGui::Text("Detected Objects: %d", m_Terrian_Space.m_ObjectList_Static.size());
+				ImGui::Text(u8"LOD Dst"); ImGui::SameLine();
+				ImGui::InputFloat("##Distance", &m_Terrian_Space.m_fStartDistance, 2);
+				ImGui::Text(u8"LOD Mul"); ImGui::SameLine();
+				ImGui::InputFloat("##Multiple", &m_Terrian_Space.m_fDistance_Multiply, 2);
+#pragma endregion
+			}
+			ImGui::EndChild();
+		}
+		//----------------------------------------------------------------------------------------	
+		float* lightColor[3] = { &m_Light.m_vLightColor.x,&m_Light.m_vLightColor.y,&m_Light.m_vLightColor.z };
+		if (ImGui::CollapsingHeader("[ Light ]"))
+		{
+			if (ImGui::BeginChild("light", ImVec2(0, 150), true))
+			{
+#pragma region 씬 라이트 IMGUI
+				ImGui::SliderFloat("X", &m_Light.m_vPos.x, -200.0f, 200.0f);
+				ImGui::SliderFloat("Z", &m_Light.m_vPos.z, -200.0f, 200.0f);
+				ImGui::InputFloat3("Color", *lightColor, 2, 0);
+#pragma endregion
+			}
+			ImGui::EndChild();
+		}
+		//----------------------------------------------------------------------------------------	
+	}
+	ImGui::End();
+#pragma endregion
+}
+void KScene_Maptool::ImguiSaveLoad()
+{
+	bool           m_bImguiLoad=false;
+	bool           m_bImguiSave=false;
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("Menu"))
+		{
+			if (ImGui::MenuItem("Load", NULL))
+				m_bImguiLoad = true;
+			if (ImGui::MenuItem("Save", NULL))
+				m_bImguiSave = true;
+
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+	}
+	if (m_bImguiLoad)
+		ImGui::OpenPopup("Open File");
+	if (m_bImguiSave)
+		ImGui::OpenPopup("Save File");
+	
+	//경로 설정 확인 후 작업 진행
+	if (g_ImGui.m_FileDialog.showFileDialog("Open File", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), ".kmap"))
+	{
+		m_Terrian_Util.LoadKMap(g_ImGui.m_FileDialog.selected_path);
+	}
+	if (g_ImGui.m_FileDialog.showFileDialog("Save File", imgui_addons::ImGuiFileBrowser::DialogMode::SAVE, ImVec2(700, 310), ".kmap"))
+	{
+		m_Terrian_Util.SaveKMap(&m_Terrian_Space, g_ImGui.m_FileDialog.selected_path);
+		//Do writing of files based on extension here
+	}
+}
 bool KScene_Maptool::Load(std::wstring file)
 {
 	//todo:파일입출력 맵 구성
@@ -86,273 +379,14 @@ bool KScene_Maptool::Frame()
 	m_Light.Frame();
 	m_Shadow.Frame(); // 쉐도우 행렬 계산, 프로젝션 행렬 ,텍스쳐 행렬 곱한것
 	m_Terrian_Space.Frame();
-
-	#pragma region IMGUI UI <- HERE
-	//IMGUI IU 
-	ImVec2 ivMin = { static_cast<float>(g_rtClient.right)- static_cast<float>(g_rtClient.right) / 3.5f, 0 };
-	ImVec2 ivMax = { static_cast<float>(g_rtClient.right), static_cast<float>(g_rtClient.bottom) };
-	if (ImGui::IsMouseHoveringRect(ivMin, ivMax, false))
-	{
-		m_MousePicker.m_bImgui = true;
-	}
-	else
-	{
-		m_MousePicker.m_bImgui = false;
-	}
 	
-	ImGui::SetNextWindowSize(ImVec2(ivMax.x -ivMin.x, ivMax.y - ivMin.y));
-	ImGui::SetNextWindowPos(ivMin);
-	if (ImGui::Begin("Inspector"))
-	{
-		// 맵툴 : 오브젝트 배치, 높이, 텍스쳐--------------------------------------------------------
-		if (ImGui::CollapsingHeader("[ MapTool ]"))
-		{
-			if (ImGui::BeginChild("chlid_terrain", ImVec2(0, 300.0f), true))
-			{
-				#pragma region 맵툴 IMGUI
-				//--------------------------------------------------------
-				//라디오 버튼
-				if (ImGui::RadioButton("Object", (m_MousePicker.m_iControlState == 0)))
-				{
-					m_MousePicker.m_iControlState = 0;
-				}ImGui::SameLine();
-				if (ImGui::RadioButton("Height", (m_MousePicker.m_iControlState == 1)))
-				{
-					m_MousePicker.m_iControlState = 1;
-
-				}ImGui::SameLine();
-				if (ImGui::RadioButton("Texture", (m_MousePicker.m_iControlState == 2)))
-				{
-					m_MousePicker.m_iControlState = 2;
-				}
-				//------------------------------------------------------
-				//오브젝트
-				if (m_MousePicker.m_iControlState == 0)
-				{
-					#pragma region 오브젝트 IMGUI
-					//마우스 선택, 리스트 선택 오브젝트---------------------------------------------------------
-					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"오브젝트");
-					if (m_MousePicker.m_pSeletedObj != nullptr)
-					{
-						int iChange = 0;
-						ImGui::PushItemWidth(50);
-						ImGui::TextColored(ImVec4(1, 1, 0, 1), u8"선택된 오브젝트 : "); ImGui::SameLine();
-						ImGui::TextColored(ImVec4(1, 1, 0, 1), to_wm(m_MousePicker.m_pSeletedObj->obj_name).c_str());
-						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Position"); ImGui::SameLine();
-						iChange += ImGui::InputFloat("X ##position", &m_MousePicker.m_pSeletedObj->obj_pos.x); ImGui::SameLine();
-						iChange += ImGui::InputFloat("Y ##position", &m_MousePicker.m_pSeletedObj->obj_pos.y); ImGui::SameLine();
-						iChange += ImGui::InputFloat("Z ##position", &m_MousePicker.m_pSeletedObj->obj_pos.z);
-						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Rotation"); ImGui::SameLine();
-						iChange += ImGui::InputFloat("X ##rotation", &m_MousePicker.m_pSeletedObj->obj_RollPitchYaw.x); ImGui::SameLine();
-						iChange += ImGui::InputFloat("Y ##rotation", &m_MousePicker.m_pSeletedObj->obj_RollPitchYaw.y); ImGui::SameLine();
-						iChange += ImGui::InputFloat("Z ##rotation", &m_MousePicker.m_pSeletedObj->obj_RollPitchYaw.z);
-						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Scale"); ImGui::SameLine();
-						iChange += ImGui::InputFloat("X ##scale", &m_MousePicker.m_pSeletedObj->obj_scale.x); ImGui::SameLine();
-						iChange += ImGui::InputFloat("Y ##scale", &m_MousePicker.m_pSeletedObj->obj_scale.y); ImGui::SameLine();
-						iChange += ImGui::InputFloat("Z ##scale", &m_MousePicker.m_pSeletedObj->obj_scale.z);
-						if (iChange > 0)
-						{
-							m_MousePicker.m_pSeletedObj->UpdateData();
-							m_MousePicker.m_pSeletedObj->UpdateCollision();
-							//오브젝트 이동시 새로운 노드에 넣는다.
-							//기존 노드에 오브젝트 nullptr
-							m_Terrian_Space.UpdateObject();
-						}
-						if (ImGui::Button(u8"선택된 오브젝트 삭제"))
-						{
-							m_Terrian_Space.DeleteObject(m_MousePicker.m_pSeletedObj->obj_name);
-							m_MousePicker.m_pSeletedObj = nullptr;
-						}
-						ImGui::PopItemWidth();
-					}
-					else
-					{
-						ImGui::TextColored(ImVec4(1, 0, 1, 1), u8"[ 현재 선택된 오브젝트가 없습니다.]");
-					}
-					ImGui::Dummy(ImVec2(0.0f, 5.0f));
-					//오브젝트 추가 버튼----------------------------------------------------------------
-					if (ImGui::Button(u8"오브젝트 추가"))
-					{
-						m_MousePicker.m_pSeletedObj = nullptr;
-						m_bImguiAddObject = true;
-						m_bImguiAddObject_Random = false;
-					}
-					ImGui::SameLine();
-					if (ImGui::Button(u8"오브젝트 추가(랜덤)"))
-					{
-						m_MousePicker.m_pSeletedObj = nullptr;
-						m_bImguiAddObject_Random = true;
-						m_bImguiAddObject = false;
-					}
-					if (m_bImguiAddObject || m_bImguiAddObject_Random)
-					{
-						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"추가 할 오브젝트 선택");
-						if(ImGui::ListBoxHeader("##ASSETLIST", ImVec2(150, 0)))
-						{
-							for (auto it : m_Terrian_Space.m_FBXAssetList)
-							{
-								if (ImGui::Selectable(to_wm(it->m_ObjName).c_str()))
-								{
-									if (m_bImguiAddObject)
-									{
-										m_Terrian_Space.SetupObject(it);
-										m_bImguiAddObject_Random = false;
-										m_bImguiAddObject = false;
-									}
-									if (m_bImguiAddObject_Random)
-									{
-										m_Terrian_Space.RandomSetupObject(static_cast<K3DAsset*>(it), 10);
-										m_bImguiAddObject_Random = false;
-										m_bImguiAddObject = false;
-									}
-								}
-							}
-						ImGui::ListBoxFooter();
-						}
-					}
-					else 
-					{
-						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"맵에 배치된 오브젝트 리스트");
-						if(ImGui::ListBoxHeader("##OBJECTLIST", ImVec2(150, 0)))
-						{
-							for (auto it : m_Terrian_Space.m_ObjectMap)
-							{
-								if (ImGui::Selectable(to_wm(it.first).c_str()))
-								{
-									m_MousePicker.m_pSeletedObj = it.second;
-								}
-							}
-						ImGui::ListBoxFooter();
-						}
-					}
-					#pragma endregion
-				}
-				//맵 지형
-				else if (m_MousePicker.m_iControlState == 1)
-				{
-					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"브러쉬 타입");
-					if (ImGui::RadioButton("UP", (m_MousePicker.m_iBrushState == 0)))
-					{
-						m_MousePicker.m_iBrushState = 0;
-					}ImGui::SameLine();
-					if (ImGui::RadioButton("DOWN", (m_MousePicker.m_iBrushState == 1)))
-					{
-						m_MousePicker.m_iBrushState = 1;
-
-					}ImGui::SameLine();
-					if (ImGui::RadioButton("SMOOTH", (m_MousePicker.m_iBrushState == 2)))
-					{
-						m_MousePicker.m_iBrushState = 2;
-					}ImGui::SameLine();
-					if (ImGui::RadioButton("FLATTEN", (m_MousePicker.m_iBrushState == 3)))
-					{
-						m_MousePicker.m_iBrushState = 3;
-					}
-				}
-				//텍스쳐
-				else if (m_MousePicker.m_iControlState == 2)
-				{
-					#pragma region 텍스쳐 IMGUI
-					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"텍스쳐");
-
-					//마우스 선택, 리스트 선택 오브젝트---------------------------------------------------------
-						ImGui::PushItemWidth(50);
-						ImGui::TextColored(ImVec4(1, 1, 0, 1), u8"해당 레이어 텍스쳐 : "); ImGui::SameLine();
-						ImGui::TextColored(ImVec4(1, 1, 0, 1), to_wm(m_Terrian.m_pSubTextureList[m_Terrian_Sprite.m_Pickbuffer.iIndex]->m_Name).c_str());
-						ImGui::PopItemWidth();
-					//텍스쳐 4개 중 선택
-						ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"레이어 선택");
-						if (ImGui::RadioButton("0", m_Terrian_Sprite.m_Pickbuffer.iIndex == 0))
-						{
-							m_Terrian_Sprite.m_Pickbuffer.iIndex = 0;
-						}ImGui::SameLine();
-						if (ImGui::RadioButton("1", m_Terrian_Sprite.m_Pickbuffer.iIndex == 1))
-						{
-							m_Terrian_Sprite.m_Pickbuffer.iIndex = 1;
-
-						}ImGui::SameLine();
-						if (ImGui::RadioButton("2", m_Terrian_Sprite.m_Pickbuffer.iIndex == 2))
-						{
-							m_Terrian_Sprite.m_Pickbuffer.iIndex = 2;
-						}ImGui::SameLine();
-						if (ImGui::RadioButton("3", m_Terrian_Sprite.m_Pickbuffer.iIndex == 3))
-						{
-							m_Terrian_Sprite.m_Pickbuffer.iIndex = 3;
-						}
-					ImGui::Dummy(ImVec2(0.0f, 5.0f));
-
-					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"텍스쳐 선택");
-					if (ImGui::ListBoxHeader("##TEXTURELIST"))
-					{
-						for (auto it : m_TextureList)
-						{
-							if (ImGui::Selectable(to_wm(it->m_Name).c_str()))
-							{
-								m_Terrian.m_pSubTextureList[m_Terrian_Sprite.m_Pickbuffer.iIndex]= it;
-							}
-						}
-						ImGui::ListBoxFooter();
-					}
-				#pragma endregion
-				}
-				if (m_MousePicker.m_iControlState == 1 || m_MousePicker.m_iControlState == 2)
-				{
-					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"브러쉬 조절");
-					ImGui::SliderFloat("Brush Size", &m_MousePicker.m_Sel_Brush_Size, 50, 150);
-					ImGui::SliderFloat("Brush Strenght", &m_MousePicker.m_Sel_Brush_Strenght, 1, 100);
-				}
-				#pragma endregion
-			}
-			ImGui::EndChild();
-		}
-		//----------------------------------------------------------------------------------------
-		if (ImGui::CollapsingHeader("[ LOD, Frustum Culling ]"))
-		{
-			if (ImGui::BeginChild("LOD", ImVec2(0, 150), true))
-			{
-				#pragma region LOD 프러스텀 컬링 공간분활 IMGUI
-				if (ImGui::Button("Terrian Box Enable"))
-				{
-					m_Terrian_Space.SetDrawDebug();
-				}
-				ImGui::Text("Detected Nodes: %d", m_Terrian_Space.m_pDrawableLeafList.size());
-				ImGui::Text("Detected Objects: %d", m_Terrian_Space.m_ObjectList_Static.size());
-				ImGui::Text(u8"LOD Dst"); ImGui::SameLine();
-				ImGui::InputFloat("##Distance", &m_Terrian_Space.m_fStartDistance, 2);
-				ImGui::Text(u8"LOD Mul"); ImGui::SameLine();
-				ImGui::InputFloat("##Multiple", &m_Terrian_Space.m_fDistance_Multiply, 2);
-#pragma endregion
-			}
-			ImGui::EndChild();
-		}
-		//----------------------------------------------------------------------------------------	
-		float* lightColor[3] = { &m_Light.m_vLightColor.x,&m_Light.m_vLightColor.y,&m_Light.m_vLightColor.z };
-		if (ImGui::CollapsingHeader("[ Light ]"))
-		{
-			if (ImGui::BeginChild("light", ImVec2(0, 150), true))
-			{
-				#pragma region 씬 라이트 IMGUI
-				ImGui::SliderFloat("X", &m_Light.m_vPos.x, -200.0f, 200.0f);
-				ImGui::SliderFloat("Z", &m_Light.m_vPos.z, -200.0f, 200.0f);
-				ImGui::InputFloat3("Color", *lightColor, 2, 0);
-				#pragma endregion
-			}
-			ImGui::EndChild();
-		}
-		//----------------------------------------------------------------------------------------	
-	}
-	ImGui::End();
-#pragma endregion
+	ImguiInspector();
+	ImguiSaveLoad();
 	
 	if (m_MousePicker.m_iControlState == m_MousePicker.C_Texture && !m_MousePicker.m_bImgui)
 	{
 		m_Terrian_Sprite.UpdatePickPos(m_MousePicker.m_vIntersect, m_MousePicker.m_Sel_Brush_Size);
 		m_Terrian_Sprite.Frame();
-	}
-	// 텍스쳐 마스킹 이미지 저장
-	if (g_InputData.bQKey)
-	{
-		m_Terrian_Sprite.SaveFile(m_pContext);
 	}
 	KScene::Frame();
 	return true;

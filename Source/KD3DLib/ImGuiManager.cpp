@@ -42,6 +42,14 @@ bool ImGuiManager::isImguiEnable()
 {
     return m_bImguiEnable;
 }
+void ImGuiManager::Init_DX(ID3D11Device* pdevice, ID3D11DeviceContext* pcontext)
+{
+    ImGui_ImplDX11_Init(pdevice, pcontext);
+}
+void ImGuiManager::Init_Win(HWND hwnd)
+{
+    ImGui_ImplWin32_Init(hwnd);
+}
 ImGuiManager::ImGuiManager()
 {
     Init();

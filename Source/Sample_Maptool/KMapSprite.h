@@ -10,6 +10,8 @@ struct PICKBUFFER
 };
 class KMapSprite
 {
+private:
+	wrl::ComPtr<ID3D11Texture2D>				m_pTexture;
 public:
 	int						m_iWidth;
 	int						m_iHeight;
@@ -17,7 +19,6 @@ public:
 	ID3D11DeviceContext*	m_pContext;
 public:
 	wrl::ComPtr<ID3D11ComputeShader>			m_pCS;
-	wrl::ComPtr<ID3D11Texture2D>				m_pTexture;
 	wrl::ComPtr<ID3D11ShaderResourceView>		m_pTextureSRV;
 	wrl::ComPtr<ID3D11Texture2D>				m_pTextureCopy;
 	wrl::ComPtr<ID3D11ShaderResourceView>		m_pTextureCopySRV;
@@ -39,8 +40,6 @@ public:
 		int iWidth, int iHeight, ID3D11UnorderedAccessView** ppUAVOut);
 public:
 	void UpdatePickPos(KVector3 vIntersect, float fRadius);
-public:
-	void SaveFile(ID3D11DeviceContext* pContext);
 public:
 	bool Init(ID3D11DeviceContext* pContext, KMap* pMap);
 	bool Frame();

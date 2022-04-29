@@ -1,5 +1,4 @@
 #pragma once
-#include <winsock2.h>
 #include <windows.h>
 #include <tchar.h>
 #include <string>

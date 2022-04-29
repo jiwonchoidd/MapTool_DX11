@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <sstream>
 #include "resource.h"
-#include "ImGui\imgui_impl_win32.h"
+#include "ImGuiManager.h"
 KWindow*    g_pWindow = nullptr;
 HINSTANCE	g_hInstance;
 HWND        g_hWnd;
@@ -105,8 +105,7 @@ bool   KWindow::InitWindows(
     
     ShowWindow(m_hWnd, SW_SHOW);
     
-    ImGui_ImplWin32_Init(m_hWnd);
-
+    g_ImGui.Init_Win(m_hWnd);
 	return true;
 }
 
