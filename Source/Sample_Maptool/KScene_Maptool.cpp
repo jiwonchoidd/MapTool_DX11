@@ -289,6 +289,34 @@ void KScene_Maptool::ImguiSaveLoad()
 	if (g_ImGui.m_FileDialog.showFileDialog("Open File", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), ".kmap"))
 	{
 		m_Terrian_Util.LoadKMap(g_ImGui.m_FileDialog.selected_path);
+
+		//초기화
+		m_Terrian.Release();
+		m_Terrian_Space.Release();
+		m_Terrian_Sprite.Release();
+		m_MousePicker.Release();
+		
+		//다시 로드
+		m_Terrian.Init(m_pContext, m_Terrian_Util.m_Mapsize[0], m_Terrian_Util.m_Mapsize[1], m_Terrian_Util.m_MapHeight);
+		m_Terrian.CreateObject(L"../../data/shader/VSPS_Terrain.hlsl", L"../../data/shader/VSPS_Terrain.hlsl", L"../../data/map/texture/base.jpg",
+			L"../../data/map/texture/base_s.jpg", L"../../data/map/texture/base_n.jpg");
+
+		m_Terrian_Sprite.Init(m_pContext, &m_Terrian); // 지형 스프라이팅 GPU 컴퓨터 쉐이딩을 사용한다.
+		m_Terrian.m_pSubTextureList.push_back(m_TextureList[0]);
+		m_Terrian.m_pSubTextureList.push_back(m_TextureList[1]);
+		m_Terrian.m_pSubTextureList.push_back(m_TextureList[2]);
+		m_Terrian.m_pSubTextureList.push_back(m_TextureList[3]);
+
+		m_Terrian_Space.Build(&m_Terrian, g_SceneManager.m_pCamera); // 공간분할
+		m_Terrian_Space.DrawDebugInit(m_pContext);
+
+		for (auto pfbx : m_FBXList)
+		{
+			m_Terrian_Space.m_FBXAssetList.push_back(pfbx);
+		}
+
+		//마우스 피커------------------------------------------------------------
+		m_MousePicker.Init(m_pContext, &m_Terrian_Space, g_SceneManager.m_pCamera);
 	}
 	if (g_ImGui.m_FileDialog.showFileDialog("Save File", imgui_addons::ImGuiFileBrowser::DialogMode::SAVE, ImVec2(700, 310), ".kmap"))
 	{
@@ -358,18 +386,18 @@ bool KScene_Maptool::Init(ID3D11DeviceContext* context)
 		m_Terrian_Space.m_FBXAssetList.push_back(pfbx);
 	}
 
-	m_TopView.Init(m_pContext);
-	m_TopView.CreateViewMatrix(KVector3(0, 2000.0f, -1),KVector3(0, 0, 0));
-	m_TopView.CreateProjMatrix(1.0f, 10000.0f, XM_PI * 0.3f,
-		static_cast<float>(g_rtClient.right) / static_cast<float>(g_rtClient.bottom));
+	//마우스 피커------------------------------------------------------------
+	m_MousePicker.Init(m_pContext, &m_Terrian_Space, g_SceneManager.m_pCamera);
 
 	//라이트 그림자----------------------------------------------------------------
 	m_Light.SetLight(KVector3(10.0f,1000.0f,0.0f), KVector3(0.0f, 0.0f, 0.0f));
 	m_Shadow.CreateShadow(&m_Light);
 
-	//마우스 피커------------------------------------------------------------
-	m_MousePicker.Init(m_pContext, &m_Terrian_Space, g_SceneManager.m_pCamera);
-
+	//탑뷰 카메라 ----------------------------------------------------------------
+	m_TopView.Init(m_pContext);
+	m_TopView.CreateViewMatrix(KVector3(0, 2000.0f, -1),KVector3(0, 0, 0));
+	m_TopView.CreateProjMatrix(1.0f, 10000.0f, XM_PI * 0.3f,
+		static_cast<float>(g_rtClient.right) / static_cast<float>(g_rtClient.bottom));
 	return true;
 }
 
@@ -448,34 +476,34 @@ bool KScene_Maptool::Render()
 	}
 
 	////미니맵------------------------------------------------
-	if (g_InputData.bDebugRender)
-	{
-		m_MiniMap_DebugShadow.SwapVisibility();
-		m_MiniMap_DebugCamera.SwapVisibility();
-	}
-	m_MiniMap_DebugShadow.SetMatrix(nullptr, nullptr, nullptr);
-	m_MiniMap_DebugShadow.PreRender(m_pContext);
-	m_pContext->PSSetShaderResources(0, 1, m_Shadow.m_ShadowRT.m_pTextureSRV.GetAddressOf());
-	m_MiniMap_DebugShadow.PostRender(m_pContext, m_MiniMap_DebugShadow.m_iNumIndex);
+	//if (g_InputData.bDebugRender)
+	//{
+	//	m_MiniMap_DebugShadow.SwapVisibility();
+	//	m_MiniMap_DebugCamera.SwapVisibility();
+	//}
+	//m_MiniMap_DebugShadow.SetMatrix(nullptr, nullptr, nullptr);
+	//m_MiniMap_DebugShadow.PreRender(m_pContext);
+	//m_pContext->PSSetShaderResources(0, 1, m_Shadow.m_ShadowRT.m_pTextureSRV.GetAddressOf());
+	//m_MiniMap_DebugShadow.PostRender(m_pContext, m_MiniMap_DebugShadow.m_iNumIndex);
 
-	float color[4] = { 0.2f,0.2f,0.2f,1.0f };
-	if (m_MiniMap_DebugCamera.m_Rt.Begin(m_pContext, color))
-	{
-		ApplyBS(m_pContext, KState::g_pAlphaBlendState);
-			m_Terrian.SetMatrix(&m_Terrian.m_matWorld, &m_TopView.m_matView, &m_TopView.m_matProj);
-			m_Terrian_Space.Render(m_pContext); //맵 렌더
-			for (auto obj : m_Terrian_Space.m_ObjectList_Static)
-			{
-				obj->obj_pObject->SetMatrix(&obj->obj_matWorld, &m_TopView.m_matView, &m_TopView.m_matProj);
-				obj->obj_pObject->Render(m_pContext);
-			}
-			g_SceneManager.m_pCamera->SetMatrix(nullptr, &m_TopView.m_matView,
-			&m_TopView.m_matProj);
-			g_SceneManager.m_pCamera->Render(m_pContext); //프러스텀 렌더
-		m_MiniMap_DebugCamera.m_Rt.End(m_pContext);
-		KState::g_pCurrentBS = KState::g_pBlendState;
-	}
-	m_MiniMap_DebugCamera.Render(m_pContext);
+	//float color[4] = { 0.2f,0.2f,0.2f,1.0f };
+	//if (m_MiniMap_DebugCamera.m_Rt.Begin(m_pContext, color))
+	//{
+	//	ApplyBS(m_pContext, KState::g_pAlphaBlendState);
+	//		m_Terrian.SetMatrix(&m_Terrian.m_matWorld, &m_TopView.m_matView, &m_TopView.m_matProj);
+	//		m_Terrian_Space.Render(m_pContext); //맵 렌더
+	//		for (auto obj : m_Terrian_Space.m_ObjectList_Static)
+	//		{
+	//			obj->obj_pObject->SetMatrix(&obj->obj_matWorld, &m_TopView.m_matView, &m_TopView.m_matProj);
+	//			obj->obj_pObject->Render(m_pContext);
+	//		}
+	//		g_SceneManager.m_pCamera->SetMatrix(nullptr, &m_TopView.m_matView,
+	//		&m_TopView.m_matProj);
+	//		g_SceneManager.m_pCamera->Render(m_pContext); //프러스텀 렌더
+	//	m_MiniMap_DebugCamera.m_Rt.End(m_pContext);
+	//	KState::g_pCurrentBS = KState::g_pBlendState;
+	//}
+	//m_MiniMap_DebugCamera.Render(m_pContext);
 	
 
 	//마우스 피커--------------------------------------
@@ -489,13 +517,13 @@ bool KScene_Maptool::Render()
 bool KScene_Maptool::Release()
 {
 	m_FbxLoader.Release();
+	m_TopView.Release();
 	m_Terrian.Release();
 	m_Terrian_Space.Release();
 	m_Terrian_Sprite.Release();
-	m_TopView.Release();
+	m_MousePicker.Release();
 	m_MiniMap_DebugCamera.Release();
 	m_MiniMap_DebugShadow.Release();
-	m_MousePicker.Release();
 	KScene::Release();
 	return true;
 }

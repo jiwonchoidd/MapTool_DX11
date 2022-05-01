@@ -22,11 +22,13 @@ public:
 	std::vector<float>  m_HeightList;
 public:
 	virtual	bool Init(ID3D11DeviceContext* context, std::wstring heightmap);
+	virtual	bool Init(ID3D11DeviceContext* context, UINT width, UINT height, std::vector<float> heightList);
 	virtual bool CreateVertexData()override;
 	virtual bool CreateIndexData()override;
 	virtual bool CalculateTBN();
 	virtual bool PreRender(ID3D11DeviceContext* context)override;
 	virtual bool Render(ID3D11DeviceContext* context);
+	virtual bool Release();
 public:
 	virtual float GetHeight(float xpos, float ypos);
 	virtual float GetHeightMap(int row, int col);

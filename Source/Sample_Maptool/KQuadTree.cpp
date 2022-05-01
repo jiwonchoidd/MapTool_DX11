@@ -192,8 +192,6 @@ bool KQuadTree::SubDivide(KNode* pNode)
 	return false;
 }
 
-
-
 KNode* KQuadTree::FindLeafNode(KVector2 pos)
 {
 	for (int iNode = 0; iNode < m_pLeafList.size(); iNode++)

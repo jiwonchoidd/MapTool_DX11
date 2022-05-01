@@ -519,16 +519,17 @@ bool KMapSpace::RandomSetupObject(K3DAsset* obj, int amount)
 	return true;
 }
 //원점으로 오브젝트 배치
-bool KMapSpace::SetupObject(KFBXAsset* pFBXAsset)
+bool KMapSpace::SetupObject(KFBXAsset* pFBXAsset,
+	KVector3 pos, KVector3 rot, KVector3 scale)
 {
 	KMapObject* pObj = new KMapObject();
 	for (int iv = 0; iv < 8; iv++)
 	{
 		pObj->obj_box.List[iv] = pFBXAsset->m_BoxCollision.List[iv];
 	}
-	pObj->obj_pos = KVector3(0.0f, 0.0f, 0.0f);
-	pObj->obj_scale = KVector3(0.1f, 0.1f, 0.1f);
-	pObj->obj_RollPitchYaw = KVector3(0.0f, 0.0f, 0.0f);
+	pObj->obj_pos = pos;
+	pObj->obj_scale = rot;
+	pObj->obj_RollPitchYaw = rot;
 	pObj->obj_pos.y = m_pMap->GetHeight(pObj->obj_pos.x, pObj->obj_pos.z);
 	pObj->obj_name = pFBXAsset->m_ObjName;
 	pObj->UpdateData();

@@ -11,6 +11,16 @@ bool KMap::Init(ID3D11DeviceContext* context, std::wstring heightmap)
 	CreateMap(m_num_row, m_num_col, 10.0f);
 	return true;
 }
+bool KMap::Init(ID3D11DeviceContext* context, UINT width, UINT height, std::vector<float> heightList)
+{
+	m_pContext = context;
+	m_tex_offset = 4.0f;
+	//높이맵 읽어옴
+	m_HeightList = heightList;
+	//높이맵으로 부터 크기 형성
+	CreateMap(m_num_row, m_num_col, 10.0f);
+	return true;
+}
 bool KMap::CreateMap(UINT width, UINT height, float distance)
 {
 	m_cell_distance = distance;
@@ -29,6 +39,12 @@ bool KMap::CreateMap(UINT width, UINT height, float distance)
 
 	m_BoxCollision.size.x = (m_BoxCollision.max.x - m_BoxCollision.min.x);
 	m_BoxCollision.size.z = (m_BoxCollision.max.z - m_BoxCollision.min.z);
+	return true;
+}
+bool KMap::Release()
+{
+	m_HeightList.clear();
+	K3DAsset::Release();
 	return true;
 }
 //context가 로드되어야 실행됨
