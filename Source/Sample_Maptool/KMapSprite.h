@@ -11,7 +11,9 @@ struct PICKBUFFER
 class KMapSprite
 {
 private:
+	KTexture*									m_pBlankTexture;
 	wrl::ComPtr<ID3D11Texture2D>				m_pTexture;
+	std::wstring								m_strAlphaFile;
 public:
 	int						m_iWidth;
 	int						m_iHeight;
@@ -37,9 +39,10 @@ public:
 	HRESULT CreateStructuredBuffer(ID3D11Device* pDevice, UINT uElementSize, UINT uCount, VOID* pInitData, ID3D11Buffer** ppBufOut);
 	HRESULT CreateBufferSRV(ID3D11Device* pDevice, ID3D11Buffer* pBuffer, ID3D11ShaderResourceView** ppSRVOut);
 	HRESULT CreateBufferUAV(ID3D11Device* pDevice,
-		int iWidth, int iHeight, ID3D11UnorderedAccessView** ppUAVOut);
+		int iWidth, int iHeight, ID3D11UnorderedAccessView** ppUAVOut, std::wstring filename= L"");
 public:
 	void UpdatePickPos(KVector3 vIntersect, float fRadius);
+	void SetAlphaFileName(std::wstring file);
 public:
 	bool Init(ID3D11DeviceContext* pContext, KMap* pMap);
 	bool Frame();

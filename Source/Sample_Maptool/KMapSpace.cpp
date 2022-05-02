@@ -165,6 +165,31 @@ bool KMapSpace::UpdateVertexList(KNode* pNode)
 	if (pNode->m_VertexList.size() > 0) return true;
 	return false;
 }
+bool KMapSpace::UpdateMapVertexList()
+{
+	for (auto leafMap : m_pLeafList)
+	{
+		KNode* pNode = leafMap.second;
+
+		int iNumCols = m_pMap->m_num_col;
+		int iStartRow = pNode->m_CornerList[0] / iNumCols;
+		int iEndRow = pNode->m_CornerList[2] / iNumCols;
+		int iStartCol = pNode->m_CornerList[0] % iNumCols;
+		int iEndCol = pNode->m_CornerList[1] % iNumCols;
+		int iNumColCell = iEndCol - iStartCol;
+		int iNumRowCell = iEndRow - iStartRow;
+		int iIndex = 0;
+		for (int iRow = iStartRow; iRow <= iEndRow; iRow++)
+		{
+			for (int iCol = iStartCol; iCol <= iEndCol; iCol++)
+			{
+				int iCurrentIndex = iRow * iNumCols + iCol;
+				m_pMap->m_VertexList[iCurrentIndex] = pNode->m_VertexList[iIndex++];
+			}
+		}
+	}
+	return false;
+}
 //노드에 버텍스 버퍼 만들어줌.
 HRESULT KMapSpace::CreateVertexBuffer(KNode* pNode)
 {
@@ -528,8 +553,8 @@ bool KMapSpace::SetupObject(KFBXAsset* pFBXAsset,
 		pObj->obj_box.List[iv] = pFBXAsset->m_BoxCollision.List[iv];
 	}
 	pObj->obj_pos = pos;
-	pObj->obj_scale = rot;
 	pObj->obj_RollPitchYaw = rot;
+	pObj->obj_scale = scale;
 	pObj->obj_pos.y = m_pMap->GetHeight(pObj->obj_pos.x, pObj->obj_pos.z);
 	pObj->obj_name = pFBXAsset->m_ObjName;
 	pObj->UpdateData();
@@ -748,15 +773,8 @@ bool KMapSpace::Release()
 	{
 		m_LodPatchList[iPatch].Release();
 	}
-	for (auto list : m_FBXAssetList)
-	{
-		if (list!= nullptr)
-		{
-			list->Release();
-			delete list;
-			list= nullptr;
-		}
-	}
+	m_pLodIndexBuffer.Reset();
+	m_FBXAssetList.clear();
 	KQuadTree::Release();
 	m_Debug_Box.Release();
 	return true;
@@ -767,4 +785,5 @@ KMapSpace::KMapSpace()
 
 KMapSpace::~KMapSpace()
 {
+	
 }

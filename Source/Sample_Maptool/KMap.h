@@ -8,18 +8,18 @@ public:
 	ID3D11ShaderResourceView*	m_pMapAlphaResultSRV;
 	std::vector<KTexture*>		m_pSubTextureList;
 public:
-	float		m_cell_distance;
+	float						m_cell_distance;
 public:
-	UINT		m_num_col;
-	UINT		m_num_row;
-	UINT        m_num_vertex;
-	UINT		m_num_cell_col;
-	UINT		m_num_cell_row;
-	UINT        m_num_face;
+	UINT						m_num_col;
+	UINT						m_num_row;
+	UINT						m_num_vertex;
+	UINT						m_num_cell_col;
+	UINT						m_num_cell_row;
+	UINT						m_num_face;
 public:
-	float		m_tex_offset;
+	float						m_tex_offset;
 public:
-	std::vector<float>  m_HeightList;
+	std::vector<float>			m_HeightList;
 public:
 	virtual	bool Init(ID3D11DeviceContext* context, std::wstring heightmap);
 	virtual	bool Init(ID3D11DeviceContext* context, UINT width, UINT height, std::vector<float> heightList);

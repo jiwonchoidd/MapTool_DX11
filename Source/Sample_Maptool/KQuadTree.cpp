@@ -107,6 +107,7 @@ void KQuadTree::SetNeighborNode()
 
 bool KQuadTree::Release()
 {
+	m_pLeafList.clear();
 	if (m_pRootNode != nullptr)
 	{
 		delete m_pRootNode;

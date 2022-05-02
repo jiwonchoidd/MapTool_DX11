@@ -18,11 +18,13 @@ bool KMapUtil::SaveKMap(KMapSpace* pSpace,std::string filename)
 		header = "#Mapheight";
 		bRet = fprintf_s(fpWrite, "%s\n", header.c_str());
 		bRet = fprintf_s(fpWrite, "%d\n", static_cast<int>(pSpace->m_pMap->m_VertexList.size())); //버텍스 개수
+
+		pSpace->UpdateMapVertexList(); // 노드의 높이를 맵 높이와 같게 만듬
 		for (auto vertex : pSpace->m_pMap->m_VertexList)
 		{
 			bRet = fprintf_s(fpWrite, "%f\n", vertex.pos.y);//버텍스 높이 
 		}
-
+		
 		//오브젝트 갯수
 		header = "#MapObject";
 		bRet = fprintf_s(fpWrite, "%s\n", header.c_str());
@@ -48,7 +50,8 @@ bool KMapUtil::SaveKMap(KMapSpace* pSpace,std::string filename)
 		bRet = fprintf_s(fpWrite, "%s\n", to_wm(pSpace->m_pMap->m_pSubTextureList[3]->m_Name).c_str());
 		header = "#MapAlpha";
 		bRet = fprintf_s(fpWrite, "%s\n", header.c_str());
-		bRet = fprintf_s(fpWrite, "%s\n", filename.c_str());
+		std::string alphafile = filename + ".bmp";
+		bRet = fprintf_s(fpWrite, "%s\n", alphafile.c_str());
 
 	fclose(fpWrite);
 	}
@@ -129,7 +132,10 @@ bool KMapUtil::LoadKMap(std::string filename)
 			}
 			else if (_tcscmp(type, L"#MapAlpha") == 0)
 			{
-				
+				TCHAR tex[36] = { 0, };
+				_fgetts(buffer, _countof(buffer), fpRead);
+				_stscanf_s(buffer, _T("%s\n"), tex, (unsigned int)_countof(tex));
+				m_AlphaTexture = tex;
 			}
 		}
 		fclose(fpRead);

@@ -12,6 +12,7 @@ public:
 	std::vector<float>				m_MapHeight;
 	std::map<std::wstring, KMatrix> m_MapObject;
 	std::vector<std::wstring>		m_SubTexture;
+	std::wstring					m_AlphaTexture;
 public:
 	bool	SaveKMap(KMapSpace* pSpace,std::string filename);
 	bool	LoadKMap(std::string filename);

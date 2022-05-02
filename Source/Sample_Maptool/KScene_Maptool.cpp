@@ -285,28 +285,25 @@ void KScene_Maptool::ImguiSaveLoad()
 	if (m_bImguiSave)
 		ImGui::OpenPopup("Save File");
 	
-	//경로 설정 확인 후 작업 진행
+	//경로 설정 확인 후 작업 진행, 파일로드
 	if (g_ImGui.m_FileDialog.showFileDialog("Open File", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), ".kmap"))
 	{
 		m_Terrian_Util.LoadKMap(g_ImGui.m_FileDialog.selected_path);
-
 		//초기화
-		m_Terrian.Release();
-		m_Terrian_Space.Release();
-		m_Terrian_Sprite.Release();
-		m_MousePicker.Release();
+		m_Terrian.Release();m_Terrian_Space.Release();m_Terrian_Sprite.Release();m_MousePicker.Release();
 		
 		//다시 로드
 		m_Terrian.Init(m_pContext, m_Terrian_Util.m_Mapsize[0], m_Terrian_Util.m_Mapsize[1], m_Terrian_Util.m_MapHeight);
 		m_Terrian.CreateObject(L"../../data/shader/VSPS_Terrain.hlsl", L"../../data/shader/VSPS_Terrain.hlsl", L"../../data/map/texture/base.jpg",
 			L"../../data/map/texture/base_s.jpg", L"../../data/map/texture/base_n.jpg");
 
+		m_Terrian_Sprite.SetAlphaFileName(m_Terrian_Util.m_AlphaTexture);
 		m_Terrian_Sprite.Init(m_pContext, &m_Terrian); // 지형 스프라이팅 GPU 컴퓨터 쉐이딩을 사용한다.
-		m_Terrian.m_pSubTextureList.push_back(m_TextureList[0]);
-		m_Terrian.m_pSubTextureList.push_back(m_TextureList[1]);
-		m_Terrian.m_pSubTextureList.push_back(m_TextureList[2]);
-		m_Terrian.m_pSubTextureList.push_back(m_TextureList[3]);
 
+		m_Terrian.m_pSubTextureList.push_back(g_TextureMananger.Load(m_Terrian_Util.m_SubTexture[0]));
+		m_Terrian.m_pSubTextureList.push_back(g_TextureMananger.Load(m_Terrian_Util.m_SubTexture[1]));
+		m_Terrian.m_pSubTextureList.push_back(g_TextureMananger.Load(m_Terrian_Util.m_SubTexture[2]));
+		m_Terrian.m_pSubTextureList.push_back(g_TextureMananger.Load(m_Terrian_Util.m_SubTexture[3]));
 		m_Terrian_Space.Build(&m_Terrian, g_SceneManager.m_pCamera); // 공간분할
 		m_Terrian_Space.DrawDebugInit(m_pContext);
 
@@ -314,14 +311,36 @@ void KScene_Maptool::ImguiSaveLoad()
 		{
 			m_Terrian_Space.m_FBXAssetList.push_back(pfbx);
 		}
+		//저장된 오브젝트 배치
+		for (auto mapObject : m_Terrian_Util.m_MapObject)
+		{
+			std::size_t pos = mapObject.first.rfind(L"#");
+			std::wstring objName = mapObject.first.substr(0, pos);
+
+			for (auto list : m_Terrian_Space.m_FBXAssetList)
+			{
+				if (list->m_ObjName == objName)
+				{
+					m_Terrian_Space.SetupObject(list,
+						KVector3(mapObject.second._11, mapObject.second._12, mapObject.second._13),
+						KVector3(mapObject.second._21, mapObject.second._22, mapObject.second._23), 
+						KVector3(mapObject.second._31, mapObject.second._32, mapObject.second._33));
+					break;
+				}
+			}
+		}
 
 		//마우스 피커------------------------------------------------------------
 		m_MousePicker.Init(m_pContext, &m_Terrian_Space, g_SceneManager.m_pCamera);
 	}
+	//파일 저장
 	if (g_ImGui.m_FileDialog.showFileDialog("Save File", imgui_addons::ImGuiFileBrowser::DialogMode::SAVE, ImVec2(700, 310), ".kmap"))
 	{
+		//저장 구현
+		//맵의 높이가 아닌 노드의 높이로 조절중이여서 
+		//노드 높이와 맵 높이를 다시 계산해줌.
 		m_Terrian_Util.SaveKMap(&m_Terrian_Space, g_ImGui.m_FileDialog.selected_path);
-		//Do writing of files based on extension here
+		g_TextureMananger.SaveFile(m_pContext, to_mw(g_ImGui.m_FileDialog.selected_path), m_Terrian_Sprite.m_pTextureCopy.Get());
 	}
 }
 bool KScene_Maptool::Load(std::wstring file)
@@ -517,6 +536,13 @@ bool KScene_Maptool::Render()
 bool KScene_Maptool::Release()
 {
 	m_FbxLoader.Release();
+	for (auto fbx_object : m_FBXList)
+	{
+		fbx_object->Release();
+		delete fbx_object;
+	}
+	m_FBXList.clear();
+	//
 	m_TopView.Release();
 	m_Terrian.Release();
 	m_Terrian_Space.Release();

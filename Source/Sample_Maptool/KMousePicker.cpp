@@ -346,14 +346,7 @@ bool KMousePicker::Map_TextureControl(float HeightScale, float BrushSize)
 		}
 		else
 		{
-			//완전히 포함된 노드
-			for (int i = 0; i < 25; i++)
-			{
-				pNode->m_VertexList[i].color = KVector4{ 0.5f,0.5f,0.5f,1.0f };
-			}
-			m_pContext->UpdateSubresource(
-				pNode->m_pVertexBuffer.Get(), 0, NULL,
-				&pNode->m_VertexList.at(0), 0, 0);
+			
 		}
 	}
 	return true;

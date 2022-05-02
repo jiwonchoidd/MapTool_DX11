@@ -124,7 +124,7 @@ public:
 	std::list<KMapObject*>  m_StaticObjectList;
 	std::list<KMapObject*>  m_DynamicObjectList;
 public:
-	std::vector <PNCT_VERTEX>	m_VertexList;
+	std::vector <PNCT_VERTEX>	m_VertexList; //맵의 버텍스 리스트에서 포인터 변수로 받아옴, 맵의 변동 사항을 적용하기 위함
 	wrl::ComPtr<ID3D11Buffer>	m_pVertexBuffer;
 public:
 	void   AddObject(KMapObject* obj);

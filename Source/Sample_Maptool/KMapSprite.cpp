@@ -1,7 +1,9 @@
 #include "KMapSprite.h"
 //맵을 뿌릴때, 복사해온 디퓨즈 맵을 SRV로 뿌리고
 //CS의 CSSetUnorderedAccessView와 연결을 해제함
-void KMapSprite::RunComputeShader(ID3D11DeviceContext* pContext, ID3D11ComputeShader* pComputeShader, UINT nNumViews, ID3D11ShaderResourceView** pShaderResourceViews, ID3D11Buffer* pCBCS, void* pCSData, DWORD dwNumDataBytes, ID3D11UnorderedAccessView** pUnorderedAccessView, UINT X, UINT Y, UINT Z)
+void KMapSprite::RunComputeShader(ID3D11DeviceContext* pContext, ID3D11ComputeShader* pComputeShader,
+	UINT nNumViews, ID3D11ShaderResourceView** pShaderResourceViews, ID3D11Buffer* pCBCS,
+	void* pCSData, DWORD dwNumDataBytes, ID3D11UnorderedAccessView** pUnorderedAccessView, UINT X, UINT Y, UINT Z)
 {
 	pContext->CSSetShader(pComputeShader, NULL, 0);
 	pContext->CSSetShaderResources(0, nNumViews, pShaderResourceViews);
@@ -31,7 +33,7 @@ void KMapSprite::RunComputeShader(ID3D11DeviceContext* pContext, ID3D11ComputeSh
 	pContext->CSSetConstantBuffers(0, 1, ppCBNULL);
 }
 
-HRESULT KMapSprite::CreateBufferUAV(ID3D11Device* pDevice, int iWidth, int iHeight, ID3D11UnorderedAccessView** ppUAVOut)
+HRESULT KMapSprite::CreateBufferUAV(ID3D11Device* pDevice, int iWidth, int iHeight, ID3D11UnorderedAccessView** ppUAVOut, std::wstring filename)
 {
 	HRESULT hr = S_OK;
 	//before dispatch
@@ -45,8 +47,15 @@ HRESULT KMapSprite::CreateBufferUAV(ID3D11Device* pDevice, int iWidth, int iHeig
 	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
 	textureDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
-	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; DXGI_FORMAT_R32G32B32A32_FLOAT;
+	textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(srvDesc));
+	srvDesc.Format = textureDesc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+
 	hr = pDevice->CreateTexture2D(&textureDesc, NULL, m_pTexture.GetAddressOf());
+	hr = pDevice->CreateShaderResourceView(m_pTexture.Get(), &srvDesc, m_pTextureSRV.GetAddressOf());
 
 	D3D11_UNORDERED_ACCESS_VIEW_DESC viewDescUAV;
 	ZeroMemory(&viewDescUAV, sizeof(viewDescUAV));
@@ -54,20 +63,36 @@ HRESULT KMapSprite::CreateBufferUAV(ID3D11Device* pDevice, int iWidth, int iHeig
 	viewDescUAV.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 	viewDescUAV.Texture2D.MipSlice = 0;
 	hr = pDevice->CreateUnorderedAccessView(m_pTexture.Get(), &viewDescUAV, ppUAVOut);
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	ZeroMemory(&srvDesc, sizeof(srvDesc));
-	srvDesc.Format = textureDesc.Format;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = 1;
-	hr = pDevice->CreateShaderResourceView(m_pTexture.Get(), &srvDesc, m_pTextureSRV.GetAddressOf());
-
 	// 복사본
-	hr = pDevice->CreateTexture2D(&textureDesc, NULL, m_pTextureCopy.GetAddressOf());
-	hr = pDevice->CreateShaderResourceView(m_pTextureCopy.Get(), &srvDesc, m_pTextureCopySRV.GetAddressOf());
+	if (filename.empty())
+	{
+		hr = pDevice->CreateTexture2D(&textureDesc, NULL, m_pTextureCopy.GetAddressOf());
+		hr = pDevice->CreateShaderResourceView(m_pTextureCopy.Get(), &srvDesc, m_pTextureCopySRV.GetAddressOf());
+	}
+	else
+	{
+		HRESULT hr;
+		wrl::ComPtr<ID3D11Resource> pTexture;
+		size_t maxsize = 0;
+		hr = CreateWICTextureFromFileEx(g_pd3dDevice,
+			filename.c_str(),
+			maxsize,
+			D3D11_USAGE_STAGING,
+			NULL,
+			D3D11_CPU_ACCESS_READ,
+			NULL,
+			WIC_LOADER_DEFAULT,
+			pTexture.GetAddressOf(), nullptr);
+
+		hr = pDevice->CreateTexture2D(&textureDesc, NULL, m_pTextureCopy.GetAddressOf());
+		m_pContext->CopyResource(m_pTextureCopy.Get(), pTexture.Get());
+		hr = pDevice->CreateShaderResourceView(m_pTextureCopy.Get(), &srvDesc, m_pTextureCopySRV.GetAddressOf());
+
+		pTexture.Reset();
+	}
+
 	return hr;
 }
-
 
 HRESULT KMapSprite::CreateStructuredBuffer(ID3D11Device* pDevice, UINT uElementSize, UINT uCount, VOID* pInitData, ID3D11Buffer** ppBufOut)
 {
@@ -141,7 +166,7 @@ bool KMapSprite::Init(ID3D11DeviceContext* pContext, KMap* pMap)
 	CreateStructuredBuffer(g_pd3dDevice, sizeof(PICKBUFFER), 1, &m_Pickbuffer, m_pPickBuffer.GetAddressOf());
 	CreateBufferSRV(g_pd3dDevice, m_pPickBuffer.Get(), m_pPickBufferSRV.GetAddressOf());
 	//unorder access view 생성 : SRV 순서와 상관없이 다른 리소스에 대한 읽기 및 쓰기 허용
-	CreateBufferUAV(g_pd3dDevice, m_pMap->m_BoxCollision.size.x, m_pMap->m_BoxCollision.size.z, m_pResultUAV.GetAddressOf());
+	CreateBufferUAV(g_pd3dDevice, m_pMap->m_BoxCollision.size.x, m_pMap->m_BoxCollision.size.z, m_pResultUAV.GetAddressOf(), m_strAlphaFile);
 	//CS 쉐이더 생성
 
 	KShader* pCS = g_ShaderManager.CreateComputeShader(L"../../data/shader/CS_Terrain.hlsl");
@@ -161,6 +186,10 @@ void KMapSprite::UpdatePickPos(KVector3 vIntersect, float fRadius)
 	m_Pickbuffer.vRect[1] = KVector3(640, 640, 0);
 	m_Pickbuffer.vRect[2] = KVector3(640, -640, 0);
 	m_Pickbuffer.vRect[3] = KVector3(-640, -640, 0);
+}
+void KMapSprite::SetAlphaFileName(std::wstring file)
+{
+	m_strAlphaFile = file;
 }
 bool KMapSprite::Frame()
 {
@@ -183,6 +212,8 @@ bool KMapSprite::Release()
 	m_pCS.Reset();
 	m_pTextureCopy.Reset();
 	m_pTextureCopySRV.Reset();
+	m_pTexture.Reset();
+	m_pTextureSRV.Reset();
 	m_pPickBuffer.Reset();
 	m_pPickBufferSRV.Reset();
 	m_pResultUAV.Reset();

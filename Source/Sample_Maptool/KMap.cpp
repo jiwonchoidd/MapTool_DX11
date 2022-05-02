@@ -11,6 +11,7 @@ bool KMap::Init(ID3D11DeviceContext* context, std::wstring heightmap)
 	CreateMap(m_num_row, m_num_col, 10.0f);
 	return true;
 }
+//Load 높이 맵이 아닌 리스트로 받아옴
 bool KMap::Init(ID3D11DeviceContext* context, UINT width, UINT height, std::vector<float> heightList)
 {
 	m_pContext = context;
@@ -18,6 +19,8 @@ bool KMap::Init(ID3D11DeviceContext* context, UINT width, UINT height, std::vect
 	//높이맵 읽어옴
 	m_HeightList = heightList;
 	//높이맵으로 부터 크기 형성
+	m_num_row = height;
+	m_num_col = width;
 	CreateMap(m_num_row, m_num_col, 10.0f);
 	return true;
 }
@@ -44,6 +47,16 @@ bool KMap::CreateMap(UINT width, UINT height, float distance)
 bool KMap::Release()
 {
 	m_HeightList.clear();
+	m_pMapAlphaResultSRV = nullptr;
+	m_pSubTextureList.clear();
+	m_cell_distance = 1.0f;
+	m_num_col=0;
+	m_num_row=0;
+	m_num_vertex=0;
+	m_num_cell_col=0;
+	m_num_cell_row=0;
+	m_num_face=0;
+	m_tex_offset=0;
 	K3DAsset::Release();
 	return true;
 }

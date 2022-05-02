@@ -57,7 +57,7 @@ void KTextureManager::SaveFile(ID3D11DeviceContext* pContext, std::wstring name,
 	}
 	if (SUCCEEDED(hr))
 	{
-		hr = DirectX::SaveWICTextureToFile(pContext, tex.Get(), GUID_ContainerFormatJpeg, (name + L".jpg").c_str());
+		hr = DirectX::SaveWICTextureToFile(pContext, tex.Get(), GUID_ContainerFormatBmp, (name + L".bmp").c_str());
 	}
 	if (pRes == nullptr)
 	{

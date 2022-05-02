@@ -10,7 +10,7 @@ public:
 public:
 	KNode*				m_pRootNode;
 	std::map<int, KNode*> m_pLeafList;
-	std::queue<KNode*>	m_queue;
+	std::queue<KNode*>	  m_queue;
 public:
 	bool	LoadLeafData(std::wstring data);
 public:

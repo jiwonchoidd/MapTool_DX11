@@ -13,11 +13,8 @@ struct KLodPatch
 	{
 		for (int iBuffer = 0; iBuffer < 16; iBuffer++)
 		{
-			if (IndexBufferList[iBuffer].Get())
-			{
-				IndexBufferList[iBuffer].Reset();
-				IndexBufferList[iBuffer] = nullptr;
-			}
+			IndexBufferList[iBuffer].Reset();
+			IndexBufferList[iBuffer] = nullptr;
 		}
 	}
 	KLodPatch() {}
@@ -81,6 +78,7 @@ public:
 public:
 	virtual KNode*	  CreateNode(KNode* pParent, float x, float y, float w, float h)override;
 	virtual bool      UpdateVertexList(KNode* pNode)override;
+	virtual bool      UpdateMapVertexList();
 	virtual HRESULT   CreateVertexBuffer(KNode* pNode)override;
 	virtual bool      UpdateIndexList(KNode* pNode);
 	virtual HRESULT   CreateIndexBuffer(KLodPatch& patch, int iCode);

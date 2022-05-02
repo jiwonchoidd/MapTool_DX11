@@ -360,10 +360,14 @@ bool KObject::CreateObject(std::wstring vsFile,
 bool KObject::Release()
 {
     m_pVertexBuffer.Reset();
+    m_pVertexBTBuffer.Reset();
     m_pIndexBuffer.Reset();
     m_pConstantBuffer.Reset();
     m_pVertexLayout.Reset();
     m_pConstantBuffer_EX.Reset();
+    m_VertexList.clear();
+    m_BTList.clear();
+    m_IndexList.clear();
     return true;
 }
 
