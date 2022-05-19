@@ -5,9 +5,6 @@
 - 그래픽스 : 환경매핑, 디퓨즈매핑, 스페큘러매핑, 노말매핑, 깊이 맵 쉐도우 적용 
 - 파일 입출력 : 맵 정보 저장, 로드 기능 구현
 
-![image](https://user-images.githubusercontent.com/48117119/169185880-1d32f557-fbca-4ed8-b612-3e41f571c6dd.png)
-
-
 ## Branch structure
 
 ### Main branch
@@ -15,3 +12,5 @@
 
 ## Environment
 Visual Studio 2019, DirectX11, ImGui
+
+![image](https://user-images.githubusercontent.com/48117119/169185880-1d32f557-fbca-4ed8-b612-3e41f571c6dd.png)
