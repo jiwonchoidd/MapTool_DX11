@@ -27,7 +27,7 @@ void KScene_Maptool::ImguiInspector()
 		{
 			if (ImGui::BeginChild("chlid_terrain", ImVec2(0, 300.0f), true))
 			{
-#pragma region 맵툴 IMGUI
+				#pragma region 맵툴 IMGUI
 				//--------------------------------------------------------
 				//라디오 버튼
 				if (ImGui::RadioButton("Object", (m_MousePicker.m_iControlState == 0)))
@@ -47,12 +47,12 @@ void KScene_Maptool::ImguiInspector()
 				//오브젝트
 				if (m_MousePicker.m_iControlState == 0)
 				{
-#pragma region 오브젝트 IMGUI
+					#pragma region 오브젝트 IMGUI
 					//마우스 선택, 리스트 선택 오브젝트---------------------------------------------------------
 					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), u8"오브젝트");
 					if (m_MousePicker.m_pSeletedObj != nullptr)
 					{
-						int iChange = 0;
+						bool iChange = 0;
 						ImGui::PushItemWidth(50);
 						ImGui::TextColored(ImVec4(1, 1, 0, 1), u8"선택된 오브젝트 : "); ImGui::SameLine();
 						ImGui::TextColored(ImVec4(1, 1, 0, 1), to_wm(m_MousePicker.m_pSeletedObj->obj_name).c_str());
@@ -229,7 +229,7 @@ void KScene_Maptool::ImguiInspector()
 		{
 			if (ImGui::BeginChild("LOD", ImVec2(0, 150), true))
 			{
-#pragma region LOD 프러스텀 컬링 공간분활 IMGUI
+				#pragma region LOD 프러스텀 컬링 공간분활 IMGUI
 				if (ImGui::Button("Terrian Box Enable"))
 				{
 					m_Terrian_Space.SetDrawDebug();
@@ -250,7 +250,7 @@ void KScene_Maptool::ImguiInspector()
 		{
 			if (ImGui::BeginChild("light", ImVec2(0, 150), true))
 			{
-#pragma region 씬 라이트 IMGUI
+				#pragma region 씬 라이트 IMGUI
 				ImGui::SliderFloat("X", &m_Light.m_vPos.x, -200.0f, 200.0f);
 				ImGui::SliderFloat("Z", &m_Light.m_vPos.z, -200.0f, 200.0f);
 				ImGui::InputFloat3("Color", *lightColor, 2, 0);
