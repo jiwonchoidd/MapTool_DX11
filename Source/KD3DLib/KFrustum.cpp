@@ -175,10 +175,10 @@ BOOL KFrustum::ClassifyOBB(KBox* box)
 			m_Plane[i].y * vDir.y +
 			m_Plane[i].z * vDir.z);
 
-		float pToc = m_Plane[i].x * box->middle.x +
+		float center = m_Plane[i].x * box->middle.x +
 			m_Plane[i].y * box->middle.y +
 			m_Plane[i].z * box->middle.z + m_Plane[i].w;
-		if (pToc >= sum)
+		if (center >= sum)
 		{
 			return FALSE;
 		}

@@ -12,13 +12,13 @@ private:
 	bool m_bImguiEnable = true;
 	bool m_bCreated = false;
 public:
-	imgui_addons::ImGuiFileBrowser m_FileDialog;
+	imgui_addons::ImGuiFileBrowser m_FileDialog; //파일입출력 브라우저
 public:
 	void OnOffImgui();
 	bool isImguiEnable();
 public:
-	void Init_DX(ID3D11Device* pdevice, ID3D11DeviceContext* pcontext);
-	void Init_Win(HWND hwnd);
+	void Init_DX(ID3D11Device* pdevice, ID3D11DeviceContext* pcontext); //다이렉트 파이프라인 초기화
+	void Init_Win(HWND hwnd); // 윈도우 Winapi 초기화
 public:
 	void Init();
 	void Frame();

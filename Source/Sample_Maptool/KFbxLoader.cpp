@@ -6,11 +6,11 @@
 //------------------------------------------------------------------------
 bool KFbxLoader::Init()
 {
-	m_pFbxManager = FbxManager::Create(); 
+	m_pFbxManager = FbxManager::Create(); // FbxManager
 	m_pFbxImporter = FbxImporter::Create(m_pFbxManager, "");
 	m_pFbxScene = FbxScene::Create(m_pFbxManager, "");
 
-	FbxAxisSystem	 m_SceneAxisSystem = m_pFbxScene->GetGlobalSettings().GetAxisSystem();
+	FbxAxisSystem	m_SceneAxisSystem = m_pFbxScene->GetGlobalSettings().GetAxisSystem();
 	
 	FbxAxisSystem::MayaZUp.ConvertScene(m_pFbxScene); //마야 Z축 버젼 사용
 	

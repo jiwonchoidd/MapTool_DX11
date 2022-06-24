@@ -8,7 +8,7 @@ bool KQuadTree::Init(float width, float height)
 
 void KQuadTree::Buildtree(KNode* pNode)
 {
-	if (SubDivide(pNode))
+	if (SubDivide(pNode)) // 재귀호출, 더 나눠 질 수 있는지?
 	{
 		int center = (pNode->m_CornerList[3] + pNode->m_CornerList[0]) / 2;
 		int mt = (pNode->m_CornerList[0] + pNode->m_CornerList[1]) / 2;
@@ -135,6 +135,7 @@ KNode* KQuadTree::FindNode(KNode* pNode, KVector2 pos)
 	do {
 		for (int iNode = 0; iNode < 4; iNode++)
 		{
+			//위치에 포함된 노드라면?
 			if (pNode->m_pChildlist[iNode] != nullptr &&
 				pNode->m_pChildlist[iNode]->isRect(pos))
 			{

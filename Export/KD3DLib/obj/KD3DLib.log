@@ -1,5 +1,23 @@
-﻿  KTextureManager.cpp
-  KD3DLib.vcxproj -> C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\제출처\최지원Maptool\MapTool_DX11\Export\KD3DLib\KD3DLib.lib
+﻿  ImGuiManager.cpp
+  KCamera.cpp
+  KCore.cpp
+  KDevice.cpp
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\02_제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KDevice.cpp(6,10): warning C4101: 'hr' :참조되지 않은 지역 변수입니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\02_제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KDevice.cpp(102,1): warning C4002: 함수 같은 매크로 호출 'FAILED'에 대해 인수가 너무 많습니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\02_제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KDevice.cpp(125,47): warning C4244: '=': 'UINT'에서 'FLOAT'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\02_제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KDevice.cpp(126,48): warning C4244: '=': 'UINT'에서 'FLOAT'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  KObjObject.cpp
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\02_제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KObjObject.cpp(81,37): warning C4473: 'swscanf_s': 서식 문자열에 대한 인수가 충분하게 전달되지 않았습니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\02_제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KObjObject.cpp(81,37): message : 자리 표시자 및 해당 매개 변수에는 variadic 인수가 14개 필요하지만 11개가 제공되었습니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\02_제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KObjObject.cpp(81,37): message : 누락된 variadic 인수 12이(가) 서식 문자열 '%d'에 필요합니다.
+  KUI.cpp
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\02_제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KUI.cpp(40,44): warning C4244: '=': 'UINT'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\02_제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KUI.cpp(41,45): warning C4244: '=': 'UINT'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\02_제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KUI.cpp(303,17): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\02_제출처\최지원Maptool\MapTool_DX11\Source\KD3DLib\KUI.cpp(304,18): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  KWindow.cpp
+  코드를 생성하고 있습니다...
+  KD3DLib.vcxproj -> C:\Users\kgca4021\OneDrive - nsu.ac.kr\KGCA 자료\02_제출처\최지원Maptool\MapTool_DX11\Export\KD3DLib\KD3DLib.lib
           1개 파일이 복사되었습니다.
   ImGuiManager.h
   K2DAsset.h

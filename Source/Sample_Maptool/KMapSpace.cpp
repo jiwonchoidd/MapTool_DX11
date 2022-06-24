@@ -308,7 +308,7 @@ bool KMapSpace::SetLOD(KVector3* vCamera)
 DWORD KMapSpace::SetLODType(KNode* pNode)
 {
 	int iRenderCode = 0;
-	// 동서남북
+	// 동서남북 BCD 바이너리 코드
 	if (pNode->m_pNeighborlist[0] &&
 		pNode->m_LodLevel < pNode->m_pNeighborlist[0]->m_LodLevel)
 	{
@@ -472,6 +472,7 @@ void KMapSpace::DrawableUpdate()
 void KMapSpace::RenderTile(KNode* pNode)
 {
 	if (pNode == nullptr) return;
+	//카메라 프러스텀 컬링
 	if (m_pCamera->ClassifyOBB(&pNode->m_node_box) == TRUE)
 	{
 		for (auto obj : pNode->m_StaticObjectList)
